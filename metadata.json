@@ -1,0 +1,6 @@
+{
+  "name": "OHPEA Admin Portal",
+  "description": "Admin management portal for Oromia Hospitality & Tourism Professionals Association (OHPEA) with real-time statistics, member approvals, contributions, and announcements.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

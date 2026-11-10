@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --brand-green-900: #0B3D2E;
+    --brand-green-700: #14573F;
+    --brand-green-500: #1F7A57;
+    --brand-gold: #C9A24A;
+    --brand-gold-light: #F1E3B8;
+    --brand-orange: #E8772E;
+    --brand-orange-light: #FCE5D3;
+    --ink: #14231D;
+    --text: #2D3748;
+    --muted: #718096;
+    --border: #E2E8F0;
+    --bg: #F6F8F7;
+    --surface: #FFFFFF;
+    --success: #2F9E6B;
+    --warning: #E8772E;
+    --danger: #D64545;
+    --info: #2F6FB5;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Ethiopic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom brand utility colors */
+.bg-brand-green-900 { background-color: var(--brand-green-900); }
+.bg-brand-green-700 { background-color: var(--brand-green-700); }
+.bg-brand-green-500 { background-color: var(--brand-green-500); }
+.bg-brand-gold { background-color: var(--brand-gold); }
+.bg-brand-gold-light { background-color: var(--brand-gold-light); }
+.bg-brand-orange { background-color: var(--brand-orange); }
+.bg-brand-orange-light { background-color: var(--brand-orange-light); }
+.bg-brand-surface { background-color: var(--surface); }
+.bg-brand-bg { background-color: var(--bg); }
+
+.text-brand-green-900 { color: var(--brand-green-900); }
+.text-brand-green-700 { color: var(--brand-green-700); }
+.text-brand-green-500 { color: var(--brand-green-500); }
+.text-brand-gold { color: var(--brand-gold); }
+.text-brand-orange { color: var(--brand-orange); }
+.text-brand-ink { color: var(--ink); }
+.text-brand-muted { color: var(--muted); }
+
+.border-brand-green-900 { border-color: var(--brand-green-900); }
+.border-brand-green-700 { border-color: var(--brand-green-700); }
+.border-brand-gold { border-color: var(--brand-gold); }
+.border-brand-border { border-color: var(--border); }
+
+/* Tabular figures for data tables and statistics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars for data tables and panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

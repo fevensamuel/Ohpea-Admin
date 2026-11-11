@@ -56,7 +56,7 @@ export const DEMO_SECTORS: LookupItem[] = [
 ];
 
 export const DEMO_FIELDS: LookupItem[] = [
-  { id: 'fld_thm', code: 'THM', name: 'Tourism & Hotel Management', nameOm: 'Hoggansa Tuuriizimii fi Hoteelaa', nameAm: 'የቱሪዝም እና ሆቴል ማኔጅመንት' },
+  { id: 'fld_thm', code: 'THM', name: 'Tourism & Hotel Management', nameOm: 'Hoggansa Tuuriizimii fi Keessummeessuu', nameAm: 'የቱሪዝም እና ሆቴል ማኔጅመንት' },
   { id: 'fld_cul', code: 'CUL', name: 'Culinary Arts & Food Science', nameOm: 'Aartii Nyaataa fi Qorannoo', nameAm: 'የምግብ ዝግጅት ጥበብ' },
   { id: 'fld_eco', code: 'ECO', name: 'Ecotourism & Heritage Conservation', nameOm: 'Tuuriizimii Uumamaa fi Dhaala', nameAm: 'ኢኮ-ቱሪዝም እና ቅርሶች ጥበቃ' },
   { id: 'fld_evt', code: 'MICE', name: 'Event & Conference Management (MICE)', nameOm: 'Qophii Sagantaalee fi Walgahii', nameAm: 'የስብሰባዎችና ክንውኖች አስተዳደር' },
@@ -500,12 +500,12 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     status: 'published',
     title: {
       en: '2nd Annual Oromia Hospitality & Tourism Summit 2026',
-      om: 'Yaa’ii Waggaa 2ffaa Tuuriizimii fi Hoteelaa Oromiyaa 2026',
+      om: 'Yaa’ii Waggaa 2ffaa Tuuriizimii fi Keessummeessuu Oromiyaa 2026',
       am: '2ኛው ዓመታዊ የኦሮሚያ ሆስፒታሊቲ እና ቱሪዝም ጉባኤ 2026',
     },
     summary: {
       en: 'Gathering over 500 tourism leaders, hoteliers, and government policymakers in Adama.',
-      om: 'Hoggantoota tuuriizimii, abbootii qabeenyaa hoteelaa fi mootummaa 500 ol Adaamaatti walitti fida.',
+      om: 'Hoggantoota tuuriizimii, abbootii qabeenyaa keessummeessuu fi mootummaa 500 ol Adaamaatti walitti fida.',
       am: 'ከ500 በላይ የቱሪዝም መሪዎችን እና ባለድርሻ አካላትን በአዳማ የሚያገናኝ ጉባኤ።',
     },
     body: {
@@ -525,7 +525,7 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     status: 'published',
     title: {
       en: 'Call for Lead Curriculum Specialists - Eco-Tourism Certification',
-      om: 'Waamicha Ogeessota Sirna Barnootaa - Eko-Tuuriizimii',
+      om: 'Waamicha Ogeeyyii Sirna Barnootaa - Eko-Tuuriizimii',
       am: 'የኢኮ-ቱሪዝም ስርአተ-ትምህርት ባለሙያዎች የስራ ማስታወቂያ',
     },
     summary: {
@@ -535,7 +535,7 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     },
     body: {
       en: 'OHPEA in partnership with Ministry of Culture and Tourism is developing a standardized national certification framework for nature guides and eco-lodge managers.',
-      om: 'Pirojektii haarawa leenjii fi waraqaa ragaa kennuu irratti ogeessota qacaruu barbaanna.',
+      om: 'Pirojektii haarawa leenjii fi waraqaa ragaa kennuu irratti ogeeyyii qacaruu barbaanna.',
       am: 'ከባህልና ቱሪዝም ሚኒስቴር ጋር በመተባበር ለተፈጥሮ አስጎብኚዎች የሚሰጥ ብሄራዊ ስልጠና ዝግጅት።',
     },
     organization: 'OHPEA Professional Standards Committee',
@@ -594,7 +594,7 @@ export const DEMO_PROGRAMS: ProgramItem[] = [
     code: 'STD',
     icon: 'ShieldCheck',
     order: 3,
-    title: { en: 'Hospitality Quality Standards & Grading', om: 'Ulaagaa fi Sadarkaa Qulqullina Hoteelaa', am: 'የሆቴልና አገልግሎት ጥራት ደረጃ ማረጋገጥ' },
+    title: { en: 'Hospitality Quality Standards & Grading', om: 'Ulaagaa fi Sadarkaa Qulqullina Keessummeessuu', am: 'የሆቴልና አገልግሎት ጥራት ደረጃ ማረጋገጥ' },
     description: { en: 'Standard operating manuals, food hygiene inspections, and service rating benchmarks.', om: 'Qajeelfama qulqullina tajaajilaa fi qorannoo qulqullina nyaataa.', am: 'የምግብ ደህንነት እና የአገልግሎት ጥራት መመዘኛዎች።' },
     active: true,
   },
@@ -614,13 +614,13 @@ export const DEMO_OBJECTIVES: ObjectiveItem[] = [
     id: 'obj_01',
     category: 'General',
     order: 1,
-    title: { en: 'Unify and empower tourism and hospitality professionals across Oromia region.', om: 'Ogeessota tuuriizimii fi hoteelaa Oromiyaa keessatti tokkoomsuu fi cimsuu.', am: 'በኦሮሚያ ክልል የሚገኙ የሆስፒታሊቲ እና ቱሪዝም ባለሙያዎችን ማስተባበርና ማብቃት።' },
+    title: { en: 'Unify and empower tourism and hospitality professionals across Oromia region.', om: 'Ogeeyyii Keessummeessuu fi Tuuriizimii Oromiyaa keessatti tokkoomsuu fi cimsuu.', am: 'በኦሮሚያ ክልል የሚገኙ የሆስፒታሊቲ እና ቱሪዝም ባለሙያዎችን ማስተባበርና ማብቃት።' },
   },
   {
     id: 'obj_02',
     category: 'Official',
     order: 2,
-    title: { en: 'Serve as the legal professional voice advocating for members in national tourism policy.', om: 'Sagalee seeraa ta’uun mirga ogeessotaa imaammata bioolessaa keessatti tiksuu.', am: 'በሀገራዊ የቱሪዝም ፖሊሲ ውሳኔዎች ላይ የባለሙያዎችን መብት ማስከበር።' },
+    title: { en: 'Serve as the legal professional voice advocating for members in national tourism policy.', om: 'Sagalee seeraa ta’uun mirga ogeeyyii imaammata bioolessaa keessatti tiksuu.', am: 'በሀገራዊ የቱሪዝም ፖሊሲ ውሳኔዎች ላይ የባለሙያዎችን መብት ማስከበር።' },
   },
   {
     id: 'obj_03',
@@ -786,4 +786,3 @@ export let demoMessagesState: ContactMessageItem[] = [...DEMO_MESSAGES];
 export let demoSubscribersState: SubscriberItem[] = [...DEMO_SUBSCRIBERS];
 export let demoAuditLogsState: AuditLogItem[] = [...DEMO_AUDIT_LOGS];
 export let demoUsersState: AdminUser[] = [DEMO_ADMIN];
-

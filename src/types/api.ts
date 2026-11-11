@@ -292,6 +292,19 @@ export interface DashboardSummary {
   totalCollectedThisYear: number;
   totalCollectedThisMonth: number;
   unpaidMembersCount: number;
+  active?: number;
+  inactive?: number;
+  pending?: number;
+  pendingRegistrations?: number;
+  female?: number;
+  male?: number;
+  governmentCount?: number;
+  privateCount?: number;
+  otherCount?: number;
+  governmentMembers?: number;
+  privateMembers?: number;
+  otherMembers?: number;
+  newThisMonth?: number;
 }
 
 export interface DashboardDimensionItem {

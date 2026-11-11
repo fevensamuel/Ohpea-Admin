@@ -28,19 +28,36 @@ import {
 } from '@/types/api';
 
 const TOKEN_KEY = 'ohpea_admin_token';
+const DEFAULT_API_URL = 'http://localhost:3000/api';
 
 class OhpeaAdminApiClient {
   private baseUrl: string;
   private token: string | null = null;
   private onAuthErrorCallbacks: (() => void)[] = [];
 
-  constructor() {
-    this.baseUrl = import.meta.env.VITE_API_URL || '/api';
+  constructor(rawBase?: string) {
+    const configuredBase = rawBase ?? import.meta.env.VITE_API_URL ?? '';
+    const base = configuredBase.trim() || DEFAULT_API_URL;
+    this.baseUrl = base.replace(/\/+$/, '');
+    if (!configuredBase.trim()) {
+      console.warn(`[ohpea-admin-api] VITE_API_URL is unset; using ${DEFAULT_API_URL}.`);
+    }
+    if (!/^https?:\/\//.test(this.baseUrl)) {
+      console.error(`[ohpea-admin-api] VITE_API_URL is "${this.baseUrl}" — expected absolute URL. Requests will fail.`);
+    }
     try {
       this.token = localStorage.getItem(TOKEN_KEY);
     } catch {
       this.token = null;
     }
+  }
+
+  private url(path: string): string {
+    if (path.startsWith('http')) {
+      return path;
+    }
+    const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+    return new URL(`${this.baseUrl}/${cleanPath}`).toString();
   }
 
   public getToken(): string | null {
@@ -76,9 +93,7 @@ class OhpeaAdminApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const url = endpoint.startsWith('http')
-      ? endpoint
-      : `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const url = this.url(endpoint);
 
     const headers: Record<string, string> = {
       Accept: 'application/json',
@@ -138,9 +153,7 @@ class OhpeaAdminApiClient {
   }
 
   private async requestBlob(endpoint: string): Promise<Blob> {
-    const url = endpoint.startsWith('http')
-      ? endpoint
-      : `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+    const url = this.url(endpoint);
 
     const headers: Record<string, string> = {};
     if (this.token) {

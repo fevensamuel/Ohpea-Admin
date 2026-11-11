@@ -20,11 +20,27 @@ export function usePagination(initialPage = 1, initialPageSize = 10) {
     setPageState(1);
   }, []);
 
-  const updateMeta = useCallback((newMeta: PaginationMeta) => {
-    setMeta(newMeta);
-    setPageState(newMeta.page);
-    setPageSizeState(newMeta.pageSize);
-  }, []);
+  const updateMeta = useCallback(
+    (newMeta?: Partial<PaginationMeta> | null) => {
+      if (!newMeta) return;
+
+      const nextMeta = {
+        page: newMeta.page ?? initialPage,
+        pageSize: newMeta.pageSize ?? initialPageSize,
+        total: newMeta.total ?? 0,
+        totalPages:
+          newMeta.totalPages ??
+          Math.max(
+            1,
+            Math.ceil((newMeta.total ?? 0) / (newMeta.pageSize ?? initialPageSize))
+          ),
+      };
+      setMeta(nextMeta);
+      setPageState(nextMeta.page);
+      setPageSizeState(nextMeta.pageSize);
+    },
+    [initialPage, initialPageSize]
+  );
 
   const nextPage = useCallback(() => {
     if (page < meta.totalPages) {

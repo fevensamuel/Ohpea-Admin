@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { ApiError } from '@/types/api';
-import { KeyRound, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { KeyRound, CheckCircle2 } from 'lucide-react';
 
 export function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -13,7 +13,7 @@ export function ChangePassword() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [generalError, setGeneralError] = useState('');
 
-  const { changePassword, mustChangePassword } = useAuthContext();
+  const { changePassword, logout } = useAuthContext();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -41,8 +41,9 @@ export function ChangePassword() {
     try {
       setLoading(true);
       await changePassword(currentPassword, newPassword);
-      toast.success('Your password has been successfully updated.');
-      navigate('/dashboard');
+      await logout();
+      toast.success('Your password has been updated. Please sign in again.');
+      navigate('/login', { replace: true });
     } catch (err) {
       if (err instanceof ApiError) {
         if (err.fields) {
@@ -70,17 +71,6 @@ export function ChangePassword() {
             <p className="text-xs text-slate-500">Update administrative access key</p>
           </div>
         </div>
-
-        {mustChangePassword && (
-          <div className="mb-5 p-3 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs flex items-start gap-2.5">
-            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold">Password Reset Required: </span>
-              Your account has a temporary or expiring password. You must set a new secure password
-              to proceed to the administrative dashboard.
-            </div>
-          </div>
-        )}
 
         {generalError && (
           <div className="mb-4 p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs font-medium">
@@ -173,7 +163,7 @@ export function ChangePassword() {
               ) : (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-[#C9A24A]" />
-                  <span>Update Password &amp; Continue</span>
+                  <span>Update Password</span>
                 </>
               )}
             </button>

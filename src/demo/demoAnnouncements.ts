@@ -7,12 +7,12 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     status: 'published',
     title: {
       en: '2nd Annual Oromia Hospitality & Tourism Summit 2026',
-      om: 'Yaa’ii Waggaa 2ffaa Tuuriizimii fi Hoteelaa Oromiyaa 2026',
+      om: 'Yaa’ii Waggaa 2ffaa Tuuriizimii fi Keessummeessuu Oromiyaa 2026',
       am: '2ኛው አመታዊ የኦሮሚያ ሆስፒታሊቲ እና ቱሪዝም ጉባኤ 2026',
     },
     summary: {
       en: 'Gathering over 500 hospitality professionals, eco-lodge operators, and policymakers in Adama.',
-      om: 'Ogeessota tuuriizimii fi hoteelaa 500 ol magaalaa Adaamaatti walitti fida.',
+      om: 'Ogeeyyii keessummeessuu fi tuuriizimii 500 ol magaalaa Adaamaatti walitti fida.',
       am: 'ከ 500 በላይ የሆስፒታሊቲ ባለሙያዎች እና ፖሊሲ አውጪዎችን በአዳማ ያገናኛል።',
     },
     body: {
@@ -32,7 +32,7 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     status: 'published',
     title: {
       en: 'Call for Lead Curriculum Specialists - Eco-Tourism Certification',
-      om: 'Waamicha Ogeessota Sirna Barnootaa - Eko-Tuuriizimii',
+      om: 'Waamicha Ogeeyyii Sirna Barnootaa - Eko-Tuuriizimii',
       am: 'የኢኮ-ቱሪዝም ስርአተ-ትምህርት ባለሙያዎች የስራ ማስታወቂያ',
     },
     summary: {
@@ -42,7 +42,7 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     },
     body: {
       en: 'OHPEA in partnership with Ministry of Culture and Tourism is developing a standardized national certification framework for nature guides and eco-lodge managers.',
-      om: 'Pirojektii haarawa leenjii fi waraqaa ragaa kennuu irratti ogeessota qacaruu barbaanna.',
+      om: 'Pirojektii haarawa leenjii fi waraqaa ragaa kennuu irratti ogeeyyii qacaruu barbaanna.',
       am: 'ከባህልና ቱሪዝም ሚኒስቴር ጋር በመተባበር ለተፈጥሮ አስጎብኚዎች የሚሰጥ ብሄራዊ ስልጠና ዝግጅት።',
     },
     organization: 'OHPEA Professional Standards Committee',
@@ -177,7 +177,7 @@ export const DEMO_ANNOUNCEMENTS: AnnouncementItem[] = [
     status: 'draft',
     title: {
       en: 'Partnership Signed with Ethiopian Airlines Aviation Academy for Hotel Staff Training',
-      om: 'Waliigaltee Leenjii Hoteelaa Dhaabbata Xiyyaaraa Itoophiyaa Waliin Mallatteeffame',
+      om: 'Waliigaltee Leenjii Keessummeessuu Dhaabbata Xiyyaaraa Itoophiyaa Waliin Mallatteeffame',
       am: 'ከኢትዮጵያ አየር መንገድ አቪዬሽን አካዳሚ ጋር የሆቴል ባለሙያዎች ስልጠና ስምምነት ተፈረመ',
     },
     summary: {

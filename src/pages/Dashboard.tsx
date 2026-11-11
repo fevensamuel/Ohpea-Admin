@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { useUiStore } from '@/store/useUiStore';
 import { DashboardApi } from '@/api/dashboard';
+import { localized } from '@/lib/i18n';
 import { MembersApi } from '@/api/members';
 import { RegionsApi } from '@/api/regions';
 import type {
@@ -64,6 +65,54 @@ export function Dashboard() {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [rejectingMember, setRejectingMember] = useState<{ id: string; name: string } | null>(null);
 
+  const safeSummary: DashboardSummary = {
+    totalMembers: 0,
+    activeMembers: 0,
+    inactiveMembers: 0,
+    pendingMembers: 0,
+    femaleMembers: 0,
+    maleMembers: 0,
+    governmentSector: 0,
+    privateSector: 0,
+    totalCollectedThisYear: 0,
+    totalCollectedThisMonth: 0,
+    unpaidMembersCount: 0,
+    pendingRegistrations: 0,
+    governmentMembers: 0,
+    privateMembers: 0,
+    otherMembers: 0,
+    newThisMonth: 0,
+    ...(summary ?? {}),
+  };
+  const safeRegions = Array.isArray(regions) ? regions : [];
+  const safeGenderChart = Array.isArray(genderData) ? genderData : [];
+  const safeSectorChart = Array.isArray(sectorData) ? sectorData : [];
+  const safeFieldChart = Array.isArray(fieldData) ? fieldData : [];
+  const safeOccupationChart = Array.isArray(occupationData) ? occupationData : [];
+  const safeGraduationChart = Array.isArray(graduationData) ? graduationData : [];
+  const safeRegionChart = Array.isArray(regionStats) ? regionStats : [];
+  const safeRecentActivity = Array.isArray(activities) ? activities : [];
+  const safeRecentMembers = Array.isArray(recentRegistrations) ? recentRegistrations : [];
+  const safeContributions =
+    contributions && typeof contributions === 'object'
+      ? contributions
+      : {
+          totalYear: 0,
+          totalMonth: 0,
+          paidCount: 0,
+          unpaidCount: 0,
+          timeline: [],
+          methodDistribution: [],
+          byRegion: [],
+        };
+  const safeContribSeries = Array.isArray(safeContributions.timeline)
+    ? safeContributions.timeline
+    : [];
+  const safeContribMethods = Array.isArray(safeContributions.methodDistribution)
+    ? safeContributions.methodDistribution
+    : [];
+  const contributionRanges: readonly ('3m' | '6m' | '12m')[] = ['3m', '6m', '12m'];
+
   // RegionalAdmin is locked to their region
   const effectiveRegionId = user?.role === 'RegionalAdmin' ? user.regionId : selectedRegionId;
 
@@ -95,22 +144,32 @@ export function Dashboard() {
       ]);
 
       setSummary(sumRes);
-      setRegions(regList);
-      setGenderData(genRes);
-      setSectorData(secRes);
-      setFieldData(fldRes);
-      setOccupationData(occRes);
-      setGraduationData(grdRes);
-      setRegionStats(rgnRes);
-      setRecentRegistrations(recRes.data);
-      setActivities(actRes);
+      setRegions(Array.isArray(regList) ? regList : []);
+      setGenderData(Array.isArray(genRes) ? genRes : []);
+      setSectorData(Array.isArray(secRes) ? secRes : []);
+      setFieldData(Array.isArray(fldRes) ? fldRes : []);
+      setOccupationData(Array.isArray(occRes) ? occRes : []);
+      setGraduationData(Array.isArray(grdRes) ? grdRes : []);
+      setRegionStats(Array.isArray(rgnRes) ? rgnRes : []);
+      setRecentRegistrations(Array.isArray(recRes?.data) ? recRes.data : []);
+      setActivities(Array.isArray(actRes) ? actRes : []);
 
       if (hasPermission('contributions.dashboard')) {
         const contribRes = await DashboardApi.getContributions({
           range: contributionRange,
           regionId: effectiveRegionId,
         });
-        setContributions(contribRes);
+        setContributions({
+          totalYear: contribRes?.totalYear ?? sumRes.totalCollectedThisYear ?? 0,
+          totalMonth: contribRes?.totalMonth ?? 0,
+          paidCount: contribRes?.paidCount ?? 0,
+          unpaidCount: contribRes?.unpaidCount ?? 0,
+          timeline: Array.isArray(contribRes?.timeline) ? contribRes.timeline : [],
+          methodDistribution: Array.isArray(contribRes?.methodDistribution)
+            ? contribRes.methodDistribution
+            : [],
+          byRegion: Array.isArray(contribRes?.byRegion) ? contribRes.byRegion : [],
+        });
       }
     } catch {
       toast.error('Failed to load dashboard metrics');
@@ -169,9 +228,9 @@ export function Dashboard() {
               aria-label="Filter dashboard by regional cluster"
             >
               <option value="">All Oromia Clusters</option>
-              {regions.map((r) => (
+              {safeRegions.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.name}
+                  {localized(r.name)}
                 </option>
               ))}
             </select>
@@ -181,13 +240,13 @@ export function Dashboard() {
 
       {loading && !summary ? (
         <LoadingSpinner text="Aggregating registry metrics..." size="lg" />
-      ) : summary ? (
+      ) : summary || !loading ? (
         <>
           {/* KPI Stat Cards Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
             <StatsCard
               title="Total"
-              value={summary.totalMembers.toLocaleString()}
+              value={(safeSummary.totalMembers ?? 0).toLocaleString()}
               icon={<Users className="w-4 h-4" />}
               accentColor="#0B3D2E"
               onClick={() => navigate('/members')}
@@ -195,7 +254,7 @@ export function Dashboard() {
             />
             <StatsCard
               title="Active"
-              value={summary.activeMembers.toLocaleString()}
+              value={(safeSummary.activeMembers ?? 0).toLocaleString()}
               icon={<CheckCircle className="w-4 h-4 text-emerald-600" />}
               accentColor="#1F7A57"
               badge={{ text: 'Verified', variant: 'positive' }}
@@ -203,45 +262,49 @@ export function Dashboard() {
             />
             <StatsCard
               title="Pending"
-              value={summary.pendingMembers}
+              value={safeSummary.pendingMembers ?? 0}
               icon={<Clock className="w-4 h-4 text-[#E8772E]" />}
               accentColor="#E8772E"
               badge={{ text: 'Review', variant: 'warning' }}
               onClick={() => navigate('/members/pending')}
               ctaText="Review"
-              active={summary.pendingMembers > 0}
+              active={(safeSummary.pendingMembers ?? 0) > 0}
             />
             <StatsCard
               title="Inactive"
-              value={summary.inactiveMembers.toLocaleString()}
+              value={(safeSummary.inactiveMembers ?? 0).toLocaleString()}
               icon={<UserX className="w-4 h-4 text-slate-400" />}
               accentColor="#718096"
               onClick={() => navigate('/members?membershipStatus=inactive')}
             />
             <StatsCard
               title="Female"
-              value={summary.femaleMembers.toLocaleString()}
-              subtext={`${Math.round((summary.femaleMembers / summary.totalMembers) * 100)}%`}
+              value={(safeSummary.femaleMembers ?? 0).toLocaleString()}
+              subtext={`${Math.round(
+                ((safeSummary.femaleMembers ?? 0) / (safeSummary.totalMembers || 1)) * 100
+              )}%`}
               accentColor="#C9A24A"
               onClick={() => navigate('/members?gender=female')}
             />
             <StatsCard
               title="Male"
-              value={summary.maleMembers.toLocaleString()}
-              subtext={`${Math.round((summary.maleMembers / summary.totalMembers) * 100)}%`}
+              value={(safeSummary.maleMembers ?? 0).toLocaleString()}
+              subtext={`${Math.round(
+                ((safeSummary.maleMembers ?? 0) / (safeSummary.totalMembers || 1)) * 100
+              )}%`}
               accentColor="#14573F"
               onClick={() => navigate('/members?gender=male')}
             />
             <StatsCard
               title="Gov Sector"
-              value={summary.governmentSector.toLocaleString()}
+              value={(safeSummary.governmentSector ?? 0).toLocaleString()}
               icon={<Building2 className="w-4 h-4" />}
               accentColor="#2F6FB5"
               onClick={() => navigate('/members')}
             />
             <StatsCard
               title="Private"
-              value={summary.privateSector.toLocaleString()}
+              value={(safeSummary.privateSector ?? 0).toLocaleString()}
               icon={<Briefcase className="w-4 h-4" />}
               accentColor="#0B3D2E"
               onClick={() => navigate('/members')}
@@ -259,8 +322,8 @@ export function Dashboard() {
                 Male &amp; female hospitality professionals
               </p>
               <DonutChart
-                data={genderData.map((d) => ({
-                  name: d.label,
+                data={safeGenderChart.map((d) => ({
+                  name: localized(d.label),
                   value: d.value,
                   color: d.color,
                 }))}
@@ -288,8 +351,8 @@ export function Dashboard() {
                 </button>
               </div>
               <BarChartCard
-                data={sectorData.map((d) => ({
-                  label: d.label,
+                data={safeSectorChart.map((d) => ({
+                  label: localized(d.label),
                   value: d.value,
                   color: d.color,
                 }))}
@@ -308,8 +371,8 @@ export function Dashboard() {
               </h3>
               <p className="text-xs text-slate-500 mb-4">Specialization distribution</p>
               <BarChartCard
-                data={fieldData.map((d) => ({
-                  label: d.label.split(' / ')[0].split(' & ')[0],
+                data={safeFieldChart.map((d) => ({
+                  label: localized(d.label).split(' / ')[0].split(' & ')[0],
                   value: d.value,
                   color: d.color,
                 }))}
@@ -325,8 +388,8 @@ export function Dashboard() {
               </h3>
               <p className="text-xs text-slate-500 mb-4">Employment classification</p>
               <DonutChart
-                data={occupationData.map((d) => ({
-                  name: d.label,
+                data={safeOccupationChart.map((d) => ({
+                  name: localized(d.label),
                   value: d.value,
                   color: d.color,
                 }))}
@@ -343,10 +406,12 @@ export function Dashboard() {
                 </h3>
                 <p className="text-xs text-slate-500 mb-4">Member density across Oromia</p>
                 <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-                  {regionStats.map((r, i) => (
-                    <div key={r.label} className="text-xs space-y-1">
+                  {safeRegionChart.map((r, i) => (
+                    <div key={localized(r.label)} className="text-xs space-y-1">
                       <div className="flex justify-between font-medium">
-                        <span className="text-slate-700 truncate max-w-[180px]">{r.label}</span>
+                        <span className="text-slate-700 truncate max-w-[180px]">
+                          {localized(r.label)}
+                        </span>
                         <span className="font-semibold text-slate-900 tabular-nums">
                           {r.value} members
                         </span>
@@ -371,8 +436,8 @@ export function Dashboard() {
                 </h3>
                 <p className="text-xs text-slate-500 mb-4">Educational credential benchmarks</p>
                 <BarChartCard
-                  data={graduationData.map((d) => ({
-                    label: d.label.split(' ')[0],
+                  data={safeGraduationChart.map((d) => ({
+                    label: localized(d.label).split(' ')[0],
                     value: d.value,
                     color: d.color,
                   }))}
@@ -401,7 +466,7 @@ export function Dashboard() {
 
                 <div className="flex items-center gap-2">
                   <div className="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs">
-                    {(['3m', '6m', '12m'] as const).map((r) => (
+                    {contributionRanges.map((r) => (
                       <button
                         key={r}
                         onClick={() => setContributionRange(r)}
@@ -431,7 +496,7 @@ export function Dashboard() {
                     Collected This Year
                   </span>
                   <p className="mt-1 text-xl font-bold text-slate-900 tabular-nums">
-                    ETB {contributions.totalYear.toLocaleString()}
+                    ETB {(safeContributions.totalYear ?? 0).toLocaleString()}
                   </p>
                   <span className="text-2xs text-emerald-700 font-semibold flex items-center gap-0.5 mt-0.5">
                     <TrendingUp className="w-3 h-3" /> +14.2% YoY Growth
@@ -443,7 +508,7 @@ export function Dashboard() {
                     Collected This Month
                   </span>
                   <p className="mt-1 text-xl font-bold text-slate-900 tabular-nums">
-                    ETB {contributions.totalMonth.toLocaleString()}
+                    ETB {(safeContributions.totalMonth ?? 0).toLocaleString()}
                   </p>
                   <span className="text-2xs text-slate-500">October 2026</span>
                 </div>
@@ -453,12 +518,12 @@ export function Dashboard() {
                     Compliant (Paid)
                   </span>
                   <p className="mt-1 text-xl font-bold text-emerald-800 tabular-nums">
-                    {contributions.paidCount.toLocaleString()}
+                    {(safeContributions.paidCount ?? 0).toLocaleString()}
                   </p>
                   <span className="text-2xs text-slate-500">
                     {Math.round(
-                      (contributions.paidCount /
-                        (contributions.paidCount + contributions.unpaidCount)) *
+                      ((safeContributions.paidCount ?? 0) /
+                        ((safeContributions.paidCount ?? 0) + (safeContributions.unpaidCount ?? 0) || 1)) *
                         100
                     )}
                     % Collection Rate
@@ -470,7 +535,7 @@ export function Dashboard() {
                     Outstanding (Unpaid)
                   </span>
                   <p className="mt-1 text-xl font-bold text-red-700 tabular-nums">
-                    {contributions.unpaidCount.toLocaleString()}
+                    {(safeContributions.unpaidCount ?? 0).toLocaleString()}
                   </p>
                   <button
                     onClick={() => navigate('/payments/unpaid')}
@@ -487,15 +552,15 @@ export function Dashboard() {
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                     Contribution Collections Over Time
                   </h4>
-                  <LineAreaChart data={contributions.timeline} height={230} />
+                  <LineAreaChart data={safeContribSeries} height={230} />
                 </div>
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                     Channel Distribution
                   </h4>
                   <DonutChart
-                    data={contributions.methodDistribution.map((m) => ({
-                      name: m.method.split(' ')[0],
+                    data={safeContribMethods.map((m) => ({
+                      name: localized(m.method).split(' ')[0],
                       value: m.amount,
                     }))}
                     totalLabel="Deposited"
@@ -522,7 +587,7 @@ export function Dashboard() {
                   onClick={() => navigate('/members/pending')}
                   className="text-xs font-semibold text-[#14573F] hover:underline flex items-center gap-1"
                 >
-                  Pending ({summary.pendingMembers}) <ChevronRight className="w-3.5 h-3.5" />
+                  Pending ({safeSummary.pendingMembers}) <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
 
@@ -538,7 +603,7 @@ export function Dashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {recentRegistrations.map((m) => (
+                    {safeRecentMembers.map((m) => (
                       <tr
                         key={m.id}
                         className="hover:bg-slate-50/70 transition-colors cursor-pointer"
@@ -603,11 +668,13 @@ export function Dashboard() {
               <p className="text-xs text-slate-500 mb-4">Official staff audit trail</p>
 
               <div className="space-y-3.5">
-                {activities.map((act) => (
+                {safeRecentActivity.map((act) => (
                   <div key={act.id} className="flex items-start gap-3 text-xs">
                     <div className="w-2 h-2 rounded-full bg-[#14573F] mt-1.5 shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-slate-800 leading-tight">{act.title}</p>
+                      <p className="font-semibold text-slate-800 leading-tight">
+                        {localized(act.title)}
+                      </p>
                       <p className="text-2xs text-slate-500 mt-0.5 leading-normal">
                         {act.description}
                       </p>

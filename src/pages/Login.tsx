@@ -33,13 +33,10 @@ export function Login() {
 
     try {
       setLoading(true);
-      const user = await login(identifier.trim(), password);
-      if (user.mustChangePassword) {
-        navigate('/change-password');
-      } else {
-        navigate('/dashboard');
-      }
+      await login(identifier.trim(), password);
+      navigate('/dashboard');
     } catch (err) {
+      console.error('[login] failed request URL:', `${import.meta.env.VITE_API_URL || '(unset)'}/auth/login`);
       if (err instanceof ApiError) {
         if (err.fields) {
           setFieldErrors(err.fields);
@@ -80,7 +77,7 @@ export function Login() {
               OHPEA
             </h1>
             <p className="text-xs text-[#C9A24A] font-medium tracking-wide">
-              Waldaa Ogeessota Tuuriizimii fi Hoteelaa Oromiyaa
+              Waldaa Ogeeyyii Keessummeessuu fi Tuuriizimii Oromiyaa
             </p>
           </div>
         </div>

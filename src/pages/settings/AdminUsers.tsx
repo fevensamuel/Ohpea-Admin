@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UsersApi } from '@/api/users';
 import { RegionsApi } from '@/api/regions';
+import { localized } from '@/lib/i18n';
 import { PERMISSION_GROUPS } from '@/config/permissions';
 import { ApiError, type AdminUser, type RoleType, type RegionItem } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
@@ -362,7 +363,7 @@ export function AdminUsers() {
                       <option value="">-- Select Region --</option>
                       {regions.map((r) => (
                         <option key={r.id} value={r.id}>
-                          {r.name}
+                          {localized(r.name)}
                         </option>
                       ))}
                     </select>

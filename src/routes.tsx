@@ -42,7 +42,7 @@ import { ContractMismatch } from '@/pages/ContractMismatch';
 
 // Protected layout with hard guards
 export function ProtectedLayout() {
-  const { user, loading, mustChangePassword } = useAuthContext();
+  const { user, loading } = useAuthContext();
   const { ok } = useContractGuard();
   const { sidebarCollapsed } = useUiStore();
   const location = useLocation();
@@ -63,11 +63,6 @@ export function ProtectedLayout() {
   // 2. Contract drift guard: once logged in, if !ok, redirect to /contract-mismatch
   if (!ok && location.pathname !== '/contract-mismatch') {
     return <Navigate to="/contract-mismatch" replace />;
-  }
-
-  // 3. If user.mustChangePassword === true AND path !== /change-password -> hard redirect
-  if (mustChangePassword && location.pathname !== '/change-password') {
-    return <Navigate to="/change-password" replace />;
   }
 
   return (

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Receipt, CheckCircle, Download, Search } from 'lucide-react';
 import { PaymentsApi } from '@/api/payments';
+import { localized } from '@/lib/i18n';
 import { MembersApi } from '@/api/members';
 import { PlansApi } from '@/api/plans';
 import { ApiError, type MemberSummary, type ContributionPlan, type PaymentMethod, type PaymentPeriod } from '@/types/api';
@@ -280,7 +281,7 @@ export function RecordPaymentModal({
                   <option value="">-- Custom Amount --</option>
                   {plans.map((pln) => (
                     <option key={pln.id} value={pln.id}>
-                      {pln.name} (ETB {pln.amountEtb})
+                      {localized(pln.name)} (ETB {pln.amountEtb})
                     </option>
                   ))}
                 </select>

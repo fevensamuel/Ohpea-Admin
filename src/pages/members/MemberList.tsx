@@ -4,6 +4,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { usePagination } from '@/hooks/usePagination';
 import { useAuthContext } from '@/context/AuthContext';
 import { MembersApi } from '@/api/members';
+import { localized } from '@/lib/i18n';
 import { RegionsApi } from '@/api/regions';
 import { LookupsApi } from '@/api/lookups';
 import type { MemberSummary, RegionItem, LookupItem } from '@/types/api';
@@ -286,7 +287,7 @@ export function MemberList() {
                 <option value="">All Regions</option>
                 {regions.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.name}
+                    {localized(r.name)}
                   </option>
                 ))}
               </select>
@@ -304,7 +305,7 @@ export function MemberList() {
               <option value="">All Sectors</option>
               {sectors.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.name}
+                  {localized(s.name)}
                 </option>
               ))}
             </select>

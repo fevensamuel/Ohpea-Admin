@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { MembersApi } from '@/api/members';
+import { localized } from '@/lib/i18n';
 import { RegionsApi } from '@/api/regions';
 import { LookupsApi } from '@/api/lookups';
 import { useAuthContext } from '@/context/AuthContext';
@@ -267,13 +268,17 @@ export function MemberEdit() {
                 value={member.regionId || ''}
                 onChange={(e) => {
                   const reg = regions.find((r) => r.id === e.target.value);
-                  setMember({ ...member, regionId: e.target.value, regionName: reg?.name });
+                  setMember({
+                    ...member,
+                    regionId: e.target.value,
+                    regionName: localized(reg?.name),
+                  });
                 }}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 font-semibold"
               >
                 {regions.map((r) => (
                   <option key={r.id} value={r.id}>
-                    {r.name}
+                    {localized(r.name)}
                   </option>
                 ))}
               </select>
@@ -285,13 +290,17 @@ export function MemberEdit() {
                 value={member.sectorId || ''}
                 onChange={(e) => {
                   const sec = sectors.find((s) => s.id === e.target.value);
-                  setMember({ ...member, sectorId: e.target.value, sectorName: sec?.name });
+                  setMember({
+                    ...member,
+                    sectorId: e.target.value,
+                    sectorName: localized(sec?.name),
+                  });
                 }}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               >
                 {sectors.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name}
+                    {localized(s.name)}
                   </option>
                 ))}
               </select>
@@ -303,13 +312,17 @@ export function MemberEdit() {
                 value={member.fieldId || ''}
                 onChange={(e) => {
                   const fld = fields.find((f) => f.id === e.target.value);
-                  setMember({ ...member, fieldId: e.target.value, fieldName: fld?.name });
+                  setMember({
+                    ...member,
+                    fieldId: e.target.value,
+                    fieldName: localized(fld?.name),
+                  });
                 }}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               >
                 {fields.map((f) => (
                   <option key={f.id} value={f.id}>
-                    {f.name}
+                    {localized(f.name)}
                   </option>
                 ))}
               </select>
@@ -323,8 +336,8 @@ export function MemberEdit() {
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               >
                 {gradLevels.map((g) => (
-                  <option key={g.id} value={g.name}>
-                    {g.name}
+                  <option key={g.id} value={localized(g.name)}>
+                    {localized(g.name)}
                   </option>
                 ))}
               </select>

@@ -34,17 +34,11 @@ export function ContractProvider({ children }: { children: React.ReactNode }) {
     }
 
     setLoading(true);
-    // Resolve base url: if VITE_API_URL is set, strip /api suffix, otherwise use window.location.origin
+    // Keep /api in the base URL so the contract is fetched from /api/contract.json.
     const rawApiUrl = (import.meta as any).env?.VITE_API_URL || '';
-let baseUrl = '';
-if (rawApiUrl) {
-  // Keep the full base including /api so we fetch /api/contract.json
-  baseUrl = rawApiUrl.replace(/\/+$/, '');
-} else if (typeof window !== 'undefined') {
-  baseUrl = window.location.origin;
-}
+    const baseUrl = rawApiUrl.replace(/\/+$/, '') || 'http://localhost:3000/api';
 
-const result = await validateBackendContract(baseUrl);
+    const result = await validateBackendContract(baseUrl);
     setCheck(result);
     setLoading(false);
   };

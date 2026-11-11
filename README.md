@@ -84,7 +84,7 @@ VITE_CONTRACT_VERSION=1
 src/
   App.tsx                            # Root application shell with providers & router
   main.tsx                           # DOM entrypoint
-  routes.tsx                         # Route configuration with permission & mustChangePassword guards
+  routes.tsx                         # Protected application layout and permission guards
   index.css                          # Brand tokens, CSS variables, Ethiopic font rules
   types/
     api.ts                           # Authoritative TypeScript interfaces & DTOs
@@ -142,6 +142,15 @@ npm run dev
 npm run lint
 
 # Production build
+npm run build
+```
+
+## Building on Windows
+
+If `npm run build` fails with a memory-allocation error on Windows, run:
+
+```cmd
+set NODE_OPTIONS=--max-old-space-size=4096
 npm run build
 ```
 
@@ -226,3 +235,6 @@ The portal features a boot-time contract guard (`ContractContext`) that validate
   - In demo mode, the application runs entirely standalone using the local fixture data in `src/demo/fixtures.ts` without failing boot-time contract validation or requiring a live backend service.
   - Setting `VITE_DEMO_MODE=false` (the default for staging and production) restores full remote contract enforcement and real API communication.
 
+  ## First login and password changes
+
+  The backend seed may set `mustChangePassword: true` for its SuperAdmin account. The portal no longer forces a password-change redirect; users can open **TopBar → Change Password** whenever they choose. After a successful password change, the current session is cleared and the user must sign in again. Use the temporary credentials configured by the backend seed and do not store them in this repository.

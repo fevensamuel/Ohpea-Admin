@@ -3,6 +3,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { ToastProvider } from '@/context/ToastContext';
 import { ContractProvider } from '@/context/ContractContext';
 import { ContractDriftBanner } from '@/components/common/ContractDriftBanner';
+import { DashboardErrorBoundary } from '@/components/common/DashboardErrorBoundary';
 import {
   ProtectedLayout,
   RequirePermission,
@@ -60,7 +61,9 @@ export default function App() {
                 path="/dashboard"
                 element={
                   <RequirePermission permission="dashboard">
-                    <Dashboard />
+                    <DashboardErrorBoundary>
+                      <Dashboard />
+                    </DashboardErrorBoundary>
                   </RequirePermission>
                 }
               />

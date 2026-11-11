@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { LookupsApi } from '@/api/lookups';
+import { localized } from '@/lib/i18n';
 import { ApiError, type LookupItem } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useToast } from '@/context/ToastContext';
@@ -160,9 +161,15 @@ export function Lookups() {
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50">
                     <td className="py-3 px-4 font-mono font-bold text-slate-700">{item.code}</td>
-                    <td className="py-3 px-3 font-semibold text-slate-900">{item.name}</td>
-                    <td className="py-3 px-3 text-slate-600">{item.nameOm || '-'}</td>
-                    <td className="py-3 px-3 text-slate-500">{item.nameAm || '-'}</td>
+                    <td className="py-3 px-3 font-semibold text-slate-900">
+                      {localized(item.name)}
+                    </td>
+                    <td className="py-3 px-3 text-slate-600">
+                      {localized(item.nameOm, 'om') || '-'}
+                    </td>
+                    <td className="py-3 px-3 text-slate-500">
+                      {localized(item.nameAm, 'am') || '-'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -265,4 +272,3 @@ export function Lookups() {
     </div>
   );
 }
-

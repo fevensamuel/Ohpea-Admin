@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { RegionsApi } from '@/api/regions';
+import { localized } from '@/lib/i18n';
 import { ApiError, type RegionItem } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -50,9 +51,9 @@ export function Regions() {
 
   const openEdit = (r: RegionItem) => {
     setEditingRegion(r);
-    setName(r.name);
-    setNameOm(r.nameOm || '');
-    setNameAm(r.nameAm || '');
+    setName(localized(r.name));
+    setNameOm(localized(r.nameOm, 'om'));
+    setNameAm(localized(r.nameAm, 'am'));
     setCode(r.code);
     setActive(r.active);
     setModalOpen(true);
@@ -148,9 +149,15 @@ export function Regions() {
                 {regions.map((r) => (
                   <tr key={r.id} className="hover:bg-slate-50">
                     <td className="py-3 px-4 font-mono font-bold text-slate-700">{r.code}</td>
-                    <td className="py-3 px-3 font-semibold text-slate-900">{r.name}</td>
-                    <td className="py-3 px-3 text-slate-600">{r.nameOm || '-'}</td>
-                    <td className="py-3 px-3 text-slate-500">{r.nameAm || '-'}</td>
+                    <td className="py-3 px-3 font-semibold text-slate-900">
+                      {localized(r.name)}
+                    </td>
+                    <td className="py-3 px-3 text-slate-600">
+                      {localized(r.nameOm, 'om') || '-'}
+                    </td>
+                    <td className="py-3 px-3 text-slate-500">
+                      {localized(r.nameAm, 'am') || '-'}
+                    </td>
                     <td className="py-3 px-3 text-right tabular-nums font-semibold text-slate-800">
                       {r.memberCount || 0}
                     </td>

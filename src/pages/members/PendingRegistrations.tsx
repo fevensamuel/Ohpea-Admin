@@ -52,13 +52,14 @@ export function PendingRegistrations() {
       };
 
       const res = await MembersApi.list(queryParams);
-      setPendingMembers(res.data);
-      updateMeta(res.meta);
+      const members = Array.isArray(res?.data) ? res.data : [];
+      setPendingMembers(members);
+      updateMeta(res?.meta);
 
       // Auto-select first member for split-screen inspection if none selected
-      if (res.data.length > 0 && !selectedMember) {
-        loadMemberDetails(res.data[0].id);
-      } else if (res.data.length === 0) {
+      if (members.length > 0 && !selectedMember) {
+        loadMemberDetails(members[0].id);
+      } else if (members.length === 0) {
         setSelectedMember(null);
       }
     } catch {
@@ -127,7 +128,7 @@ export function PendingRegistrations() {
               Pending Member Registrations
             </h2>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#E8772E] text-white tabular-nums">
-              {meta.total} awaiting review
+              {(meta?.total ?? 0)} awaiting review
             </span>
           </div>
           <p className="text-xs text-slate-500 mt-1">
@@ -158,7 +159,7 @@ export function PendingRegistrations() {
           {/* Left: Queue Table (5 cols on lg) */}
           <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col">
             <div className="p-3.5 border-b border-slate-100 bg-slate-50/60 font-semibold text-xs text-slate-700 flex items-center justify-between">
-              <span>Application Queue ({meta.total})</span>
+              <span>Application Queue ({meta?.total ?? 0})</span>
               <span className="text-2xs text-slate-400">Select to inspect</span>
             </div>
 

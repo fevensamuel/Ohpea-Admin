@@ -189,7 +189,7 @@ export function AnnouncementEdit() {
             required={true}
             placeholder={{
               en: 'e.g. 2nd Annual Oromia Hospitality & Tourism Summit 2026',
-              om: 'e.g. Yaa’ii Waggaa 2ffaa Tuuriizimii fi Hoteelaa Oromiyaa',
+              om: 'e.g. Yaa’ii Waggaa 2ffaa Tuuriizimii fi Keessummeessuu Oromiyaa',
               am: 'e.g. 2ኛው ዓመታዊ የኦሮሚያ ሆስፒታሊቲ እና ቱሪዝም ጉባኤ',
             }}
           />

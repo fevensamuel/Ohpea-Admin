@@ -70,12 +70,9 @@ export function useAuth() {
 
   const changePassword = useCallback(
     async (currentPassword: string, nextPassword: string) => {
-      const res = await adminApi.changePassword(currentPassword, nextPassword);
-      // Re-fetch user so mustChangePassword flag clears
-      await fetchCurrentUser();
-      return res;
+      return adminApi.changePassword(currentPassword, nextPassword);
     },
-    [fetchCurrentUser]
+    []
   );
 
   const hasPermission = useCallback(

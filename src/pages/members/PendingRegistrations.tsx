@@ -16,29 +16,40 @@ import {
   CheckCircle2,
   XCircle,
   FileText,
-  AlertTriangle,
   Eye,
-  Calendar,
-  Building,
-  GraduationCap,
-  MapPin,
-  Phone,
-  Mail,
   ShieldAlert,
 } from 'lucide-react';
+
+// Safe date formatter — never crashes on undefined/invalid
+function fmtDate(d: unknown): string {
+  if (!d) return '—';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? '—' : dt.toLocaleDateString();
+}
+
+// Safe initials — never crashes on empty names
+function initials(name: unknown): string {
+  const s = text(name).trim();
+  if (!s) return '?';
+  return s
+    .split(/\s+/)
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+}
 
 export function PendingRegistrations() {
   const { user } = useAuthContext();
   const toast = useToast();
 
-  const { page, pageSize, meta, setPage, setPageSize, updateMeta } = usePagination(1, 10);
+  const { page, pageSize, meta, setPage, updateMeta } = usePagination(1, 10);
   const [pendingMembers, setPendingMembers] = useState<MemberSummary[]>([]);
   const [selectedMember, setSelectedMember] = useState<MemberDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailLoading, setDetailLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Modals
   const [rejectingTarget, setRejectingTarget] = useState<{ id: string; name: string } | null>(null);
   const [viewDoc, setViewDoc] = useState<{ id: string; name: string } | null>(null);
 
@@ -57,7 +68,6 @@ export function PendingRegistrations() {
       setPendingMembers(members);
       updateMeta(res?.meta);
 
-      // Auto-select first member for split-screen inspection if none selected
       if (members.length > 0 && !selectedMember) {
         loadMemberDetails(members[0].id);
       } else if (members.length === 0) {
@@ -118,7 +128,6 @@ export function PendingRegistrations() {
 
   return (
     <div className="space-y-4">
-      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -139,7 +148,7 @@ export function PendingRegistrations() {
 
         {user?.role === 'RegionalAdmin' && (
           <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-           Scoped to: {text(user.regionName)}
+            Scoped to: {text((user as any).regionName) || '—'}
           </span>
         )}
       </div>
@@ -155,9 +164,7 @@ export function PendingRegistrations() {
           />
         </div>
       ) : (
-        /* Split view layout: Left table queue, Right active dossier & document inspection */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left: Queue Table (5 cols on lg) */}
           <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col">
             <div className="p-3.5 border-b border-slate-100 bg-slate-50/60 font-semibold text-xs text-slate-700 flex items-center justify-between">
               <span>Application Queue ({meta?.total ?? 0})</span>
@@ -167,6 +174,13 @@ export function PendingRegistrations() {
             <div className="divide-y divide-slate-100 overflow-y-auto max-h-[620px]">
               {pendingMembers.map((member) => {
                 const isSelected = selectedMember?.id === member.id;
+                const fullName = text(member.fullName);
+                const regionLabel = text(member.regionName) || '—';
+                const sectorLabel =
+                  text(member.sectorName) || text((member as any).sectorLabel) || '—';
+                const fieldLabel =
+                  text(member.fieldName) || text((member as any).fieldLabel) || '—';
+
                 return (
                   <div
                     key={member.id}
@@ -180,41 +194,41 @@ export function PendingRegistrations() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="truncate">
                         <p className="text-xs font-bold text-slate-900 truncate">
-                          {member.fullName}
+                          {fullName || '—'}
                         </p>
-                        <p className="text-2xs font-mono text-slate-500">{member.memberNo}</p>
+                        <p className="text-2xs font-mono text-slate-500">
+                          {text(member.memberNo)}
+                        </p>
                       </div>
                       <StatusBadge type="registration" status="pending" size="sm" />
                     </div>
 
                     <div className="mt-2 text-2xs text-slate-500 space-y-0.5">
                       <p className="truncate">
-                        <strong className="text-slate-700">Region:</strong> {text(member.regionName)}
+                        <strong className="text-slate-700">Region:</strong> {regionLabel}
                       </p>
                       <p className="truncate">
-                        <strong className="text-slate-700">Sector:</strong> {text(member.sectorName) || text((member as any).sectorLabel)}
+                        <strong className="text-slate-700">Sector:</strong> {sectorLabel}
                       </p>
                       <p className="truncate">
-                        <strong className="text-slate-700">Field:</strong> {member.fieldName}
+                        <strong className="text-slate-700">Field:</strong> {fieldLabel}
                       </p>
                     </div>
 
                     <div className="mt-3 flex items-center justify-between text-2xs pt-2 border-t border-slate-100/80">
                       <span className="text-slate-400 tabular-nums">
-                        {new Date(member.registeredAt).toLocaleDateString()}
+                        {fmtDate(member.registeredAt)}
                       </span>
                       <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
                         <button
-                          onClick={() => handleApprove(member.id, member.fullName)}
+                          onClick={() => handleApprove(member.id, fullName)}
                           disabled={actionLoading}
                           className="px-2.5 py-1 rounded bg-[#0B3D2E] text-white hover:bg-[#14573F] font-semibold transition-colors disabled:opacity-50"
                         >
                           Approve
                         </button>
                         <button
-                          onClick={() =>
-                            setRejectingTarget({ id: member.id, name: member.fullName })
-                          }
+                          onClick={() => setRejectingTarget({ id: member.id, name: fullName })}
                           disabled={actionLoading}
                           className="px-2.5 py-1 rounded border border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-colors disabled:opacity-50"
                         >
@@ -230,29 +244,23 @@ export function PendingRegistrations() {
             <Pagination meta={meta} onPageChange={setPage} />
           </div>
 
-          {/* Right: Inspection Dossier (7 cols on lg) */}
           <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-2xs p-6 flex flex-col justify-between">
             {detailLoading ? (
               <LoadingSpinner text="Retrieving applicant documents..." />
             ) : selectedMember ? (
               <div className="space-y-5">
-                {/* Header */}
                 <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-[#0B3D2E] text-[#F1E3B8] font-bold text-sm flex items-center justify-center shrink-0">
-                      {selectedMember.fullName
-                        .split(' ')
-                        .map((n) => n[0])
-                        .slice(0, 2)
-                        .join('')}
+                      {initials(selectedMember.fullName)}
                     </div>
                     <div>
                       <h3 className="text-base font-bold text-slate-900 leading-tight">
-                        {selectedMember.fullName}
+                        {text(selectedMember.fullName) || '—'}
                       </h3>
                       <p className="text-xs text-slate-500 font-mono">
-                        {selectedMember.memberNo} · Registered{' '}
-                        {new Date(selectedMember.registeredAt).toLocaleDateString()}
+                        {text(selectedMember.memberNo)} · Registered{' '}
+                        {fmtDate(selectedMember.registeredAt)}
                       </p>
                     </div>
                   </div>
@@ -262,7 +270,7 @@ export function PendingRegistrations() {
                       onClick={() =>
                         setRejectingTarget({
                           id: selectedMember.id,
-                          name: selectedMember.fullName,
+                          name: text(selectedMember.fullName),
                         })
                       }
                       disabled={actionLoading}
@@ -273,7 +281,7 @@ export function PendingRegistrations() {
                     </button>
                     <button
                       onClick={() =>
-                        handleApprove(selectedMember.id, selectedMember.fullName)
+                        handleApprove(selectedMember.id, text(selectedMember.fullName))
                       }
                       disabled={actionLoading}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
@@ -284,19 +292,17 @@ export function PendingRegistrations() {
                   </div>
                 </div>
 
-                {/* Duplicate Warning if flagged */}
                 {selectedMember.duplicateOf && (
                   <div className="p-3.5 rounded-xl border border-amber-300 bg-amber-50 text-amber-900 text-xs flex items-center gap-2.5">
                     <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
                     <div>
                       <span className="font-bold">Duplicate Profile Flag: </span>
                       This record matches phone or national ID of previously registered member{' '}
-                      <strong>{selectedMember.duplicateOf}</strong>. Inspect certificate details.
+                      <strong>{text(selectedMember.duplicateOf)}</strong>. Inspect certificate details.
                     </div>
                   </div>
                 )}
 
-                {/* Grid attributes */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2">
                     <span className="text-2xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
@@ -305,25 +311,25 @@ export function PendingRegistrations() {
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Gender:</span>
                       <span className="font-semibold text-slate-800 capitalize">
-                        {selectedMember.gender}
+                        {text(selectedMember.gender) || '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Phone:</span>
                       <span className="font-semibold text-slate-800 tabular-nums">
-                        {selectedMember.phone}
+                        {text(selectedMember.phone) || '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Email:</span>
                       <span className="font-semibold text-slate-800 truncate max-w-[160px]">
-                        {selectedMember.email}
+                        {text(selectedMember.email) || '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5">
                       <span className="text-slate-500">National ID:</span>
                       <span className="font-semibold text-slate-800 uppercase">
-                        {selectedMember.idType} ({selectedMember.idNumber})
+                        {text(selectedMember.idType)} ({text(selectedMember.idNumber)})
                       </span>
                     </p>
                   </div>
@@ -335,31 +341,34 @@ export function PendingRegistrations() {
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Region:</span>
                       <span className="font-semibold text-slate-800">
-                        {selectedMember.regionName}
+                        {text(selectedMember.regionName) || '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Sector:</span>
                       <span className="font-semibold text-slate-800">
-                        {selectedMember.sectorName}
+                        {text(selectedMember.sectorName) ||
+                          text((selectedMember as any).sectorLabel) ||
+                          '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Degree/Level:</span>
                       <span className="font-semibold text-slate-800">
-                        {selectedMember.graduationLevel}
+                        {text(selectedMember.graduationLevel) ||
+                          text((selectedMember as any).gradLabel) ||
+                          '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5">
                       <span className="text-slate-500">Employer:</span>
                       <span className="font-semibold text-slate-800">
-                        {selectedMember.employer || 'Independent Professional'}
+                        {text(selectedMember.employer) || 'Independent Professional'}
                       </span>
                     </p>
                   </div>
                 </div>
 
-                {/* Uploaded Documents Side-by-Side Inspection */}
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
@@ -378,16 +387,18 @@ export function PendingRegistrations() {
                             <FileText className="w-5 h-5 text-emerald-700 shrink-0" />
                             <div className="truncate">
                               <p className="text-xs font-bold text-slate-800 truncate">
-                                {doc.name}
+                                {text(doc.name) || 'Document'}
                               </p>
                               <p className="text-2xs text-slate-400">
-                                {(doc.size / 1024).toFixed(0)} KB · Verified Scan
+                                {((doc.size ?? 0) / 1024).toFixed(0)} KB · Verified Scan
                               </p>
                             </div>
                           </div>
                           <button
                             type="button"
-                            onClick={() => setViewDoc({ id: doc.id, name: doc.name })}
+                            onClick={() =>
+                              setViewDoc({ id: doc.id, name: text(doc.name) || 'Document' })
+                            }
                             className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-2xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shrink-0 shadow-2xs"
                           >
                             <Eye className="w-3 h-3" />
@@ -398,8 +409,7 @@ export function PendingRegistrations() {
                     </div>
                   ) : (
                     <div className="p-4 rounded-xl border border-dashed border-amber-200 bg-amber-50/50 text-2xs text-amber-800">
-                      Applicant did not upload external certificate files. Verify via direct college
-                      inquiry.
+                      Applicant did not upload external certificate files. Verify via direct college inquiry.
                     </div>
                   )}
                 </div>
@@ -413,7 +423,6 @@ export function PendingRegistrations() {
         </div>
       )}
 
-      {/* Embedded Document Viewer Modal */}
       {viewDoc && selectedMember && (
         <DocumentViewerModal
           isOpen={true}
@@ -424,7 +433,6 @@ export function PendingRegistrations() {
         />
       )}
 
-      {/* Embedded Reject Reason Modal */}
       {rejectingTarget && (
         <RejectReasonModal
           isOpen={true}

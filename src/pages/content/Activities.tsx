@@ -1,18 +1,32 @@
 import { useState, useEffect } from 'react';
 import { ActivitiesApi } from '@/api/activities';
 import { ApiError, type ActivityItem } from '@/types/api';
+import { text } from '@/lib/normalize';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmModal } from '@/components/modals/ConfirmModal';
 import { useToast } from '@/context/ToastContext';
 import { CalendarCheck, Plus, Edit2, Trash2, MapPin, Eye, EyeOff, X } from 'lucide-react';
 
+const fmtDate = (d: unknown): string => {
+  if (!d) return '—';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleDateString();
+};
+
+/** Handle both `{en, om, am}` objects and plain strings */
+function fromLocalized(v: any, field: 'en' | 'om' | 'am' = 'en'): string {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'object') return text(v[field]) || text(v.en) || text(v.om) || text(v.am);
+  return String(v);
+}
+
 export function Activities() {
   const toast = useToast();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<ActivityItem | null>(null);
   const [title, setTitle] = useState('');
@@ -28,7 +42,7 @@ export function Activities() {
     try {
       setLoading(true);
       const res = await ActivitiesApi.list();
-      setActivities(res);
+      setActivities(Array.isArray(res) ? res : []);
     } catch {
       toast.error('Failed to load activity logs');
     } finally {
@@ -52,11 +66,13 @@ export function Activities() {
 
   const openEdit = (act: ActivityItem) => {
     setEditingActivity(act);
-    setTitle(act.title);
-    setDescription(act.description || '');
-    setDate(act.date);
-    setLocation(act.location || '');
-    setIsPublic(act.isPublic);
+    setTitle(fromLocalized(act.title, 'en'));
+    setDescription(fromLocalized((act as any).description, 'en'));
+    // date may be stored as ISO with time — trim to YYYY-MM-DD for <input type="date">
+    const rawDate = text(act.date);
+    setDate(rawDate ? rawDate.slice(0, 10) : new Date().toISOString().slice(0, 10));
+    setLocation(fromLocalized((act as any).location, 'en'));
+    setIsPublic(!!act.isPublic);
     setModalOpen(true);
   };
 
@@ -115,7 +131,6 @@ export function Activities() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -144,61 +159,67 @@ export function Activities() {
         <EmptyState title="No public activities logged yet" />
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs divide-y divide-slate-100 overflow-hidden">
-          {activities.map((act) => (
-            <div
-              key={act.id}
-              className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors text-xs"
-            >
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900 text-sm">{act.title}</h3>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-2xs font-semibold ${
-                      act.isPublic
-                        ? 'bg-emerald-50 text-emerald-800'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {act.isPublic ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                    {act.isPublic ? 'Public' : 'Hidden'}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3 text-slate-500 tabular-nums">
-                  <span>{new Date(act.date).toLocaleDateString()}</span>
-                  {act.location && (
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-slate-400" />
-                      {act.location}
+          {activities.map((act) => {
+            const titleStr = fromLocalized(act.title, 'en');
+            const descStr = fromLocalized((act as any).description, 'en');
+            const locStr = fromLocalized((act as any).location, 'en');
+            return (
+              <div
+                key={act.id}
+                className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50 transition-colors text-xs"
+              >
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-slate-900 text-sm">
+                      {titleStr || '(untitled)'}
+                    </h3>
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-2xs font-semibold ${
+                        act.isPublic
+                          ? 'bg-emerald-50 text-emerald-800'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {act.isPublic ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      {act.isPublic ? 'Public' : 'Hidden'}
                     </span>
+                  </div>
+
+                  <div className="flex items-center gap-3 text-slate-500 tabular-nums">
+                    <span>{fmtDate(act.date)}</span>
+                    {locStr && (
+                      <span className="flex items-center gap-1">
+                        <MapPin className="w-3 h-3 text-slate-400" />
+                        {locStr}
+                      </span>
+                    )}
+                  </div>
+
+                  {descStr && (
+                    <p className="text-slate-600 mt-1 max-w-2xl">{descStr}</p>
                   )}
                 </div>
 
-                {act.description && (
-                  <p className="text-slate-600 mt-1 max-w-2xl">{act.description}</p>
-                )}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => openEdit(act)}
+                    className="p-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" /> Edit
+                  </button>
+                  <button
+                    onClick={() => setDeletingActivity(act)}
+                    className="p-1.5 text-red-500 hover:text-red-700 text-xs"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-
-              <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  onClick={() => openEdit(act)}
-                  className="p-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1"
-                >
-                  <Edit2 className="w-3.5 h-3.5" /> Edit
-                </button>
-                <button
-                  onClick={() => setDeletingActivity(act)}
-                  className="p-1.5 text-red-500 hover:text-red-700 text-xs"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -299,11 +320,10 @@ export function Activities() {
         </div>
       )}
 
-      {/* Delete confirmation */}
       {deletingActivity && (
         <ConfirmModal
           isOpen={true}
-          title={`Delete activity "${deletingActivity.title}"?`}
+          title={`Delete activity "${fromLocalized(deletingActivity.title, 'en') || 'this activity'}"?`}
           message="Are you sure you want to delete this activity log from the public feed?"
           confirmLabel="Delete Activity"
           onConfirm={handleDeleteConfirm}

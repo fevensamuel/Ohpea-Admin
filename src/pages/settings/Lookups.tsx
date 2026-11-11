@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { LookupsApi } from '@/api/lookups';
 import { localized } from '@/lib/i18n';
+import { text } from '@/lib/normalize';
 import { ApiError, type LookupItem } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useToast } from '@/context/ToastContext';
@@ -14,7 +15,6 @@ export function Lookups() {
   const [items, setItems] = useState<LookupItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Add / Edit modal
   const [modalOpen, setModalOpen] = useState(false);
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
@@ -27,7 +27,7 @@ export function Lookups() {
     try {
       setLoading(true);
       const data = await LookupsApi.get(type);
-      setItems(data);
+      setItems(Array.isArray(data) ? data : []);
     } catch {
       toast.error('Failed to load lookup categories');
     } finally {
@@ -62,7 +62,6 @@ export function Lookups() {
 
     try {
       setSaving(true);
-      // Simulates creating/updating taxonomy classification
       const newItem: LookupItem = {
         id: `lkp_${Date.now()}`,
         code: code.trim().toUpperCase(),
@@ -87,12 +86,11 @@ export function Lookups() {
   const tabs: { id: LookupType; label: string; desc: string }[] = [
     { id: 'sectors', label: 'Hospitality Sectors', desc: 'Hotels, tour operators, culinary, bureaus' },
     { id: 'fields', label: 'Fields of Study', desc: 'Tourism management, culinary arts, ecotourism, MICE' },
-    { id: 'graduation-levels', label: 'Graduation Levels', desc: 'Doctorate, Master’s, Bachelor’s, Higher Diploma' },
+    { id: 'graduation-levels', label: 'Graduation Levels', desc: "Doctorate, Master's, Bachelor's, Higher Diploma" },
   ];
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -107,7 +105,6 @@ export function Lookups() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Tabs */}
           <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-slate-200 text-xs">
             {tabs.map((tab) => (
               <button
@@ -135,7 +132,6 @@ export function Lookups() {
         </div>
       </div>
 
-      {/* Items list */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         <div className="px-5 py-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between text-xs">
           <span className="font-bold text-slate-700 uppercase tracking-wider text-2xs">
@@ -160,15 +156,17 @@ export function Lookups() {
               <tbody className="divide-y divide-slate-100">
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-slate-50">
-                    <td className="py-3 px-4 font-mono font-bold text-slate-700">{item.code}</td>
+                    <td className="py-3 px-4 font-mono font-bold text-slate-700">
+                      {text(item.code) || '—'}
+                    </td>
                     <td className="py-3 px-3 font-semibold text-slate-900">
-                      {localized(item.name)}
+                      {localized(item.name) || text(item.name) || '—'}
                     </td>
                     <td className="py-3 px-3 text-slate-600">
-                      {localized(item.nameOm, 'om') || '-'}
+                      {localized(item.nameOm, 'om') || text((item as any).nameOm) || '-'}
                     </td>
                     <td className="py-3 px-3 text-slate-500">
-                      {localized(item.nameAm, 'am') || '-'}
+                      {localized(item.nameAm, 'am') || text((item as any).nameAm) || '-'}
                     </td>
                   </tr>
                 ))}
@@ -178,7 +176,6 @@ export function Lookups() {
         )}
       </div>
 
-      {/* Add / Edit Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in"

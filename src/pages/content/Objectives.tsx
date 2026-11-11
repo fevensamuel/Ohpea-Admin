@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ObjectivesApi } from '@/api/objectives';
 import { ApiError, type ObjectiveItem } from '@/types/api';
+import { text } from '@/lib/normalize';
 import { LocalizedFields } from '@/components/forms/LocalizedFields';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -13,7 +14,6 @@ export function Objectives() {
   const [objectives, setObjectives] = useState<ObjectiveItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit / Create modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ObjectiveItem | null>(null);
   const [category, setCategory] = useState<'General' | 'Official' | 'Main' | 'Specific'>('General');
@@ -26,7 +26,7 @@ export function Objectives() {
     try {
       setLoading(true);
       const res = await ObjectivesApi.list();
-      setObjectives(res);
+      setObjectives(Array.isArray(res) ? res : []);
     } catch {
       toast.error('Failed to load objectives');
     } finally {
@@ -48,7 +48,12 @@ export function Objectives() {
   const openEdit = (obj: ObjectiveItem) => {
     setEditingItem(obj);
     setCategory(obj.category);
-    setTitle(obj.title);
+    const t: any = obj.title;
+    setTitle({
+      en: typeof t === 'string' ? t : text(t?.en) || text(t),
+      om: typeof t === 'object' ? text(t?.om) : '',
+      am: typeof t === 'object' ? text(t?.am) : '',
+    });
     setModalOpen(true);
   };
 
@@ -99,9 +104,22 @@ export function Objectives() {
 
   const categories = ['General', 'Official', 'Main', 'Specific'] as const;
 
+  const getTitle = (obj: ObjectiveItem) => {
+    const t: any = obj.title;
+    if (typeof t === 'string') return t;
+    return text(t?.en) || text(t);
+  };
+  const getTitleOm = (obj: ObjectiveItem) => {
+    const t: any = obj.title;
+    return typeof t === 'object' ? text(t?.om) : '';
+  };
+  const getTitleAm = (obj: ObjectiveItem) => {
+    const t: any = obj.title;
+    return typeof t === 'object' ? text(t?.am) : '';
+  };
+
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -155,12 +173,14 @@ export function Objectives() {
                         </span>
                         <div className="space-y-1">
                           <p className="font-semibold text-slate-900 leading-relaxed">
-                            {obj.title.en}
+                            {getTitle(obj) || '(untitled)'}
                           </p>
-                          {obj.title.om && (
-                            <p className="text-slate-600 font-medium">{obj.title.om}</p>
+                          {getTitleOm(obj) && (
+                            <p className="text-slate-600 font-medium">{getTitleOm(obj)}</p>
                           )}
-                          {obj.title.am && <p className="text-slate-500">{obj.title.am}</p>}
+                          {getTitleAm(obj) && (
+                            <p className="text-slate-500">{getTitleAm(obj)}</p>
+                          )}
                         </div>
                       </div>
 
@@ -187,7 +207,6 @@ export function Objectives() {
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -257,7 +276,6 @@ export function Objectives() {
         </div>
       )}
 
-      {/* Confirm Delete */}
       {deletingItem && (
         <ConfirmModal
           isOpen={true}

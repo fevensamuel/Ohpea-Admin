@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnnouncementsApi } from '@/api/announcements';
-import type { AnnouncementItem, AnnouncementType, AnnouncementStatus } from '@/types/api';
+import { text } from '@/lib/normalize';
+import type { AnnouncementItem, AnnouncementType } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmModal } from '@/components/modals/ConfirmModal';
@@ -14,11 +15,15 @@ import {
   Archive,
   Send,
   Trash2,
-  Calendar,
   MapPin,
   X,
-  ExternalLink,
 } from 'lucide-react';
+
+const fmtDate = (d: unknown): string => {
+  if (!d) return '—';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleDateString();
+};
 
 export function Announcements() {
   const navigate = useNavigate();
@@ -27,11 +32,9 @@ export function Announcements() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  // Modals
   const [previewItem, setPreviewItem] = useState<AnnouncementItem | null>(null);
   const [deletingItem, setDeletingItem] = useState<AnnouncementItem | null>(null);
 
@@ -42,7 +45,7 @@ export function Announcements() {
         type: typeFilter || undefined,
         status: statusFilter || undefined,
       });
-      setAnnouncements(list);
+      setAnnouncements(Array.isArray(list) ? list : []);
     } catch {
       toast.error('Failed to load announcements');
     } finally {
@@ -78,7 +81,7 @@ export function Announcements() {
     if (!deletingItem) return;
     try {
       await AnnouncementsApi.delete(deletingItem.id);
-      toast.success(`Deleted announcement "${deletingItem.title.en}".`);
+      toast.success(`Deleted announcement "${text(deletingItem.title) || deletingItem.id}".`);
       setDeletingItem(null);
       fetchAnnouncements();
     } catch {
@@ -96,7 +99,6 @@ export function Announcements() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -119,7 +121,6 @@ export function Announcements() {
         </button>
       </div>
 
-      {/* Filter strip */}
       <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-wrap items-center gap-3 text-xs">
         <span className="font-semibold text-slate-500">Filter by Type:</span>
         <select
@@ -160,7 +161,6 @@ export function Announcements() {
         )}
       </div>
 
-      {/* Table / List */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
           <LoadingSpinner text="Loading announcements..." />
@@ -181,7 +181,7 @@ export function Announcements() {
             <table className="w-full text-xs text-left">
               <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
                 <tr>
-                  <th className="py-3 px-4 font-semibold">Title (English / Oromo / Amharic)</th>
+                  <th className="py-3 px-4 font-semibold">Title</th>
                   <th className="py-3 px-3 font-semibold">Type</th>
                   <th className="py-3 px-3 font-semibold">Status</th>
                   <th className="py-3 px-3 font-semibold">Deadline / Event</th>
@@ -190,106 +190,107 @@ export function Announcements() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {announcements.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-4 max-w-sm">
-                      <p className="font-semibold text-slate-900 truncate">{item.title.en}</p>
-                      <p className="text-2xs text-slate-500 truncate">{item.summary.en}</p>
-                      <div className="mt-1 flex items-center gap-2 text-2xs text-slate-400">
-                        {item.organization && <span>{item.organization}</span>}
-                        {item.location && (
-                          <span className="flex items-center gap-0.5">
-                            <MapPin className="w-3 h-3" />
-                            {item.location}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-bold uppercase tracking-wider border ${
-                          typeColorMap[item.type] || 'bg-slate-100 text-slate-700'
-                        }`}
-                      >
-                        {item.type}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-semibold capitalize ${
-                          item.status === 'published'
-                            ? 'bg-emerald-50 text-emerald-800'
-                            : item.status === 'draft'
-                            ? 'bg-amber-50 text-amber-800'
-                            : 'bg-slate-100 text-slate-600'
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap tabular-nums text-slate-600">
-                      {item.deadline ? new Date(item.deadline).toLocaleDateString() : 'No deadline'}
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap tabular-nums text-slate-500">
-                      {item.publishedAt
-                        ? new Date(item.publishedAt).toLocaleDateString()
-                        : 'Unpublished'}
-                    </td>
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setPreviewItem(item)}
-                          className="p-1 text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100"
-                          title="Preview in public layout"
+                {announcements.map((item) => {
+                  const title = text(item.title) || '(untitled)';
+                  const summary = text(item.summary);
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                      <td className="py-3 px-4 max-w-sm">
+                        <p className="font-semibold text-slate-900 truncate">{title}</p>
+                        <p className="text-2xs text-slate-500 truncate">{summary}</p>
+                        <div className="mt-1 flex items-center gap-2 text-2xs text-slate-400">
+                          {item.organization && <span>{text(item.organization)}</span>}
+                          {item.location && (
+                            <span className="flex items-center gap-0.5">
+                              <MapPin className="w-3 h-3" />
+                              {text(item.location)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-bold uppercase tracking-wider border ${
+                            typeColorMap[item.type] || 'bg-slate-100 text-slate-700'
+                          }`}
                         >
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => navigate(`/content/announcements/edit/${item.id}`)}
-                          className="p-1 text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100"
-                          title="Edit announcement"
+                          {text(item.type)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-semibold capitalize ${
+                            item.status === 'published'
+                              ? 'bg-emerald-50 text-emerald-800'
+                              : item.status === 'draft'
+                              ? 'bg-amber-50 text-amber-800'
+                              : 'bg-slate-100 text-slate-600'
+                          }`}
                         >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-
-                        {item.status === 'draft' && (
+                          {text(item.status)}
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap tabular-nums text-slate-600">
+                        {item.deadline ? fmtDate(item.deadline) : 'No deadline'}
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap tabular-nums text-slate-500">
+                        {item.publishedAt ? fmtDate(item.publishedAt) : 'Unpublished'}
+                      </td>
+                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1">
                           <button
-                            onClick={() => handlePublish(item.id, item.title.en)}
-                            className="p-1 text-emerald-700 hover:bg-emerald-50 rounded-md"
-                            title="Publish immediately"
+                            onClick={() => setPreviewItem(item)}
+                            className="p-1 text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100"
+                            title="Preview in public layout"
                           >
-                            <Send className="w-4 h-4" />
+                            <Eye className="w-4 h-4" />
                           </button>
-                        )}
-
-                        {item.status === 'published' && (
                           <button
-                            onClick={() => handleArchive(item.id, item.title.en)}
-                            className="p-1 text-amber-600 hover:bg-amber-50 rounded-md"
-                            title="Archive post"
+                            onClick={() => navigate(`/content/announcements/edit/${item.id}`)}
+                            className="p-1 text-slate-500 hover:text-slate-800 rounded-md hover:bg-slate-100"
+                            title="Edit announcement"
                           >
-                            <Archive className="w-4 h-4" />
+                            <Edit2 className="w-4 h-4" />
                           </button>
-                        )}
 
-                        <button
-                          onClick={() => setDeletingItem(item)}
-                          className="p-1 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
-                          title="Delete announcement"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {item.status === 'draft' && (
+                            <button
+                              onClick={() => handlePublish(item.id, title)}
+                              className="p-1 text-emerald-700 hover:bg-emerald-50 rounded-md"
+                              title="Publish immediately"
+                            >
+                              <Send className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          {item.status === 'published' && (
+                            <button
+                              onClick={() => handleArchive(item.id, title)}
+                              className="p-1 text-amber-600 hover:bg-amber-50 rounded-md"
+                              title="Archive post"
+                            >
+                              <Archive className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => setDeletingItem(item)}
+                            className="p-1 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
+                            title="Delete announcement"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      {/* Public Preview Modal */}
       {previewItem && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -316,41 +317,41 @@ export function Announcements() {
                     typeColorMap[previewItem.type]
                   }`}
                 >
-                  {previewItem.type}
+                  {text(previewItem.type)}
                 </span>
-                <h3 className="text-base font-bold text-slate-900 mt-2">{previewItem.title.en}</h3>
-                <p className="text-xs font-semibold text-emerald-800">{previewItem.title.om}</p>
-                <p className="text-xs text-slate-600">{previewItem.title.am}</p>
+                <h3 className="text-base font-bold text-slate-900 mt-2">
+                  {text(previewItem.title) || '(untitled)'}
+                </h3>
               </div>
 
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5 text-slate-600">
                 {previewItem.organization && (
                   <p>
-                    <strong>Host / Org:</strong> {previewItem.organization}
+                    <strong>Host / Org:</strong> {text(previewItem.organization)}
                   </p>
                 )}
                 {previewItem.location && (
                   <p>
-                    <strong>Location:</strong> {previewItem.location}
+                    <strong>Location:</strong> {text(previewItem.location)}
                   </p>
                 )}
                 {previewItem.deadline && (
                   <p>
                     <strong>Deadline / Event Date:</strong>{' '}
-                    {new Date(previewItem.deadline).toLocaleString()}
+                    {fmtDate(previewItem.deadline)}
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <h4 className="font-bold text-slate-800">Summary</h4>
-                <p className="text-slate-700 leading-relaxed">{previewItem.summary.en}</p>
+                <p className="text-slate-700 leading-relaxed">{text(previewItem.summary)}</p>
               </div>
 
               <div className="space-y-2">
                 <h4 className="font-bold text-slate-800">Full Notice</h4>
                 <p className="text-slate-700 leading-relaxed whitespace-pre-wrap">
-                  {previewItem.body.en}
+                  {text(previewItem.body)}
                 </p>
               </div>
             </div>
@@ -368,11 +369,10 @@ export function Announcements() {
         </div>
       )}
 
-      {/* Delete Confirmation */}
       {deletingItem && (
         <ConfirmModal
           isOpen={true}
-          title={`Delete "${deletingItem.title.en}"?`}
+          title={`Delete "${text(deletingItem.title) || 'this announcement'}"?`}
           message="Are you sure you want to permanently delete this announcement? This action will remove it from the public website."
           confirmLabel="Delete Notice"
           onConfirm={handleDeleteConfirm}

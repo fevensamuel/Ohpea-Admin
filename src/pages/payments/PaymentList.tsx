@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { usePagination } from '@/hooks/usePagination';
 import { PaymentsApi } from '@/api/payments';
+import { text } from '@/lib/normalize';
 import type { PaymentRecord } from '@/types/api';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/common/Pagination';
@@ -15,9 +16,20 @@ import {
   Download,
   Ban,
   PlusCircle,
-  Search,
   Filter,
 } from 'lucide-react';
+
+const fmtAmount = (v: unknown): string => {
+  const n = Number(v);
+  return Number.isFinite(n)
+    ? n.toLocaleString('en-US', { minimumFractionDigits: 2 })
+    : '0.00';
+};
+
+const fmtMethod = (v: unknown): string => {
+  const s = text(v);
+  return s ? s.replace('_', ' ') : '—';
+};
 
 export function PaymentList() {
   const toast = useToast();
@@ -25,11 +37,9 @@ export function PaymentList() {
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filters
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [methodFilter, setMethodFilter] = useState<string>('');
 
-  // Modals
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [voidingPayment, setVoidingPayment] = useState<PaymentRecord | null>(null);
   const [voidReason, setVoidReason] = useState('');
@@ -44,8 +54,8 @@ export function PaymentList() {
         status: statusFilter || undefined,
         method: methodFilter || undefined,
       });
-      setPayments(res.data);
-      updateMeta(res.meta);
+      setPayments(Array.isArray(res?.data) ? res.data : []);
+      updateMeta(res?.meta);
     } catch {
       toast.error('Failed to load payment transactions');
     } finally {
@@ -63,12 +73,12 @@ export function PaymentList() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `OHPEA-${receiptNo}.pdf`;
+      a.download = `OHPEA-${text(receiptNo) || 'receipt'}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      toast.success(`Receipt ${receiptNo} downloaded.`);
+      toast.success(`Receipt ${text(receiptNo)} downloaded.`);
     } catch {
       toast.error('Could not download receipt PDF.');
     }
@@ -79,7 +89,7 @@ export function PaymentList() {
     try {
       setVoidLoading(true);
       await PaymentsApi.void(voidingPayment.id, voidReason || 'Voided by administrative officer');
-      toast.success(`Payment slip ${voidingPayment.receiptNo} has been marked as void.`);
+      toast.success(`Payment slip ${text(voidingPayment.receiptNo)} has been marked as void.`);
       setVoidingPayment(null);
       setVoidReason('');
       fetchPayments();
@@ -92,7 +102,6 @@ export function PaymentList() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -122,7 +131,6 @@ export function PaymentList() {
         </div>
       </div>
 
-      {/* Filter strip */}
       <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-wrap items-center gap-3 text-xs">
         <div className="flex items-center gap-1.5 text-slate-500 font-semibold">
           <Filter className="w-3.5 h-3.5" />
@@ -170,7 +178,6 @@ export function PaymentList() {
         )}
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
           <LoadingSpinner text="Fetching financial records..." />
@@ -196,34 +203,40 @@ export function PaymentList() {
                 {payments.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-4 font-mono font-medium text-slate-800 whitespace-nowrap">
-                      {p.receiptNo}
+                      {text(p.receiptNo) || '—'}
                     </td>
                     <td className="py-3 px-3">
-                      <p className="font-semibold text-slate-900">{p.memberName}</p>
-                      <p className="text-2xs text-slate-400 font-mono">{p.memberNo}</p>
+                      <p className="font-semibold text-slate-900">
+                        {text(p.memberName) || '—'}
+                      </p>
+                      <p className="text-2xs text-slate-400 font-mono">
+                        {text(p.memberNo)}
+                      </p>
                     </td>
                     <td className="py-3 px-3 text-slate-600 truncate max-w-[130px]">
-                      {p.regionName}
+                      {text(p.regionName) || '—'}
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap text-slate-700">
-                      <span className="font-medium capitalize">{p.period}</span>
+                      <span className="font-medium capitalize">
+                        {text(p.period) || '—'}
+                      </span>
                       <span className="text-2xs text-slate-400 block tabular-nums">
-                        {p.paidForDate}
+                        {text(p.paidForDate) || '—'}
                       </span>
                     </td>
                     <td className="py-3 px-3 text-slate-700">
-                      <span className="capitalize">{p.method.replace('_', ' ')}</span>
+                      <span className="capitalize">{fmtMethod(p.method)}</span>
                       {p.bank && (
                         <span className="text-2xs text-slate-400 block truncate max-w-[120px]">
-                          {p.bank}
+                          {text(p.bank)}
                         </span>
                       )}
                     </td>
                     <td className="py-3 px-3 font-mono text-slate-600 text-2xs truncate max-w-[120px]">
-                      {p.reference || '-'}
+                      {text(p.reference) || '-'}
                     </td>
                     <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-900">
-                      {p.amountEtb.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                      {fmtAmount(p.amountEtb)}
                     </td>
                     <td className="py-3 px-3">
                       <StatusBadge type="payment" status={p.status} />
@@ -232,7 +245,7 @@ export function PaymentList() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
-                          onClick={() => handleDownloadReceipt(p.id, p.receiptNo)}
+                          onClick={() => handleDownloadReceipt(p.id, text(p.receiptNo))}
                           className="p-1 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
                           title="Download receipt PDF"
                         >
@@ -261,7 +274,6 @@ export function PaymentList() {
         <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
       </div>
 
-      {/* Record Payment Modal */}
       {recordModalOpen && (
         <RecordPaymentModal
           isOpen={true}
@@ -270,12 +282,13 @@ export function PaymentList() {
         />
       )}
 
-      {/* Void Modal */}
       {voidingPayment && (
         <ConfirmModal
           isOpen={true}
-          title={`Void Payment Slip ${voidingPayment.receiptNo}?`}
-          message={`Are you sure you want to void the contribution payment of ETB ${voidingPayment.amountEtb} for ${voidingPayment.memberName}? This action is recorded in the financial audit trail.`}
+          title={`Void Payment Slip ${text(voidingPayment.receiptNo)}?`}
+          message={`Are you sure you want to void the contribution payment of ETB ${fmtAmount(
+            voidingPayment.amountEtb
+          )} for ${text(voidingPayment.memberName)}? This action is recorded in the financial audit trail.`}
           confirmLabel="Void Payment"
           isDestructive={true}
           isLoading={voidLoading}

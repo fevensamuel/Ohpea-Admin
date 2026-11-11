@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MessagesApi } from '@/api/messages';
+import { text } from '@/lib/normalize';
 import type { ContactMessageItem, MessageStatus } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -9,14 +10,22 @@ import { useToast } from '@/context/ToastContext';
 import {
   MessageSquare,
   Mail,
-  Phone,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
   Eye,
   Filter,
   X,
 } from 'lucide-react';
+
+const fmtDate = (d: unknown): string => {
+  if (!d) return '—';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleDateString();
+};
+
+const fmtDateTime = (d: unknown): string => {
+  if (!d) return '—';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleString();
+};
 
 export function ContactMessages() {
   const toast = useToast();
@@ -25,7 +34,6 @@ export function ContactMessages() {
   const [statusFilter, setStatusFilter] = useState<MessageStatus | ''>('');
   const [loading, setLoading] = useState(true);
 
-  // Active message inspection modal
   const [selectedMessage, setSelectedMessage] = useState<ContactMessageItem | null>(null);
 
   const fetchMessages = async () => {
@@ -36,8 +44,8 @@ export function ContactMessages() {
         page,
         pageSize,
       });
-      setMessages(res.data);
-      updateMeta(res.meta);
+      setMessages(Array.isArray(res?.data) ? res.data : []);
+      updateMeta(res?.meta);
     } catch {
       toast.error('Failed to load contact inquiries');
     } finally {
@@ -53,7 +61,7 @@ export function ContactMessages() {
     try {
       const updated = await MessagesApi.updateStatus(id, status);
       toast.success(`Message status marked as ${status.replace('_', ' ')}.`);
-      if (selectedMessage?.id === id) {
+      if (selectedMessage?.id === id && updated) {
         setSelectedMessage(updated);
       }
       fetchMessages();
@@ -71,7 +79,6 @@ export function ContactMessages() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -85,7 +92,6 @@ export function ContactMessages() {
           </p>
         </div>
 
-        {/* Filter status */}
         <div className="flex items-center gap-2 text-xs">
           <Filter className="w-3.5 h-3.5 text-slate-400" />
           <select
@@ -105,7 +111,6 @@ export function ContactMessages() {
         </div>
       </div>
 
-      {/* Messages List Table */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
           <LoadingSpinner text="Retrieving inbox..." />
@@ -138,12 +143,18 @@ export function ContactMessages() {
                     }`}
                   >
                     <td className="py-3 px-4 whitespace-nowrap">
-                      <p className="text-slate-900">{msg.fullName}</p>
-                      <p className="text-2xs text-slate-400 font-normal">{msg.email}</p>
+                      <p className="text-slate-900">
+                        {text(msg.fullName) || text((msg as any).name) || '—'}
+                      </p>
+                      <p className="text-2xs text-slate-400 font-normal">
+                        {text(msg.email)}
+                      </p>
                     </td>
                     <td className="py-3 px-3 max-w-md">
-                      <p className="text-slate-900 truncate">{msg.subject}</p>
-                      <p className="text-2xs text-slate-500 font-normal truncate">{msg.message}</p>
+                      <p className="text-slate-900 truncate">{text(msg.subject) || '—'}</p>
+                      <p className="text-2xs text-slate-500 font-normal truncate">
+                        {text(msg.message)}
+                      </p>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
                       <span
@@ -151,11 +162,11 @@ export function ContactMessages() {
                           statusMap[msg.status]?.color || 'bg-slate-100 text-slate-700'
                         }`}
                       >
-                        {statusMap[msg.status]?.label || msg.status}
+                        {statusMap[msg.status]?.label || text(msg.status)}
                       </span>
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap tabular-nums text-slate-500">
-                      {new Date(msg.createdAt).toLocaleDateString()}
+                      {fmtDate(msg.createdAt)}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-1">
@@ -196,7 +207,6 @@ export function ContactMessages() {
         <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
       </div>
 
-      {/* Message Reader Modal */}
       {selectedMessage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -208,7 +218,7 @@ export function ContactMessages() {
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#0B3D2E]" />
                 <h3 className="text-sm font-bold text-slate-900 truncate">
-                  {selectedMessage.subject}
+                  {text(selectedMessage.subject) || '(no subject)'}
                 </h3>
               </div>
               <button
@@ -222,19 +232,23 @@ export function ContactMessages() {
             <div className="p-6 overflow-y-auto space-y-4 text-xs">
               <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                 <p>
-                  <strong>From:</strong> {selectedMessage.fullName} (
-                  <a href={`mailto:${selectedMessage.email}`} className="text-[#14573F] hover:underline">
-                    {selectedMessage.email}
+                  <strong>From:</strong>{' '}
+                  {text(selectedMessage.fullName) || text((selectedMessage as any).name) || '—'} (
+                  <a
+                    href={`mailto:${text(selectedMessage.email)}`}
+                    className="text-[#14573F] hover:underline"
+                  >
+                    {text(selectedMessage.email)}
                   </a>
                   )
                 </p>
                 {selectedMessage.phone && (
                   <p>
-                    <strong>Phone:</strong> {selectedMessage.phone}
+                    <strong>Phone:</strong> {text(selectedMessage.phone)}
                   </p>
                 )}
                 <p className="text-slate-500 tabular-nums">
-                  <strong>Date:</strong> {new Date(selectedMessage.createdAt).toLocaleString()}
+                  <strong>Date:</strong> {fmtDateTime(selectedMessage.createdAt)}
                 </p>
               </div>
 
@@ -243,11 +257,10 @@ export function ContactMessages() {
                   Message Content
                 </h4>
                 <div className="p-4 rounded-xl border border-slate-200 bg-white text-slate-800 leading-relaxed whitespace-pre-wrap">
-                  {selectedMessage.message}
+                  {text(selectedMessage.message) || '—'}
                 </div>
               </div>
 
-              {/* Status transition buttons */}
               <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                 <span className="font-semibold text-slate-600">Update Status:</span>
                 <div className="flex items-center gap-1.5">

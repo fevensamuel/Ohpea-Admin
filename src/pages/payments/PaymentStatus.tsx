@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQueryParams } from '@/hooks/useQueryParams';
 import { usePagination } from '@/hooks/usePagination';
 import { MembersApi } from '@/api/members';
-import { PaymentsApi } from '@/api/payments';
+import { text } from '@/lib/normalize';
 import type { MemberSummary } from '@/types/api';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/common/Pagination';
@@ -10,19 +10,28 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { RecordPaymentModal } from '@/components/modals/RecordPaymentModal';
 import { MemberDetailModal } from '@/components/modals/MemberDetailModal';
-import { ExportButton } from '@/components/common/ExportButton';
 import { useToast } from '@/context/ToastContext';
 import {
   CreditCard,
   PlusCircle,
-  Bell,
   Lock,
-  Search,
   CheckCircle2,
   XCircle,
   Eye,
-  Calendar,
 } from 'lucide-react';
+
+const fmtAmount = (v: unknown): string => {
+  const n = Number(v);
+  return Number.isFinite(n)
+    ? n.toLocaleString('en-US', { minimumFractionDigits: 2 })
+    : '-';
+};
+
+const fmtDate = (d: unknown): string => {
+  if (!d) return 'No record';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleDateString();
+};
 
 export function PaymentStatus() {
   const { params, setParam } = useQueryParams();
@@ -35,7 +44,6 @@ export function PaymentStatus() {
   const [members, setMembers] = useState<MemberSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modals
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [preselectedMemberId, setPreselectedMemberId] = useState<string | undefined>(undefined);
   const [detailModalId, setDetailModalId] = useState<string | null>(null);
@@ -49,8 +57,8 @@ export function PaymentStatus() {
         paid: params.paid || undefined,
         q: params.q || undefined,
       });
-      setMembers(res.data);
-      updateMeta(res.meta);
+      setMembers(Array.isArray(res?.data) ? res.data : []);
+      updateMeta(res?.meta);
     } catch {
       toast.error('Failed to load member payment statuses');
     } finally {
@@ -67,7 +75,6 @@ export function PaymentStatus() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -95,13 +102,14 @@ export function PaymentStatus() {
         </div>
       </div>
 
-      {/* Summary KPI Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
           <span className="text-2xs font-bold uppercase tracking-wider text-slate-400">
             Total In Roster
           </span>
-          <p className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">{meta.total}</p>
+          <p className="mt-1 text-2xl font-bold text-slate-900 tabular-nums">
+            {(meta?.total ?? 0).toLocaleString()}
+          </p>
         </div>
 
         <div className="p-4 rounded-xl bg-white border border-slate-200/80 shadow-2xs">
@@ -135,7 +143,6 @@ export function PaymentStatus() {
         </div>
       </div>
 
-      {/* Filter strip */}
       <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3">
           <span className="font-semibold text-slate-700">Target Period:</span>
@@ -166,7 +173,6 @@ export function PaymentStatus() {
           />
         </div>
 
-        {/* Filter buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => setParam('paid', null)}
@@ -201,7 +207,6 @@ export function PaymentStatus() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
           <LoadingSpinner text="Checking member ledger statuses..." />
@@ -225,10 +230,16 @@ export function PaymentStatus() {
                 {members.map((m) => (
                   <tr key={m.id} className="hover:bg-slate-50 transition-colors">
                     <td className="py-3 px-4">
-                      <p className="font-semibold text-slate-900">{m.fullName}</p>
-                      <p className="text-2xs text-slate-400 font-mono">{m.memberNo}</p>
+                      <p className="font-semibold text-slate-900">
+                        {text(m.fullName) || '—'}
+                      </p>
+                      <p className="text-2xs text-slate-400 font-mono">
+                        {text(m.memberNo)}
+                      </p>
                     </td>
-                    <td className="py-3 px-3 text-slate-600">{m.regionName}</td>
+                    <td className="py-3 px-3 text-slate-600">
+                      {text(m.regionName) || '—'}
+                    </td>
                     <td className="py-3 px-3">
                       <StatusBadge type="membership" status={m.membershipStatus} />
                     </td>
@@ -246,12 +257,10 @@ export function PaymentStatus() {
                       )}
                     </td>
                     <td className="py-3 px-3 text-slate-600 tabular-nums">
-                      {m.lastPaymentDate || 'No record'}
+                      {fmtDate(m.lastPaymentDate)}
                     </td>
                     <td className="py-3 px-3 text-right font-bold tabular-nums text-slate-900">
-                      {m.lastPaymentAmount
-                        ? m.lastPaymentAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })
-                        : '-'}
+                      {fmtAmount(m.lastPaymentAmount)}
                     </td>
                     <td className="py-3 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1.5">
@@ -285,19 +294,15 @@ export function PaymentStatus() {
         <Pagination meta={meta} onPageChange={setPage} onPageSizeChange={setPageSize} />
       </div>
 
-      {/* Record Payment Modal */}
       {recordModalOpen && (
         <RecordPaymentModal
           isOpen={true}
           preselectedMemberId={preselectedMemberId}
           onClose={() => setRecordModalOpen(false)}
-          onSuccess={() => {
-            fetchMembersStatus();
-          }}
+          onSuccess={() => fetchMembersStatus()}
         />
       )}
 
-      {/* Member Detail Modal */}
       {detailModalId && (
         <MemberDetailModal
           isOpen={true}

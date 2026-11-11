@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PartnersApi } from '@/api/partners';
 import { ApiError, type PartnerItem } from '@/types/api';
+import { text } from '@/lib/normalize';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { ConfirmModal } from '@/components/modals/ConfirmModal';
@@ -12,7 +13,6 @@ export function Partners() {
   const [partners, setPartners] = useState<PartnerItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPartner, setEditingPartner] = useState<PartnerItem | null>(null);
   const [name, setName] = useState('');
@@ -26,7 +26,8 @@ export function Partners() {
     try {
       setLoading(true);
       const res = await PartnersApi.list();
-      setPartners(res.sort((a, b) => a.order - b.order));
+      const list = Array.isArray(res) ? res : [];
+      setPartners(list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
     } catch {
       toast.error('Failed to load partners');
     } finally {
@@ -48,9 +49,9 @@ export function Partners() {
 
   const openEdit = (p: PartnerItem) => {
     setEditingPartner(p);
-    setName(p.name);
-    setType(p.type);
-    setWebsite(p.website || '');
+    setName(text(p.name));
+    setType(text(p.type) || 'Government Authority');
+    setWebsite(text(p.website));
     setModalOpen(true);
   };
 
@@ -96,7 +97,7 @@ export function Partners() {
     if (!deletingPartner) return;
     try {
       await PartnersApi.delete(deletingPartner.id);
-      toast.success(`Removed partner "${deletingPartner.name}".`);
+      toast.success(`Removed partner "${text(deletingPartner.name)}".`);
       setDeletingPartner(null);
       fetchPartners();
     } catch {
@@ -106,7 +107,6 @@ export function Partners() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -135,53 +135,57 @@ export function Partners() {
         <EmptyState title="No partners configured" />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {partners.map((partner) => (
-            <div
-              key={partner.id}
-              className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-col justify-between"
-            >
-              <div>
-                <div className="w-10 h-10 rounded-xl bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-xs flex items-center justify-center mb-3">
-                  {partner.name[0]}
+          {partners.map((partner) => {
+            const partnerName = text(partner.name) || '(unnamed)';
+            return (
+              <div
+                key={partner.id}
+                className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-10 h-10 rounded-xl bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-xs flex items-center justify-center mb-3">
+                    {partnerName.charAt(0).toUpperCase() || '?'}
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">{partnerName}</h3>
+                  <span className="inline-block mt-1 px-2 py-0.5 rounded text-2xs font-semibold bg-slate-100 text-slate-700">
+                    {text(partner.type) || 'Partner'}
+                  </span>
+
+                  {partner.website && (
+                    <a
+                      href={text(partner.website)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 text-xs text-[#14573F] hover:underline flex items-center gap-1 font-mono text-2xs truncate"
+                    >
+                      <Globe className="w-3 h-3 shrink-0" />
+                      <span className="truncate">
+                        {text(partner.website).replace('https://', '')}
+                      </span>
+                    </a>
+                  )}
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">{partner.name}</h3>
-                <span className="inline-block mt-1 px-2 py-0.5 rounded text-2xs font-semibold bg-slate-100 text-slate-700">
-                  {partner.type}
-                </span>
 
-                {partner.website && (
-                  <a
-                    href={partner.website}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mt-3 text-xs text-[#14573F] hover:underline flex items-center gap-1 font-mono text-2xs truncate"
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-1.5">
+                  <button
+                    onClick={() => openEdit(partner)}
+                    className="p-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1"
                   >
-                    <Globe className="w-3 h-3 shrink-0" />
-                    <span className="truncate">{partner.website.replace('https://', '')}</span>
-                  </a>
-                )}
+                    <Edit2 className="w-3.5 h-3.5" /> Edit
+                  </button>
+                  <button
+                    onClick={() => setDeletingPartner(partner)}
+                    className="p-1.5 text-red-500 hover:text-red-700 text-xs"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-
-              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-1.5">
-                <button
-                  onClick={() => openEdit(partner)}
-                  className="p-1.5 text-slate-500 hover:text-slate-800 text-xs font-semibold flex items-center gap-1"
-                >
-                  <Edit2 className="w-3.5 h-3.5" /> Edit
-                </button>
-                <button
-                  onClick={() => setDeletingPartner(partner)}
-                  className="p-1.5 text-red-500 hover:text-red-700 text-xs"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
-      {/* Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -263,11 +267,10 @@ export function Partners() {
         </div>
       )}
 
-      {/* Delete confirmation */}
       {deletingPartner && (
         <ConfirmModal
           isOpen={true}
-          title={`Remove ${deletingPartner.name}?`}
+          title={`Remove ${text(deletingPartner.name) || 'partner'}?`}
           message="Are you sure you want to remove this partner from the alliance index?"
           confirmLabel="Remove Partner"
           onConfirm={handleDeleteConfirm}

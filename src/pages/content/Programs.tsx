@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ProgramsApi } from '@/api/programs';
 import { ApiError, type ProgramItem } from '@/types/api';
+import { text } from '@/lib/normalize';
 import { LocalizedFields } from '@/components/forms/LocalizedFields';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -13,7 +14,6 @@ import {
   ArrowDown,
   Edit2,
   Trash2,
-  CheckCircle,
   X,
 } from 'lucide-react';
 
@@ -22,7 +22,6 @@ export function Programs() {
   const [programs, setPrograms] = useState<ProgramItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Edit / Create modal
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProgram, setEditingProgram] = useState<ProgramItem | null>(null);
   const [code, setCode] = useState('');
@@ -38,7 +37,8 @@ export function Programs() {
     try {
       setLoading(true);
       const res = await ProgramsApi.list();
-      setPrograms(res.sort((a, b) => a.order - b.order));
+      const list = Array.isArray(res) ? res : [];
+      setPrograms(list.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)));
     } catch {
       toast.error('Failed to load association programs');
     } finally {
@@ -59,7 +59,6 @@ export function Programs() {
     copy[index] = copy[targetIndex];
     copy[targetIndex] = temp;
 
-    // reassign order numbers
     copy.forEach((item, idx) => {
       item.order = idx + 1;
     });
@@ -87,9 +86,17 @@ export function Programs() {
 
   const handleOpenEdit = (p: ProgramItem) => {
     setEditingProgram(p);
-    setCode(p.code);
-    setTitle(p.title);
-    setDescription(p.description);
+    setCode(text(p.code));
+    setTitle({
+      en: text(p.title?.en) || text(p.title),
+      om: text(p.title?.om),
+      am: text(p.title?.am),
+    });
+    setDescription({
+      en: text(p.description?.en) || text(p.description),
+      om: text(p.description?.om),
+      am: text(p.description?.am),
+    });
     setActive(p.active);
     setModalOpen(true);
   };
@@ -139,7 +146,7 @@ export function Programs() {
     if (!deletingProgram) return;
     try {
       await ProgramsApi.delete(deletingProgram.id);
-      toast.success(`Deleted program "${deletingProgram.title.en}".`);
+      toast.success(`Deleted program "${text(deletingProgram.title) || deletingProgram.id}".`);
       setDeletingProgram(null);
       fetchPrograms();
     } catch {
@@ -149,7 +156,6 @@ export function Programs() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -194,7 +200,7 @@ export function Programs() {
                     <ArrowUp className="w-3.5 h-3.5" />
                   </button>
                   <span className="text-xs font-bold text-slate-500 tabular-nums">
-                    #{program.order}
+                    #{program.order ?? idx + 1}
                   </span>
                   <button
                     onClick={() => moveOrder(idx, 'down')}
@@ -209,9 +215,11 @@ export function Programs() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-2xs font-mono font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-700">
-                      {program.code}
+                      {text(program.code) || '—'}
                     </span>
-                    <h3 className="text-sm font-bold text-slate-900">{program.title.en}</h3>
+                    <h3 className="text-sm font-bold text-slate-900">
+                      {text(program.title) || '(untitled)'}
+                    </h3>
                     <span
                       className={`text-2xs font-semibold px-2 py-0.5 rounded ${
                         program.active
@@ -222,9 +230,8 @@ export function Programs() {
                       {program.active ? 'Active' : 'Hidden'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 font-medium">{program.title.om}</p>
                   <p className="text-xs text-slate-500 leading-relaxed max-w-2xl">
-                    {program.description.en}
+                    {text(program.description)}
                   </p>
                 </div>
               </div>
@@ -248,7 +255,6 @@ export function Programs() {
         </div>
       )}
 
-      {/* Program Create/Edit Modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in"
@@ -287,7 +293,9 @@ export function Programs() {
                   required={true}
                 />
                 {(fieldErrors.title || fieldErrors['title.en']) && (
-                  <p className="text-2xs text-red-600 mt-1">{fieldErrors.title || fieldErrors['title.en']}</p>
+                  <p className="text-2xs text-red-600 mt-1">
+                    {fieldErrors.title || fieldErrors['title.en']}
+                  </p>
                 )}
               </div>
 
@@ -330,11 +338,10 @@ export function Programs() {
         </div>
       )}
 
-      {/* Confirm Delete */}
       {deletingProgram && (
         <ConfirmModal
           isOpen={true}
-          title={`Delete "${deletingProgram.title.en}"?`}
+          title={`Delete "${text(deletingProgram.title) || 'this program'}"?`}
           message="Are you sure you want to remove this pillar from the association programs list?"
           confirmLabel="Delete Pillar"
           onConfirm={handleDeleteConfirm}

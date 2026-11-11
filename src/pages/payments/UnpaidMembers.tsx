@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { PaymentsApi } from '@/api/payments';
+import { text } from '@/lib/normalize';
 import type { MemberSummary } from '@/types/api';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -7,6 +8,13 @@ import { ExportButton } from '@/components/common/ExportButton';
 import { RecordPaymentModal } from '@/components/modals/RecordPaymentModal';
 import { useToast } from '@/context/ToastContext';
 import { AlertCircle, PlusCircle, Lock, Phone, Mail } from 'lucide-react';
+
+const fmtAmount = (v: unknown): string => {
+  const n = Number(v);
+  return Number.isFinite(n)
+    ? n.toLocaleString('en-US', { minimumFractionDigits: 2 })
+    : '0.00';
+};
 
 export function UnpaidMembers() {
   const toast = useToast();
@@ -19,7 +27,7 @@ export function UnpaidMembers() {
     try {
       setLoading(true);
       const list = await PaymentsApi.getUnpaid();
-      setUnpaidMembers(list);
+      setUnpaidMembers(Array.isArray(list) ? list : []);
     } catch {
       toast.error('Failed to load unpaid members roster');
     } finally {
@@ -33,7 +41,6 @@ export function UnpaidMembers() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -85,27 +92,35 @@ export function UnpaidMembers() {
                 {unpaidMembers.map((m) => (
                   <tr key={m.id} className="hover:bg-slate-50">
                     <td className="py-3 px-4">
-                      <p className="font-semibold text-slate-900">{m.fullName}</p>
-                      <p className="text-2xs text-slate-400 font-mono">{m.memberNo}</p>
+                      <p className="font-semibold text-slate-900">
+                        {text(m.fullName) || '—'}
+                      </p>
+                      <p className="text-2xs text-slate-400 font-mono">
+                        {text(m.memberNo)}
+                      </p>
                     </td>
                     <td className="py-3 px-3 text-slate-700">
                       <p className="flex items-center gap-1 tabular-nums">
                         <Phone className="w-3 h-3 text-slate-400" />
-                        {m.phone}
+                        {text(m.phone) || '—'}
                       </p>
                       <p className="flex items-center gap-1 text-2xs text-slate-400">
                         <Mail className="w-3 h-3 text-slate-400" />
-                        {m.email}
+                        {text(m.email) || '—'}
                       </p>
                     </td>
                     <td className="py-3 px-3 text-slate-600">
-                      <p className="font-medium text-slate-800">{m.regionName}</p>
-                      <p className="text-2xs text-slate-400">{m.sectorName}</p>
+                      <p className="font-medium text-slate-800">
+                        {text(m.regionName) || '—'}
+                      </p>
+                      <p className="text-2xs text-slate-400">
+                        {text(m.sectorName) || text((m as any).sectorLabel) || '—'}
+                      </p>
                     </td>
                     <td className="py-3 px-3 text-slate-600 tabular-nums">
-                      {m.lastPaymentDate ? (
+                      {text(m.lastPaymentDate) ? (
                         <span>
-                          {m.lastPaymentDate} (ETB {m.lastPaymentAmount})
+                          {text(m.lastPaymentDate)} (ETB {fmtAmount(m.lastPaymentAmount)})
                         </span>
                       ) : (
                         <span className="text-slate-400 italic">No prior deposit</span>
@@ -141,9 +156,7 @@ export function UnpaidMembers() {
           isOpen={true}
           preselectedMemberId={selectedMemberId}
           onClose={() => setRecordModalOpen(false)}
-          onSuccess={() => {
-            fetchUnpaid();
-          }}
+          onSuccess={() => fetchUnpaid()}
         />
       )}
     </div>

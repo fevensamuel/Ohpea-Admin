@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { DashboardApi } from '@/api/dashboard';
 import { PaymentsApi } from '@/api/payments';
+import { text } from '@/lib/normalize';
 import type { ContributionSnapshot, MemberSummary } from '@/types/api';
 import { StatsCard } from '@/components/common/StatsCard';
 import { LineAreaChart } from '@/components/charts/LineAreaChart';
@@ -14,9 +15,19 @@ import {
   TrendingUp,
   Percent,
   AlertCircle,
-  Building,
   Users,
 } from 'lucide-react';
+
+const safeSplit = (v: unknown, sep = ' '): string => {
+  const s = text(v);
+  return s ? s.split(sep)[0] : '—';
+};
+
+const fmtDate = (d: unknown): string => {
+  if (!d) return 'Never';
+  const dt = new Date(String(d));
+  return Number.isNaN(dt.getTime()) ? String(d) : dt.toLocaleDateString();
+};
 
 export function ContributionDashboard() {
   const toast = useToast();
@@ -34,7 +45,7 @@ export function ContributionDashboard() {
         PaymentsApi.getUnpaid(),
       ]);
       setSnapshot(snap);
-      setUnpaidMembers(unpaid);
+      setUnpaidMembers(Array.isArray(unpaid) ? unpaid : []);
     } catch {
       toast.error('Failed to load contribution metrics');
     } finally {
@@ -50,13 +61,21 @@ export function ContributionDashboard() {
     return <LoadingSpinner text="Compiling financial telemetry..." size="lg" />;
   }
 
-  const totalMembers = (snapshot?.paidCount || 0) + (snapshot?.unpaidCount || 0);
-  const collectionRate = totalMembers > 0 ? Math.round(((snapshot?.paidCount || 0) / totalMembers) * 100) : 0;
-  const avgPerMember = totalMembers > 0 ? Math.round((snapshot?.totalYear || 0) / (snapshot?.paidCount || 1)) : 0;
+  const paidCount = snapshot?.paidCount ?? 0;
+  const unpaidCount = snapshot?.unpaidCount ?? 0;
+  const totalYear = snapshot?.totalYear ?? 0;
+  const timeline = Array.isArray(snapshot?.timeline) ? snapshot.timeline : [];
+  const methodDistribution = Array.isArray(snapshot?.methodDistribution)
+    ? snapshot.methodDistribution
+    : [];
+  const byRegion = Array.isArray(snapshot?.byRegion) ? snapshot.byRegion : [];
+
+  const totalMembers = paidCount + unpaidCount;
+  const collectionRate = totalMembers > 0 ? Math.round((paidCount / totalMembers) * 100) : 0;
+  const avgPerMember = paidCount > 0 ? Math.round(totalYear / paidCount) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
@@ -70,7 +89,6 @@ export function ContributionDashboard() {
           </p>
         </div>
 
-        {/* Range and Group switches */}
         <div className="flex items-center gap-2">
           <div className="inline-flex rounded-lg p-0.5 bg-slate-100 border border-slate-200 text-xs">
             {(['3m', '6m', '12m'] as const).map((r) => (
@@ -108,11 +126,10 @@ export function ContributionDashboard() {
 
       {snapshot && (
         <>
-          {/* KPI Strip */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatsCard
               title="Total Year Revenue"
-              value={`ETB ${snapshot.totalYear.toLocaleString()}`}
+              value={`ETB ${totalYear.toLocaleString()}`}
               icon={<TrendingUp className="w-4 h-4 text-emerald-700" />}
               subtext="Aggregated membership dues"
               accentColor="#0B3D2E"
@@ -128,7 +145,7 @@ export function ContributionDashboard() {
               title="Collection Compliance Rate"
               value={`${collectionRate}%`}
               icon={<Percent className="w-4 h-4 text-[#1F7A57]" />}
-              subtext={`${snapshot.paidCount} paid / ${snapshot.unpaidCount} unpaid`}
+              subtext={`${paidCount} paid / ${unpaidCount} unpaid`}
               accentColor="#1F7A57"
               badge={{ text: 'Target 90%', variant: 'positive' }}
             />
@@ -142,7 +159,6 @@ export function ContributionDashboard() {
             />
           </div>
 
-          {/* Charts Row 1 */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs lg:col-span-2">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
@@ -151,7 +167,7 @@ export function ContributionDashboard() {
               <p className="text-xs text-slate-500 mb-4">
                 Monthly ETB volume deposited across all accounts
               </p>
-              <LineAreaChart data={snapshot.timeline} height={240} />
+              <LineAreaChart data={timeline} height={240} />
             </div>
 
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
@@ -162,18 +178,17 @@ export function ContributionDashboard() {
                 Siinqee Bank, CBE and Telebirr distribution
               </p>
               <DonutChart
-                data={snapshot.methodDistribution.map((m) => ({
-                  name: m.method.split(' ')[0],
-                  value: m.amount,
+                data={methodDistribution.map((m) => ({
+                  name: safeSplit(m?.method),
+                  value: Number(m?.amount) || 0,
                 }))}
                 totalLabel="Total Dep."
-                formatValue={(v) => `ETB ${(v / 1000).toFixed(0)}k`}
+                formatValue={(v) => `ETB ${(Number(v) / 1000).toFixed(0)}k`}
                 height={220}
               />
             </div>
           </div>
 
-          {/* Charts Row 2: Regional Performance */}
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
             <h3 className="text-sm font-bold text-slate-900 mb-1">
               Regional Cluster Contribution Volume
@@ -182,17 +197,16 @@ export function ContributionDashboard() {
               Revenue generation and member compliance by regional office
             </p>
             <BarChartCard
-              data={snapshot.byRegion.map((r) => ({
-                label: r.region.split(' ')[0],
-                value: r.amount,
+              data={byRegion.map((r) => ({
+                label: safeSplit(r?.region),
+                value: Number(r?.amount) || 0,
                 color: '#14573F',
               }))}
               height={230}
-              formatValue={(v) => `ETB ${v.toLocaleString()}`}
+              formatValue={(v) => `ETB ${Number(v).toLocaleString()}`}
             />
           </div>
 
-          {/* Unpaid Members Roster Table */}
           <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
@@ -226,14 +240,24 @@ export function ContributionDashboard() {
                   {unpaidMembers.map((m) => (
                     <tr key={m.id} className="hover:bg-slate-50">
                       <td className="py-2.5 px-3">
-                        <span className="font-semibold text-slate-900">{m.fullName}</span>
-                        <span className="text-2xs text-slate-400 block font-mono">{m.memberNo}</span>
+                        <span className="font-semibold text-slate-900">
+                          {text(m.fullName) || '—'}
+                        </span>
+                        <span className="text-2xs text-slate-400 block font-mono">
+                          {text(m.memberNo)}
+                        </span>
                       </td>
-                      <td className="py-2.5 px-3 tabular-nums text-slate-600">{m.phone}</td>
-                      <td className="py-2.5 px-3 text-slate-600">{m.regionName}</td>
-                      <td className="py-2.5 px-3 text-slate-600">{m.sectorName}</td>
+                      <td className="py-2.5 px-3 tabular-nums text-slate-600">
+                        {text(m.phone) || '—'}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-600">
+                        {text(m.regionName) || '—'}
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-600">
+                        {text(m.sectorName) || text((m as any).sectorLabel) || '—'}
+                      </td>
                       <td className="py-2.5 px-3 text-slate-600 tabular-nums">
-                        {m.lastPaymentDate || 'Never'}
+                        {fmtDate(m.lastPaymentDate)}
                       </td>
                       <td className="py-2.5 px-3 text-right">
                         <span className="text-2xs font-semibold px-2 py-0.5 rounded bg-red-50 text-red-700 border border-red-200">

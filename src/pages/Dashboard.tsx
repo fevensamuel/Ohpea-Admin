@@ -4,6 +4,7 @@ import { useAuthContext } from '@/context/AuthContext';
 import { useUiStore } from '@/store/useUiStore';
 import { DashboardApi } from '@/api/dashboard';
 import { localized } from '@/lib/i18n';
+import { text } from '@/lib/normalize';
 import { MembersApi } from '@/api/members';
 import { RegionsApi } from '@/api/regions';
 import type {
@@ -113,7 +114,6 @@ export function Dashboard() {
     : [];
   const contributionRanges: readonly ('3m' | '6m' | '12m')[] = ['3m', '6m', '12m'];
 
-  // RegionalAdmin is locked to their region
   const effectiveRegionId = user?.role === 'RegionalAdmin' ? user.regionId : selectedRegionId;
 
   const loadDashboardData = async () => {
@@ -217,7 +217,6 @@ export function Dashboard() {
           </p>
         </div>
 
-        {/* Region Filter - Hidden for RegionalAdmin */}
         {user?.role !== 'RegionalAdmin' && (
           <div className="flex items-center gap-2">
             <Filter className="w-3.5 h-3.5 text-slate-400" />
@@ -313,7 +312,6 @@ export function Dashboard() {
 
           {/* Section 1: Demographics & Specialization Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Gender Distribution Donut */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Gender Representation
@@ -332,7 +330,6 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Sector Breakdown Bar Chart */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs lg:col-span-2">
               <div className="flex items-center justify-between mb-1">
                 <div>
@@ -364,7 +361,6 @@ export function Dashboard() {
 
           {/* Section 2: Education, Fields of Study & Regional Clusters */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Field of Study */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Core Fields of Study
@@ -381,7 +377,6 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Occupation Type Donut */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Enterprise vs Public Sector
@@ -398,7 +393,6 @@ export function Dashboard() {
               />
             </div>
 
-            {/* Regional Clusters (Hidden for Regional Admin) */}
             {user?.role !== 'RegionalAdmin' ? (
               <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
                 <h3 className="text-sm font-bold text-slate-900 mb-1">
@@ -407,10 +401,10 @@ export function Dashboard() {
                 <p className="text-xs text-slate-500 mb-4">Member density across Oromia</p>
                 <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
                   {safeRegionChart.map((r, i) => (
-                    <div key={localized(r.label)} className="text-xs space-y-1">
+                    <div key={localized(r.label) || i} className="text-xs space-y-1">
                       <div className="flex justify-between font-medium">
                         <span className="text-slate-700 truncate max-w-[180px]">
-                          {localized(r.label)}
+                          {text(r.label)}
                         </span>
                         <span className="font-semibold text-slate-900 tabular-nums">
                           {r.value} members
@@ -429,7 +423,6 @@ export function Dashboard() {
                 </div>
               </div>
             ) : (
-              /* If regional admin, show Graduation level bar */
               <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
                 <h3 className="text-sm font-bold text-slate-900 mb-1">
                   Graduation Levels
@@ -489,7 +482,6 @@ export function Dashboard() {
                 </div>
               </div>
 
-              {/* Strip KPIs */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/60">
                   <span className="text-2xs font-bold uppercase tracking-wider text-slate-500">
@@ -546,7 +538,6 @@ export function Dashboard() {
                 </div>
               </div>
 
-              {/* Chart Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
                 <div className="lg:col-span-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
@@ -574,7 +565,6 @@ export function Dashboard() {
 
           {/* Section 4: Recent Registrations & Activity Feed */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Registrations Table */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -612,19 +602,25 @@ export function Dashboard() {
                         <td className="py-2.5 px-3">
                           <div className="flex items-center gap-2">
                             <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center shrink-0">
-                              {m.fullName[0]}
+                              {text(m.fullName).charAt(0) || '?'}
                             </div>
                             <div className="truncate">
-                              <p className="font-semibold text-slate-800 truncate">{m.fullName}</p>
-                              <p className="text-2xs text-slate-400 font-mono">{m.memberNo}</p>
+                              <p className="font-semibold text-slate-800 truncate">
+                                {text(m.fullName)}
+                              </p>
+                              <p className="text-2xs text-slate-400 font-mono">
+                                {text(m.memberNo)}
+                              </p>
                             </div>
                           </div>
                         </td>
+                        {/* FIX: regionName is a localized object — wrap in text() */}
                         <td className="py-2.5 px-3 text-slate-600 truncate max-w-[130px]">
-                          {m.regionName}
+                          {text(m.regionName)}
                         </td>
+                        {/* FIX: sectorName/sectorLabel is a localized object — wrap in text() */}
                         <td className="py-2.5 px-3 text-slate-600 truncate max-w-[130px]">
-                          {m.sectorName}
+                          {text((m as any).sectorName ?? (m as any).sectorLabel)}
                         </td>
                         <td className="py-2.5 px-3">
                           <StatusBadge type="registration" status={m.registrationStatus} />
@@ -633,7 +629,7 @@ export function Dashboard() {
                           {m.registrationStatus === 'pending' ? (
                             <div className="flex items-center justify-end gap-1.5">
                               <button
-                                onClick={() => handleApprove(m.id, m.fullName)}
+                                onClick={() => handleApprove(m.id, text(m.fullName))}
                                 className="p-1 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
                                 title="Approve applicant"
                               >
@@ -641,7 +637,7 @@ export function Dashboard() {
                               </button>
                               <button
                                 onClick={() =>
-                                  setRejectingMember({ id: m.id, name: m.fullName })
+                                  setRejectingMember({ id: m.id, name: text(m.fullName) })
                                 }
                                 className="p-1 rounded-md text-red-600 hover:bg-red-50 transition-colors"
                                 title="Reject applicant"
@@ -660,7 +656,6 @@ export function Dashboard() {
               </div>
             </div>
 
-            {/* Recent Audit / Activity Feed */}
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Recent Administrative Activity
@@ -673,13 +668,14 @@ export function Dashboard() {
                     <div className="w-2 h-2 rounded-full bg-[#14573F] mt-1.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-slate-800 leading-tight">
-                        {localized(act.title)}
+                        {text(act.title)}
                       </p>
+                      {/* FIX: description may be a localized object — wrap in text() */}
                       <p className="text-2xs text-slate-500 mt-0.5 leading-normal">
-                        {act.description}
+                        {text((act as any).description)}
                       </p>
                       <span className="text-2xs text-slate-400 font-mono mt-1 block">
-                        {act.timestamp} · {act.actor}
+                        {text((act as any).timestamp)} · {text((act as any).actor)}
                       </span>
                     </div>
                   </div>
@@ -690,7 +686,6 @@ export function Dashboard() {
         </>
       ) : null}
 
-      {/* Member Detail Modal */}
       {selectedMemberId && (
         <MemberDetailModal
           isOpen={true}
@@ -700,7 +695,6 @@ export function Dashboard() {
         />
       )}
 
-      {/* Reject Reason Modal */}
       {rejectingMember && (
         <RejectReasonModal
           isOpen={true}

@@ -7,15 +7,16 @@ import {
   Tooltip,
   Cell,
 } from 'recharts';
+import { asNumber, asString } from '@/lib/normalize';
 
 interface BarItem {
-  label: string;
-  value: number;
-  color?: string;
+  label?: unknown;
+  value?: unknown;
+  color?: unknown;
 }
 
 interface BarChartCardProps {
-  data: BarItem[];
+  data?: BarItem[] | null;
   title?: string;
   horizontal?: boolean;
   height?: number;
@@ -29,8 +30,21 @@ export function BarChartCard({
   horizontal = false,
   height = 260,
   barColor = '#14573F',
-  formatValue = (v) => v.toLocaleString(),
+  formatValue = (v) => asNumber(v).toLocaleString('en-US', { maximumFractionDigits: 0 }),
 }: BarChartCardProps) {
+  const safeData = Array.isArray(data)
+    ? data
+        .filter((item): item is BarItem => item != null && typeof item === 'object')
+        .map((item) => ({
+          label: asString(item.label),
+          value: asNumber(item.value),
+          color: asString(item.color),
+        }))
+    : [];
+  if (safeData.length === 0) {
+    return <div className="text-xs text-slate-400 p-4">No data</div>;
+  }
+
   return (
     <div className="flex flex-col h-full">
       {title && <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">{title}</h4>}
@@ -38,7 +52,7 @@ export function BarChartCard({
         <ResponsiveContainer width="100%" height="100%">
           {horizontal ? (
             <BarChart
-              data={data}
+              data={safeData}
               layout="vertical"
               margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
             >
@@ -59,13 +73,13 @@ export function BarChartCard({
                 }}
               />
               <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                {data.map((entry, index) => (
+                {safeData.map((entry, index) => (
                   <Cell key={`bar-${index}`} fill={entry.color || barColor} />
                 ))}
               </Bar>
             </BarChart>
           ) : (
-            <BarChart data={data} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
+            <BarChart data={safeData} margin={{ top: 10, right: 10, left: -10, bottom: 20 }}>
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 11, fill: '#64748b' }}
@@ -84,7 +98,7 @@ export function BarChartCard({
                 }}
               />
               <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                {data.map((entry, index) => (
+                {safeData.map((entry, index) => (
                   <Cell key={`bar-${index}`} fill={entry.color || barColor} />
                 ))}
               </Bar>

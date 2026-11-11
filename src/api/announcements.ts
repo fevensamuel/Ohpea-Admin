@@ -1,9 +1,10 @@
 import { adminApi } from '@/lib';
+import { normalizeList } from '@/lib/normalize';
 import type { AnnouncementItem } from '@/types/api';
 
 export const AnnouncementsApi = {
-  list: (q: Record<string, unknown> = {}): Promise<AnnouncementItem[]> =>
-    adminApi.getAnnouncements(q),
+  list: async (q: Record<string, unknown> = {}): Promise<AnnouncementItem[]> =>
+    normalizeList(await adminApi.getAnnouncements(q)),
   get: (id: string): Promise<AnnouncementItem> =>
     adminApi.getAnnouncement(id),
   create: (data: unknown): Promise<AnnouncementItem> =>

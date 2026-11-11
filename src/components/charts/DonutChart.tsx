@@ -1,14 +1,15 @@
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
+import { asNumber, asString } from '@/lib/normalize';
 
 interface DonutItem {
-  name: string;
-  value: number;
-  color?: string;
-  percentage?: number;
+  name?: unknown;
+  value?: unknown;
+  color?: unknown;
+  percentage?: unknown;
 }
 
 interface DonutChartProps {
-  data: DonutItem[];
+  data?: DonutItem[] | null;
   title?: string;
   totalLabel?: string;
   height?: number;
@@ -22,9 +23,22 @@ export function DonutChart({
   title,
   totalLabel,
   height = 240,
-  formatValue = (v) => v.toLocaleString(),
+  formatValue = (v) => asNumber(v).toLocaleString('en-US', { maximumFractionDigits: 0 }),
 }: DonutChartProps) {
-  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const safeData = Array.isArray(data)
+    ? data
+        .filter((item): item is DonutItem => item != null && typeof item === 'object')
+        .map((item) => ({
+          name: asString(item.name),
+          value: asNumber(item.value),
+          color: asString(item.color),
+        }))
+    : [];
+  if (safeData.length === 0) {
+    return <div className="text-xs text-slate-400 p-4">No data</div>;
+  }
+
+  const total = safeData.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="flex flex-col h-full">
@@ -33,14 +47,14 @@ export function DonutChart({
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data}
+              data={safeData}
               innerRadius={55}
               outerRadius={85}
               paddingAngle={3}
               dataKey="value"
               nameKey="name"
             >
-              {data.map((entry, index) => (
+              {safeData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={entry.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length]}
@@ -51,7 +65,7 @@ export function DonutChart({
             </Pie>
             <Tooltip
               formatter={(value: unknown, name: unknown) => [
-                formatValue(Number(value)),
+                formatValue(asNumber(value)),
                 String(name),
               ]}
               contentStyle={{
@@ -76,7 +90,7 @@ export function DonutChart({
 
       {/* Legend */}
       <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 text-xs text-slate-600">
-        {data.map((item, i) => (
+        {safeData.map((item, i) => (
           <div key={item.name} className="flex items-center gap-1.5">
             <span
               className="w-2.5 h-2.5 rounded-full shrink-0"

@@ -5,6 +5,7 @@ import { usePagination } from '@/hooks/usePagination';
 import { useAuthContext } from '@/context/AuthContext';
 import { MembersApi } from '@/api/members';
 import { localized } from '@/lib/i18n';
+import { text } from '@/lib/normalize';
 import { RegionsApi } from '@/api/regions';
 import { LookupsApi } from '@/api/lookups';
 import type { MemberSummary, RegionItem, LookupItem } from '@/types/api';
@@ -36,32 +37,26 @@ export function MemberList() {
   const { user } = useAuthContext();
   const toast = useToast();
 
-  // Search input state with debouncing
   const [searchInput, setSearchInput] = useState<string>(params.q || '');
   const debouncedSearch = useDebounce(searchInput, 300);
 
-  // Pagination hook
   const { page, pageSize, meta, setPage, setPageSize, updateMeta } = usePagination(
     Number(params.page) || 1,
     Number(params.pageSize) || 10
   );
 
-  // Data states
   const [members, setMembers] = useState<MemberSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [regions, setRegions] = useState<RegionItem[]>([]);
   const [sectors, setSectors] = useState<LookupItem[]>([]);
   const [fields, setFields] = useState<LookupItem[]>([]);
 
-  // Selection states for bulk actions
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
-  // Modals
   const [detailModalId, setDetailModalId] = useState<string | null>(null);
   const [rejectingMember, setRejectingMember] = useState<{ id: string; name: string } | null>(null);
 
-  // Sync debounced search to URL query params
   useEffect(() => {
     if (debouncedSearch !== (params.q || '')) {
       setParam('q', debouncedSearch || null);
@@ -69,7 +64,6 @@ export function MemberList() {
     }
   }, [debouncedSearch, params.q, setParam, setPage]);
 
-  // Load lookup metadata
   useEffect(() => {
     const loadLookups = async () => {
       try {
@@ -88,7 +82,6 @@ export function MemberList() {
     loadLookups();
   }, []);
 
-  // Fetch members consuming `meta`
   const fetchMembers = async () => {
     try {
       setLoading(true);
@@ -106,7 +99,7 @@ export function MemberList() {
       };
 
       const res = await MembersApi.list(queryPayload);
-      setMembers(res.data);
+      setMembers(Array.isArray(res.data) ? res.data : []);
       updateMeta(res.meta);
     } catch {
       toast.error('Failed to load member records');
@@ -166,7 +159,6 @@ export function MemberList() {
     }
   };
 
-  // Active filter chips list
   const activeChips: { key: string; label: string }[] = [];
   if (params.q) activeChips.push({ key: 'q', label: `Search: "${params.q}"` });
   if (params.registrationStatus) {
@@ -178,11 +170,11 @@ export function MemberList() {
   if (params.gender) activeChips.push({ key: 'gender', label: `Gender: ${params.gender}` });
   if (params.regionId) {
     const regName = regions.find((r) => r.id === params.regionId)?.name;
-    activeChips.push({ key: 'regionId', label: `Region: ${regName || params.regionId}` });
+    activeChips.push({ key: 'regionId', label: `Region: ${text(regName) || params.regionId}` });
   }
   if (params.sectorId) {
     const secName = sectors.find((s) => s.id === params.sectorId)?.name;
-    activeChips.push({ key: 'sectorId', label: `Sector: ${secName || params.sectorId}` });
+    activeChips.push({ key: 'sectorId', label: `Sector: ${text(secName) || params.sectorId}` });
   }
   if (params.paid) {
     activeChips.push({
@@ -211,7 +203,6 @@ export function MemberList() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Protected binary download */}
           <ExportButton
             onExport={() => MembersApi.export(params)}
             filename={`OHPEA-Members-${new Date().toISOString().slice(0, 10)}.csv`}
@@ -223,7 +214,6 @@ export function MemberList() {
       {/* Filter and Search Bar */}
       <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-3">
         <div className="flex flex-col md:flex-row items-center gap-3">
-          {/* Search Input */}
           <div className="relative flex-1 w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
             <input
@@ -243,9 +233,7 @@ export function MemberList() {
             )}
           </div>
 
-          {/* Quick Filter Selects */}
           <div className="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
-            {/* Registration Status */}
             <select
               value={params.registrationStatus || ''}
               onChange={(e) => {
@@ -260,7 +248,6 @@ export function MemberList() {
               <option value="rejected">Rejected</option>
             </select>
 
-            {/* Membership Status */}
             <select
               value={params.membershipStatus || ''}
               onChange={(e) => {
@@ -274,7 +261,6 @@ export function MemberList() {
               <option value="inactive">Inactive</option>
             </select>
 
-            {/* Region Select (Hidden for Regional Admin) */}
             {user?.role !== 'RegionalAdmin' && (
               <select
                 value={params.regionId || ''}
@@ -293,7 +279,6 @@ export function MemberList() {
               </select>
             )}
 
-            {/* Sector Select */}
             <select
               value={params.sectorId || ''}
               onChange={(e) => {
@@ -310,7 +295,6 @@ export function MemberList() {
               ))}
             </select>
 
-            {/* Payment Filter */}
             <select
               value={params.paid || ''}
               onChange={(e) => {
@@ -326,7 +310,6 @@ export function MemberList() {
           </div>
         </div>
 
-        {/* Removable Active Filter Chips */}
         {activeChips.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100">
             <span className="text-2xs font-bold uppercase tracking-wider text-slate-400 mr-1">
@@ -363,7 +346,6 @@ export function MemberList() {
         )}
       </div>
 
-      {/* Bulk actions banner */}
       {selectedIds.length > 0 && (
         <div className="p-3 bg-[#0B3D2E] text-white rounded-xl flex items-center justify-between text-xs animate-in fade-in">
           <span className="font-semibold tabular-nums">
@@ -395,7 +377,6 @@ export function MemberList() {
         </div>
       )}
 
-      {/* Main Table / Data View */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
           <LoadingSpinner text="Retrieving member records..." />
@@ -443,125 +424,144 @@ export function MemberList() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {members.map((member) => (
-                  <tr
-                    key={member.id}
-                    onClick={() => setDetailModalId(member.id)}
-                    className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
-                  >
-                    <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(member.id)}
-                        onChange={() => handleToggleSelect(member.id)}
-                        className="rounded border-slate-300 text-[#0B3D2E] focus:ring-[#0B3D2E]"
-                        aria-label={`Select member ${member.fullName}`}
-                      />
-                    </td>
-                    <td className="py-3 px-3 font-mono font-medium text-slate-700 whitespace-nowrap">
-                      {member.memberNo}
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-2xs flex items-center justify-center shrink-0">
-                          {member.fullName[0]}
-                        </div>
-                        <div className="truncate">
-                          <p className="font-semibold text-slate-900 truncate">
-                            {member.fullName}
-                          </p>
-                          <p className="text-2xs text-slate-400 capitalize">
-                            {member.gender} · {member.graduationLevel.split(' ')[0]}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">
-                      <p className="tabular-nums font-medium text-slate-700">{member.phone}</p>
-                      <p className="text-2xs text-slate-400 truncate max-w-[130px]">
-                        {member.email}
-                      </p>
-                    </td>
-                    <td className="py-3 px-3 text-slate-600">
-                      <p className="font-medium text-slate-800 truncate max-w-[150px]">
-                        {member.sectorName}
-                      </p>
-                      <p className="text-2xs text-slate-400 truncate max-w-[150px]">
-                        {member.fieldName}
-                      </p>
-                    </td>
-                    <td className="py-3 px-3 text-slate-700 truncate max-w-[130px]">
-                      {member.regionName}
-                    </td>
-                    <td className="py-3 px-3">
-                      <StatusBadge type="registration" status={member.registrationStatus} />
-                    </td>
-                    <td className="py-3 px-3">
-                      <StatusBadge type="membership" status={member.membershipStatus} />
-                    </td>
-                    <td className="py-3 px-3 whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`w-2 h-2 rounded-full ${
-                            member.hasPaidRecentPeriod ? 'bg-emerald-600' : 'bg-red-500'
-                          }`}
-                        />
-                        <span className="font-medium text-slate-700">
-                          {member.hasPaidRecentPeriod ? 'Paid' : 'Unpaid'}
-                        </span>
-                      </div>
-                      {member.lastPaymentDate && (
-                        <span className="text-2xs text-slate-400 block tabular-nums">
-                          {member.lastPaymentDate}
-                        </span>
-                      )}
-                    </td>
-                    <td
-                      className="py-3 px-4 text-right whitespace-nowrap"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setDetailModalId(member.id)}
-                          className="p-1 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                          title="View member dossier"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </button>
+                {members.map((member) => {
+                  const fullName = text(member.fullName);
+                  const gradLabel =
+                    text(member.gradLabel) ||
+                    text(member.graduationLevel) ||
+                    '—';
+                  const sectorLabel =
+                    text(member.sectorLabel) ||
+                    text(member.sectorName) ||
+                    '—';
+                  const fieldLabel =
+                    text(member.fieldLabel) ||
+                    text(member.fieldName) ||
+                    '—';
+                  const regionLabel = text(member.regionName) || '—';
+                  const initial = fullName.charAt(0).toUpperCase() || '?';
 
-                        {member.registrationStatus === 'pending' && (
-                          <>
-                            <button
-                              type="button"
-                              onClick={() => handleApprove(member.id, member.fullName)}
-                              className="p-1 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
-                              title="Approve applicant"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setRejectingMember({ id: member.id, name: member.fullName })
-                              }
-                              className="p-1 rounded-md text-red-600 hover:bg-red-50 transition-colors"
-                              title="Reject applicant"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </button>
-                          </>
+                  return (
+                    <tr
+                      key={member.id}
+                      onClick={() => setDetailModalId(member.id)}
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer group"
+                    >
+                      <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.includes(member.id)}
+                          onChange={() => handleToggleSelect(member.id)}
+                          className="rounded border-slate-300 text-[#0B3D2E] focus:ring-[#0B3D2E]"
+                          aria-label={`Select member ${fullName}`}
+                        />
+                      </td>
+                      <td className="py-3 px-3 font-mono font-medium text-slate-700 whitespace-nowrap">
+                        {text(member.memberNo)}
+                      </td>
+                      <td className="py-3 px-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-2xs flex items-center justify-center shrink-0">
+                            {initial}
+                          </div>
+                          <div className="truncate">
+                            <p className="font-semibold text-slate-900 truncate">
+                              {fullName}
+                            </p>
+                            <p className="text-2xs text-slate-400 capitalize">
+                              {text(member.gender)} · {gradLabel.split(' ')[0]}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">
+                        <p className="tabular-nums font-medium text-slate-700">
+                          {text(member.phone)}
+                        </p>
+                        <p className="text-2xs text-slate-400 truncate max-w-[130px]">
+                          {text(member.email)}
+                        </p>
+                      </td>
+                      <td className="py-3 px-3 text-slate-600">
+                        <p className="font-medium text-slate-800 truncate max-w-[150px]">
+                          {sectorLabel}
+                        </p>
+                        <p className="text-2xs text-slate-400 truncate max-w-[150px]">
+                          {fieldLabel}
+                        </p>
+                      </td>
+                      <td className="py-3 px-3 text-slate-700 truncate max-w-[130px]">
+                        {regionLabel}
+                      </td>
+                      <td className="py-3 px-3">
+                        <StatusBadge type="registration" status={member.registrationStatus} />
+                      </td>
+                      <td className="py-3 px-3">
+                        <StatusBadge type="membership" status={member.membershipStatus} />
+                      </td>
+                      <td className="py-3 px-3 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`w-2 h-2 rounded-full ${
+                              member.hasPaidRecentPeriod ? 'bg-emerald-600' : 'bg-red-500'
+                            }`}
+                          />
+                          <span className="font-medium text-slate-700">
+                            {member.hasPaidRecentPeriod ? 'Paid' : 'Unpaid'}
+                          </span>
+                        </div>
+                        {member.lastPaymentDate && (
+                          <span className="text-2xs text-slate-400 block tabular-nums">
+                            {text(member.lastPaymentDate)}
+                          </span>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                      <td
+                        className="py-3 px-4 text-right whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setDetailModalId(member.id)}
+                            className="p-1 rounded-md text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                            title="View member dossier"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+
+                          {member.registrationStatus === 'pending' && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleApprove(member.id, fullName)}
+                                className="p-1 rounded-md text-emerald-700 hover:bg-emerald-50 transition-colors"
+                                title="Approve applicant"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setRejectingMember({ id: member.id, name: fullName })
+                                }
+                                className="p-1 rounded-md text-red-600 hover:bg-red-50 transition-colors"
+                                title="Reject applicant"
+                              >
+                                <XCircle className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
 
-        {/* Consumes meta and only renders when meta.totalPages > 1 */}
         <Pagination
           meta={meta}
           onPageChange={(p) => {
@@ -575,7 +575,6 @@ export function MemberList() {
         />
       </div>
 
-      {/* Member Detail Modal */}
       {detailModalId && (
         <MemberDetailModal
           isOpen={true}
@@ -585,7 +584,6 @@ export function MemberList() {
         />
       )}
 
-      {/* Reject Reason Modal */}
       {rejectingMember && (
         <RejectReasonModal
           isOpen={true}

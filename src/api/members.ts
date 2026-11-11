@@ -1,9 +1,15 @@
 import { adminApi } from '@/lib';
+import { normalizePaginated } from '@/lib/normalize';
 import type { MemberSummary, MemberDetail, Paginated, MembershipStatus } from '@/types/api';
 
 export const MembersApi = {
-  list: (q: Record<string, unknown> = {}): Promise<Paginated<MemberSummary[]>> =>
-    adminApi.getMembers(q),
+  list: async (q: Record<string, unknown> = {}): Promise<Paginated<MemberSummary[]>> => {
+    const response = await adminApi.getMembers(q);
+    return normalizePaginated<MemberSummary>(response, {
+      page: typeof q.page === 'number' ? q.page : 1,
+      pageSize: typeof q.pageSize === 'number' ? q.pageSize : 10,
+    });
+  },
   get: (id: string): Promise<MemberDetail> =>
     adminApi.getMember(id),
   create: (data: unknown): Promise<MemberDetail> =>

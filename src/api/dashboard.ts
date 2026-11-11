@@ -1,4 +1,10 @@
 import { adminApi } from '@/lib';
+import {
+  asNumber,
+  asString,
+  normalizeChartArray,
+  normalizeList,
+} from '@/lib/normalize';
 import type {
   DashboardSummary,
   DashboardDimensionItem,
@@ -29,29 +35,31 @@ type DashboardSummaryResponse = Partial<DashboardSummary> & {
 
 export const DashboardApi = {
   getSummary: async (params?: { regionId?: string }): Promise<DashboardSummary> => {
-    const raw = (await adminApi.getDashboardSummary(params)) as DashboardSummaryResponse;
-    const activeMembers = raw.activeMembers ?? raw.active ?? 0;
-    const inactiveMembers = raw.inactiveMembers ?? raw.inactive ?? 0;
-    const pendingMembers = raw.pendingMembers ?? raw.pending ?? 0;
-    const femaleMembers = raw.femaleMembers ?? raw.female ?? 0;
-    const maleMembers = raw.maleMembers ?? raw.male ?? 0;
+    const raw = (await adminApi.getDashboardSummary(params)) as DashboardSummaryResponse | null;
+    const response = raw ?? {};
+    const activeMembers = asNumber(response.activeMembers ?? response.active);
+    const inactiveMembers = asNumber(response.inactiveMembers ?? response.inactive);
+    const pendingMembers = asNumber(response.pendingMembers ?? response.pending);
+    const femaleMembers = asNumber(response.femaleMembers ?? response.female);
+    const maleMembers = asNumber(response.maleMembers ?? response.male);
     const governmentMembers =
-      raw.governmentMembers ?? raw.governmentSector ?? raw.governmentCount ?? 0;
-    const privateMembers = raw.privateMembers ?? raw.privateSector ?? raw.privateCount ?? 0;
-    const otherMembers = raw.otherMembers ?? raw.otherCount ?? 0;
+      asNumber(response.governmentMembers ?? response.governmentSector ?? response.governmentCount);
+    const privateMembers =
+      asNumber(response.privateMembers ?? response.privateSector ?? response.privateCount);
+    const otherMembers = asNumber(response.otherMembers ?? response.otherCount);
 
     return {
-      ...raw,
-      totalMembers: raw.totalMembers ?? 0,
-      active: raw.active ?? activeMembers,
-      inactive: raw.inactive ?? inactiveMembers,
-      pending: raw.pending ?? pendingMembers,
-      pendingRegistrations: raw.pendingRegistrations ?? 0,
-      female: raw.female ?? femaleMembers,
-      male: raw.male ?? maleMembers,
-      governmentCount: raw.governmentCount ?? governmentMembers,
-      privateCount: raw.privateCount ?? privateMembers,
-      otherCount: raw.otherCount ?? otherMembers,
+      ...response,
+      totalMembers: asNumber(response.totalMembers),
+      active: asNumber(response.active, activeMembers),
+      inactive: asNumber(response.inactive, inactiveMembers),
+      pending: asNumber(response.pending, pendingMembers),
+      pendingRegistrations: asNumber(response.pendingRegistrations),
+      female: asNumber(response.female, femaleMembers),
+      male: asNumber(response.male, maleMembers),
+      governmentCount: asNumber(response.governmentCount, governmentMembers),
+      privateCount: asNumber(response.privateCount, privateMembers),
+      otherCount: asNumber(response.otherCount, otherMembers),
       activeMembers,
       inactiveMembers,
       pendingMembers,
@@ -60,26 +68,82 @@ export const DashboardApi = {
       governmentMembers,
       privateMembers,
       otherMembers,
-      governmentSector: raw.governmentSector ?? governmentMembers,
-      privateSector: raw.privateSector ?? privateMembers,
-      totalCollectedThisYear: raw.totalCollectedThisYear ?? 0,
-      totalCollectedThisMonth: raw.totalCollectedThisMonth ?? 0,
-      unpaidMembersCount: raw.unpaidMembersCount ?? 0,
-      newThisMonth: raw.newThisMonth ?? 0,
+      governmentSector: asNumber(response.governmentSector, governmentMembers),
+      privateSector: asNumber(response.privateSector, privateMembers),
+      totalCollectedThisYear: asNumber(response.totalCollectedThisYear),
+      totalCollectedThisMonth: asNumber(response.totalCollectedThisMonth),
+      unpaidMembersCount: asNumber(response.unpaidMembersCount),
+      newThisMonth: asNumber(response.newThisMonth),
     };
   },
-  getMembersBy: (params: {
+
+  // FIX: preserve key/count/percent from normalizeChartPoint so any consumer
+  // (charts, legends, dropdowns) gets the full shape, not a truncated one.
+  getMembersBy: async (params: {
     dimension: 'gender' | 'sector' | 'field' | 'occupation' | 'region' | 'graduationLevel';
     lang?: 'en' | 'om' | 'am';
     regionId?: string;
-  }): Promise<DashboardDimensionItem[]> =>
-    adminApi.getDashboardMembersBy(params),
-  getContributions: (params?: {
+  }): Promise<DashboardDimensionItem[]> => {
+    const points = normalizeChartArray(await adminApi.getDashboardMembersBy(params));
+    return points.map(({ key, label, count, percent, value, color }) => ({
+      key,
+      label,
+      value,
+      count,
+      percent,
+      ...(color ? { color } : {}),
+    }));
+  },
+
+  getContributions: async (params?: {
     range?: '3m' | '6m' | '12m';
     group?: 'week' | 'month' | 'year';
     regionId?: string;
-  }): Promise<ContributionSnapshot> =>
-    adminApi.getDashboardContributions(params),
-  getRecentActivity: (): Promise<RecentActivityItem[]> =>
-    adminApi.getRecentActivity(),
+  }): Promise<ContributionSnapshot> => {
+    const raw = (await adminApi.getDashboardContributions(params)) as
+      | (Partial<ContributionSnapshot> & Record<string, unknown>)
+      | null;
+    const response = raw ?? {};
+    const rawTimeline = response.timeline ?? response.timeSeries;
+    const timeline = rawTimeline != null
+      ? normalizeList<Record<string, unknown>>(rawTimeline).map((point) => ({
+          period: asString(point.period ?? point.bucket),
+          amount: asNumber(point.amount ?? point.totalEtb),
+          ...(point.target != null ? { target: asNumber(point.target) } : {}),
+        }))
+      : normalizeChartArray(response.byPeriod).map((point) => ({
+          period: point.label,
+          amount: point.value,
+        }));
+    const methodDistribution = response.methodDistribution != null
+      ? normalizeList<Record<string, unknown>>(response.methodDistribution).map((point) => ({
+          method: asString(point.method ?? point.label ?? point.key),
+          amount: asNumber(point.amount ?? point.value ?? point.count),
+        }))
+      : normalizeChartArray(response.byMethod).map((point) => ({
+          method: point.label,
+          amount: point.value,
+        }));
+    const rawRegions = normalizeList<Record<string, unknown>>(response.byRegion);
+    const byRegion = normalizeChartArray(rawRegions).map((point, index) => ({
+      region: point.label,
+      amount: point.value,
+      unpaid: asNumber(rawRegions[index]?.unpaid),
+    }));
+
+    return {
+      totalYear: asNumber(
+        response.totalYear ?? response.totalCollectedThisYear ?? response.totalCollected
+      ),
+      totalMonth: asNumber(response.totalMonth ?? response.totalCollectedThisMonth),
+      paidCount: asNumber(response.paidCount ?? response.paidMembers),
+      unpaidCount: asNumber(response.unpaidCount ?? response.unpaidMembers),
+      timeline,
+      methodDistribution,
+      byRegion,
+    };
+  },
+
+  getRecentActivity: async (): Promise<RecentActivityItem[]> =>
+    normalizeList(await adminApi.getRecentActivity()),
 };

@@ -79,6 +79,8 @@ export interface MemberDocument {
   url?: string;
 }
 
+export type LocalizedValue = string | { en: string; om?: string; am?: string } | null | undefined;
+
 export interface MemberSummary {
   id: string;
   memberNo: string;
@@ -87,21 +89,28 @@ export interface MemberSummary {
   email: string;
   gender: MemberGender;
   regionId: string;
-  regionName: string;
+  regionName: LocalizedValue;
   sectorId: string;
-  sectorName: string;
+  sectorName?: LocalizedValue;
+  sectorLabel?: LocalizedValue;
   fieldId: string;
-  fieldName: string;
+  fieldName?: LocalizedValue;
+  fieldLabel?: LocalizedValue;
   occupationType: string;
-  graduationLevel: string;
+  graduationLevel?: LocalizedValue;
+  gradLabel?: LocalizedValue;
   institution?: string;
   registrationStatus: RegistrationStatus;
   membershipStatus: MembershipStatus;
-  hasPaidRecentPeriod: boolean;
+  hasPaidRecentPeriod?: boolean;
   lastPaymentDate?: string;
   lastPaymentAmount?: number;
-  registeredAt: string;
+  registeredAt?: string;
+  createdAt?: string;
   duplicateOf?: string;
+  organizationName?: string | null;
+  jobTitle?: string | null;
+  isDemo?: boolean;
 }
 
 export interface MemberDetail extends MemberSummary {

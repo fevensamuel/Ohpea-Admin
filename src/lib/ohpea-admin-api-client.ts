@@ -129,6 +129,16 @@ class OhpeaAdminApiClient {
             json.fields
           );
         }
+        if (json.meta !== undefined) {
+          const data = json.data;
+          if (data && typeof data === 'object' && !Array.isArray(data)) {
+            return {
+              ...(data as Record<string, unknown>),
+              meta: json.meta,
+            } as T;
+          }
+          return { data, meta: json.meta } as T;
+        }
         return (json.data !== undefined ? json.data : (json as unknown as T));
       }
 

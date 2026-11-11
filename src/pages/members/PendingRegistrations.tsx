@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuthContext } from '@/context/AuthContext';
 import { usePagination } from '@/hooks/usePagination';
 import { MembersApi } from '@/api/members';
+import { text } from '@/lib/normalize';
 import type { MemberSummary, MemberDetail } from '@/types/api';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/common/Pagination';
@@ -138,7 +139,7 @@ export function PendingRegistrations() {
 
         {user?.role === 'RegionalAdmin' && (
           <span className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200">
-            Scoped to: {user.regionName}
+           Scoped to: {text(user.regionName)}
           </span>
         )}
       </div>
@@ -188,10 +189,10 @@ export function PendingRegistrations() {
 
                     <div className="mt-2 text-2xs text-slate-500 space-y-0.5">
                       <p className="truncate">
-                        <strong className="text-slate-700">Region:</strong> {member.regionName}
+                        <strong className="text-slate-700">Region:</strong> {text(member.regionName)}
                       </p>
                       <p className="truncate">
-                        <strong className="text-slate-700">Sector:</strong> {member.sectorName}
+                        <strong className="text-slate-700">Sector:</strong> {text(member.sectorName) || text((member as any).sectorLabel)}
                       </p>
                       <p className="truncate">
                         <strong className="text-slate-700">Field:</strong> {member.fieldName}

@@ -218,7 +218,7 @@ export function RecordPaymentModal({
                       ({selectedMember.memberNo})
                     </span>
                     <p className="text-2xs text-emerald-700">
-                      {selectedMember.regionName} · {selectedMember.sectorName}
+                      {localized(selectedMember.regionName)} · {localized(selectedMember.sectorName)}
                     </p>
                   </div>
                   <button
@@ -256,7 +256,7 @@ export function RecordPaymentModal({
                               {m.memberNo}
                             </span>
                           </div>
-                          <span className="text-2xs text-slate-400">{m.regionName}</span>
+                          <span className="text-2xs text-slate-400">{localized(m.regionName)}</span>
                         </button>
                       ))
                     ) : (

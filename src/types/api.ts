@@ -61,7 +61,7 @@ export type PaymentPeriod = 'weekly' | 'monthly' | 'yearly';
 export type AnnouncementType = 'news' | 'event' | 'vacancy' | 'proposal' | 'research';
 export type AnnouncementStatus = 'draft' | 'published' | 'archived';
 export type MessageStatus = 'new' | 'read' | 'in_progress' | 'resolved';
-export type MemberGender = 'male' | 'female';
+export type MemberGender = 'male' | 'female' | 'unspecified';
 export type MemberIdType = 'fayda' | 'passport' | 'kebele' | 'driver';
 
 export interface LocalizedString {
@@ -115,6 +115,15 @@ export interface MemberSummary {
 
 export interface MemberDetail extends MemberSummary {
   birthDate?: string;
+  membershipCategory?: string;
+  dateOfBirth?: string;
+  nationality?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  businessTin?: string;
+  skills?: string[];
+  expertiseAreas?: string[];
+  interests?: string[];
   idType: MemberIdType;
   idNumber: string;
   address?: string;

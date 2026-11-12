@@ -262,6 +262,10 @@ export function PendingRegistrations() {
                         {text(selectedMember.memberNo)} · Registered{' '}
                         {fmtDate(selectedMember.registeredAt)}
                       </p>
+                      <p className="text-xs text-slate-600 mt-1">
+                        <span className="font-semibold">Membership Category:</span>{' '}
+                        {text(selectedMember.membershipCategory) || '—'}
+                      </p>
                     </div>
                   </div>
 
@@ -310,8 +314,26 @@ export function PendingRegistrations() {
                     </span>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Gender:</span>
-                      <span className="font-semibold text-slate-800 capitalize">
+                      <span
+                        className={`font-semibold capitalize ${
+                          selectedMember.gender === 'unspecified'
+                            ? 'text-slate-600 bg-slate-200 px-1.5 rounded'
+                            : 'text-slate-800'
+                        }`}
+                      >
                         {text(selectedMember.gender) || '—'}
+                      </span>
+                    </p>
+                    <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                      <span className="text-slate-500">Date of Birth:</span>
+                      <span className="font-semibold text-slate-800">
+                        {fmtDate(selectedMember.dateOfBirth || selectedMember.birthDate)}
+                      </span>
+                    </p>
+                    <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                      <span className="text-slate-500">Nationality:</span>
+                      <span className="font-semibold text-slate-800">
+                        {text(selectedMember.nationality) || '—'}
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
@@ -332,12 +354,27 @@ export function PendingRegistrations() {
                         {text(selectedMember.idType)} ({text(selectedMember.idNumber)})
                       </span>
                     </p>
+                    <p className="flex justify-between py-0.5 border-t border-slate-200/60">
+                      <span className="text-slate-500">Emergency Contact:</span>
+                      <span className="font-semibold text-slate-800 text-right">
+                        {text(selectedMember.emergencyContactName) || '—'}
+                        {selectedMember.emergencyContactPhone
+                          ? ` · ${text(selectedMember.emergencyContactPhone)}`
+                          : ''}
+                      </span>
+                    </p>
                   </div>
 
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2">
                     <span className="text-2xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
-                      Hospitality Career
+                      Career
                     </span>
+                    <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                      <span className="text-slate-500">Employment Status:</span>
+                      <span className="font-semibold text-slate-800">
+                        {text(selectedMember.occupationType) || '—'}
+                      </span>
+                    </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
                       <span className="text-slate-500">Region:</span>
                       <span className="font-semibold text-slate-800">
@@ -353,19 +390,84 @@ export function PendingRegistrations() {
                       </span>
                     </p>
                     <p className="flex justify-between py-0.5 border-b border-slate-200/60">
-                      <span className="text-slate-500">Degree/Level:</span>
-                      <span className="font-semibold text-slate-800">
-                        {text(selectedMember.graduationLevel) ||
-                          text((selectedMember as any).gradLabel) ||
-                          '—'}
-                      </span>
-                    </p>
-                    <p className="flex justify-between py-0.5">
                       <span className="text-slate-500">Employer:</span>
                       <span className="font-semibold text-slate-800">
                         {text(selectedMember.employer) || 'Independent Professional'}
                       </span>
                     </p>
+                    {(/entrepreneur|self.?employed|business owner/i.test(
+                      `${selectedMember.occupationType} ${selectedMember.membershipCategory}`,
+                    ) || selectedMember.businessTin) && (
+                      <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                        <span className="text-slate-500">Business TIN:</span>
+                        <span className="font-semibold text-slate-800">
+                          {text(selectedMember.businessTin) || '—'}
+                        </span>
+                      </p>
+                    )}
+                    <p className="flex justify-between py-0.5">
+                      <span className="text-slate-500">Years of Experience:</span>
+                      <span className="font-semibold text-slate-800">
+                        {selectedMember.yearsOfExperience ?? '—'}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-2">
+                    <span className="text-2xs font-bold uppercase tracking-wider text-slate-400 block mb-1">
+                      Education
+                    </span>
+                    <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                      <span className="text-slate-500">Qualification:</span>
+                      <span className="font-semibold text-slate-800 text-right">
+                        {text(selectedMember.graduationLevel) ||
+                          text((selectedMember as any).gradLabel) ||
+                          '—'}
+                      </span>
+                    </p>
+                    <p className="flex justify-between py-0.5 border-b border-slate-200/60">
+                      <span className="text-slate-500">Field:</span>
+                      <span className="font-semibold text-slate-800 text-right">
+                        {text(selectedMember.fieldName) ||
+                          text((selectedMember as any).fieldLabel) ||
+                          '—'}
+                      </span>
+                    </p>
+                    <p className="flex justify-between py-0.5">
+                      <span className="text-slate-500">Institution:</span>
+                      <span className="font-semibold text-slate-800 text-right">
+                        {text(selectedMember.institution) || '—'}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-3">
+                    <span className="text-2xs font-bold uppercase tracking-wider text-slate-400 block">
+                      Skills &amp; Expertise
+                    </span>
+                    {([
+                      ['Skills', selectedMember.skills],
+                      ['Expertise', selectedMember.expertiseAreas],
+                      ['Interests', selectedMember.interests],
+                    ] as const).map(([label, items]) => (
+                      <div key={label}>
+                        <p className="text-slate-500 mb-1">{label}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {items?.length ? (
+                            items.map((item) => (
+                              <span
+                                key={`${label}-${item}`}
+                                className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-2xs"
+                              >
+                                {text(item)}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-slate-400">—</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

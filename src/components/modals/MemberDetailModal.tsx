@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { MembersApi } from '@/api/members';
 import type { MemberDetail, PaymentRecord } from '@/types/api';
+import { localized } from '@/lib/i18n';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { DocumentViewerModal } from './DocumentViewerModal';
@@ -228,7 +229,9 @@ export function MemberDetailModal({
                       <div className="flex justify-between py-1">
                         <span className="text-slate-500">Registered Date</span>
                         <span className="font-semibold text-slate-800 tabular-nums">
-                          {new Date(member.registeredAt).toLocaleDateString('en-GB')}
+                          {member.registeredAt
+                            ? new Date(member.registeredAt).toLocaleDateString('en-GB')
+                            : '—'}
                         </span>
                       </div>
                     </div>
@@ -244,21 +247,25 @@ export function MemberDetailModal({
                         <span className="text-slate-500">Regional Cluster</span>
                         <span className="font-semibold text-slate-800 flex items-center gap-1">
                           <MapPin className="w-3 h-3 text-emerald-600" />
-                          {member.regionName}
+                          {localized(member.regionName)}
                         </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
                         <span className="text-slate-500">Industry Sector</span>
-                        <span className="font-semibold text-slate-800">{member.sectorName}</span>
+                        <span className="font-semibold text-slate-800">
+                          {localized(member.sectorName)}
+                        </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
                         <span className="text-slate-500">Field of Study</span>
-                        <span className="font-semibold text-slate-800">{member.fieldName}</span>
+                        <span className="font-semibold text-slate-800">
+                          {localized(member.fieldName)}
+                        </span>
                       </div>
                       <div className="flex justify-between py-1 border-b border-slate-200/60">
                         <span className="text-slate-500">Graduation Level</span>
                         <span className="font-semibold text-slate-800">
-                          {member.graduationLevel}
+                          {localized(member.graduationLevel)}
                         </span>
                       </div>
                       <div className="flex justify-between py-1">

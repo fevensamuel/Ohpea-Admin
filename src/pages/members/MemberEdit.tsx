@@ -220,13 +220,34 @@ export function MemberEdit() {
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Gender</label>
               <select
-                value={member.gender || 'male'}
+                value={member.gender || 'unspecified'}
                 onChange={(e) => setMember({ ...member, gender: e.target.value as MemberGender })}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
+                <option value="unspecified">Unspecified</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Date of Birth</label>
+              <input
+                type="date"
+                value={(member.dateOfBirth || member.birthDate || '').slice(0, 10)}
+                onChange={(e) => setMember({ ...member, dateOfBirth: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Nationality</label>
+              <input
+                type="text"
+                value={member.nationality || ''}
+                onChange={(e) => setMember({ ...member, nationality: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
             </div>
 
             <div>
@@ -253,6 +274,27 @@ export function MemberEdit() {
               />
             </div>
           </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Emergency Contact Name</label>
+              <input
+                type="text"
+                value={member.emergencyContactName || ''}
+                onChange={(e) => setMember({ ...member, emergencyContactName: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Emergency Contact Phone</label>
+              <input
+                type="tel"
+                value={member.emergencyContactPhone || ''}
+                onChange={(e) => setMember({ ...member, emergencyContactPhone: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+          </div>
         </div>
 
         {/* Professional & Regional Classifications */}
@@ -262,6 +304,15 @@ export function MemberEdit() {
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Membership Category</label>
+              <input
+                type="text"
+                value={member.membershipCategory || ''}
+                onChange={(e) => setMember({ ...member, membershipCategory: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Regional Cluster</label>
               <select
@@ -331,7 +382,14 @@ export function MemberEdit() {
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Graduation Level</label>
               <select
-                value={member.graduationLevel || ''}
+                value={
+                  typeof member.graduationLevel === 'string'
+                    ? member.graduationLevel
+                    : member.graduationLevel?.en ||
+                      member.graduationLevel?.om ||
+                      member.graduationLevel?.am ||
+                      ''
+                }
                 onChange={(e) => setMember({ ...member, graduationLevel: e.target.value })}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               >
@@ -344,13 +402,22 @@ export function MemberEdit() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
             <div>
               <label className="block font-semibold text-slate-700 mb-1">Institution</label>
               <input
                 type="text"
                 value={member.institution || ''}
                 onChange={(e) => setMember({ ...member, institution: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Employment Status</label>
+              <input
+                type="text"
+                value={member.occupationType || ''}
+                onChange={(e) => setMember({ ...member, occupationType: e.target.value })}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               />
             </div>
@@ -364,11 +431,83 @@ export function MemberEdit() {
               />
             </div>
             <div>
+              <label className="block font-semibold text-slate-700 mb-1">Business TIN</label>
+              <input
+                type="text"
+                value={member.businessTin || ''}
+                onChange={(e) => setMember({ ...member, businessTin: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
               <label className="block font-semibold text-slate-700 mb-1">Job Title / Role</label>
               <input
                 type="text"
                 value={member.jobTitle || ''}
                 onChange={(e) => setMember({ ...member, jobTitle: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Years of Experience</label>
+              <input
+                type="number"
+                min="0"
+                value={member.yearsOfExperience ?? ''}
+                onChange={(e) =>
+                  setMember({
+                    ...member,
+                    yearsOfExperience: e.target.value === '' ? undefined : Number(e.target.value),
+                  })
+                }
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Skills</label>
+              <textarea
+                rows={2}
+                value={(member.skills || []).join(', ')}
+                onChange={(e) =>
+                  setMember({
+                    ...member,
+                    skills: e.target.value.split(',').map((item) => item.trim()).filter(Boolean),
+                  })
+                }
+                placeholder="Separate items with commas"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Expertise Areas</label>
+              <textarea
+                rows={2}
+                value={(member.expertiseAreas || []).join(', ')}
+                onChange={(e) =>
+                  setMember({
+                    ...member,
+                    expertiseAreas: e.target.value.split(',').map((item) => item.trim()).filter(Boolean),
+                  })
+                }
+                placeholder="Separate items with commas"
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Interests</label>
+              <textarea
+                rows={2}
+                value={(member.interests || []).join(', ')}
+                onChange={(e) =>
+                  setMember({
+                    ...member,
+                    interests: e.target.value.split(',').map((item) => item.trim()).filter(Boolean),
+                  })
+                }
+                placeholder="Separate items with commas"
                 className="w-full px-3 py-2 rounded-lg border border-slate-200"
               />
             </div>

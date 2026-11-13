@@ -37,7 +37,10 @@ import {
 } from './routes';
 
 export default function App() {
-  const basename = "/admin";
+  const basename =
+  typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
+    ? '/admin'
+    : undefined;
 
   return (
     <ContractProvider>

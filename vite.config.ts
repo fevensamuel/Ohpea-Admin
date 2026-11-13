@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/admin/', // <--- ADDED THIS LINE
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { adminApi } from '@/lib';
 import type { AdminUser } from '@/types/api';
 
-const TOKEN_KEY = 'ohpea_admin_token';
+const TOKEN_KEY = 'ophea_admin_token';
 
 export function useAuth() {
   const [user, setUser] = useState<AdminUser | null>(null);

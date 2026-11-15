@@ -1,6 +1,6 @@
-# OHPEA Admin Portal (v2) — Internal Management System
+# OPHEA Admin Portal (v2) — Internal Management System
 
-Internal administrative portal for staff and officers of the **Oromia Hospitality & Tourism Professionals Association (OHPEA)** / **Waldaa Ogeessota Tuuriizimii fi Hoteelaa Oromiyaa**.
+Internal administrative portal for staff and officers of the **Oromia Hospitality & Tourism Professionals Association (OPHEA)** / **Waldaa Ogeessota Tuuriizimii fi Hoteelaa Oromiyaa**.
 
 ---
 
@@ -106,7 +106,7 @@ src/
     usePagination.ts                 # Page/pageSize pagination state
     useContractGuard.ts              # Contract drift access hook
   lib/
-    ohpea-admin-api-client.ts        # The ONLY network client (fetch, envelope, Bearer)
+    ophea-admin-api-client.ts        # The ONLY network client (fetch, envelope, Bearer)
     index.ts                         # Barrel re-exporting adminApi, ApiError, DTOs
     demoMode.ts                      # Explicit opt-in demo mode utility
     contract.ts                      # Contract validation logic
@@ -167,9 +167,9 @@ Follow these 8 verification steps in your browser DevTools (Network tab):
 
 2. **Staff Login**:
    - URL: `POST /api/auth/login`
-   - Body: `{"usernameOrEmail":"admin@ohpea.org","password":"..."}`
+   - Body: `{"usernameOrEmail":"admin@ophea.org","password":"..."}`
    - Expected: `200 OK` with `{ "token": "...", "user": { ... } }`.
-   - Result: `localStorage.getItem('ohpea_admin_token')` is populated; redirect to `/dashboard`.
+   - Result: `localStorage.getItem('ophea_admin_token')` is populated; redirect to `/dashboard`.
 
 3. **Dashboard Metrics**:
    - URL: `GET /api/admin/dashboard/summary`
@@ -200,9 +200,9 @@ Follow these 8 verification steps in your browser DevTools (Network tab):
    - Result: Browser save dialog; no token appears in the browser URL.
 
 8. **Session Expiry & Auto-Logout**:
-   - Action: In DevTools Console run: `localStorage.setItem('ohpea_admin_token', 'invalid_token')` and refresh.
+   - Action: In DevTools Console run: `localStorage.setItem('ophea_admin_token', 'invalid_token')` and refresh.
    - Request: Returns `401 Unauthorized`.
-   - Result: Client clears `ohpea_admin_token` and automatically redirects to `/login` with "Session expired. Please log in again."
+   - Result: Client clears `ophea_admin_token` and automatically redirects to `/login` with "Session expired. Please log in again."
 
 ---
 

@@ -57,7 +57,7 @@ export function UnpaidMembers() {
         <div className="flex items-center gap-2">
           <ExportButton
             onExport={() => PaymentsApi.export({ status: 'unpaid' })}
-            filename="OHPEA-Unpaid-Members.csv"
+            filename="OPHEA-Unpaid-Members.csv"
             label="Export Unpaid Roster"
           />
           <button

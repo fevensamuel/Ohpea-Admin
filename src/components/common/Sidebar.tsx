@@ -25,8 +25,6 @@ import {
   ChevronDown,
   X,
   Compass,
-  Briefcase,
-  Globe2,
 } from 'lucide-react';
 
 interface NavItem {
@@ -183,13 +181,6 @@ export function Sidebar() {
           icon: Mail,
           permission: 'subscribers',
         },
-        {
-          title: 'SMS Broadcasts',
-          path: '/coming-soon?module=sms',
-          icon: MessageSquare,
-          locked: true,
-          phasePill: 'Soon',
-        },
       ],
     },
     {
@@ -205,7 +196,7 @@ export function Sidebar() {
           title: 'Contact Information',
           path: '/settings/contact',
           icon: Mail,
-          permission: 'settings.contact',
+          permission: 'settings.site',
         },
         {
           title: 'Regional Clusters',
@@ -229,26 +220,7 @@ export function Sidebar() {
           title: 'System Audit Logs',
           path: '/settings/audit',
           icon: History,
-          permission: 'audit.logs',
-        },
-      ],
-    },
-    {
-      group: 'FUTURE PHASES (ROADMAP)',
-      items: [
-        {
-          title: 'Jobs & Talent Bridge',
-          path: '/coming-soon?module=jobs',
-          icon: Briefcase,
-          locked: true,
-          phasePill: 'Phase 4',
-        },
-        {
-          title: 'International Relations',
-          path: '/coming-soon?module=international',
-          icon: Globe2,
-          locked: true,
-          phasePill: 'Phase 4',
+          permission: 'audit',
         },
       ],
     },
@@ -280,7 +252,7 @@ export function Sidebar() {
             {!sidebarCollapsed && (
               <div className="flex flex-col truncate">
                 <span className="text-sm font-bold tracking-tight text-white truncate">
-                  OHPEA ADMIN
+                  OPHEA ADMIN
                 </span>
                 <span className="text-2xs text-[#C9A24A] font-medium tracking-wide truncate">
                   Oromia Hospitality &amp; Tourism
@@ -383,7 +355,7 @@ export function Sidebar() {
         <div className="p-3 border-t border-[#14573F] shrink-0 text-2xs text-emerald-300/70">
           {!sidebarCollapsed ? (
             <div className="flex items-center justify-between px-2">
-              <span>OHPEA Portal v2.0</span>
+              <span>OPHEA Portal v2.0</span>
               <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono">
                 Prod-Ready
               </span>

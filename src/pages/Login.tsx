@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
-import { isDemoMode } from '@/lib/demoMode';
 import { ApiError } from '@/types/api';
 import { Eye, EyeOff, Lock, User, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export function Login() {
-  const [identifier, setIdentifier] = useState(isDemoMode() ? 'admin@ohpea.org' : '');
-  const [password, setPassword] = useState(isDemoMode() ? 'admin123' : '');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -74,7 +73,7 @@ export function Login() {
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-white leading-tight">
-              OHPEA
+              OPHEA
             </h1>
             <p className="text-xs text-[#C9A24A] font-medium tracking-wide">
               Waldaa Ogeeyyii Keessummeessuu fi Tuuriizimii Oromiyaa
@@ -112,7 +111,7 @@ export function Login() {
               OH
             </div>
             <div>
-              <h2 className="text-sm font-bold text-slate-900 leading-tight">OHPEA Portal</h2>
+              <h2 className="text-sm font-bold text-slate-900 leading-tight">OPHEA Portal</h2>
               <p className="text-2xs text-[#C9A24A] font-medium">Oromia Hospitality &amp; Tourism</p>
             </div>
           </div>
@@ -152,7 +151,7 @@ export function Login() {
                       setFieldErrors((prev) => ({ ...prev, identifier: '' }));
                     }
                   }}
-                  placeholder="admin@ohpea.org or username"
+                  placeholder="admin@ophea.org or username"
                   className={`w-full pl-9 pr-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
                     fieldErrors.identifier || fieldErrors.usernameOrEmail
                       ? 'border-red-400'
@@ -237,36 +236,6 @@ export function Login() {
               )}
             </button>
           </form>
-
-          {/* Demo account quick login helper (shown in demo mode only) */}
-          {isDemoMode() && (
-            <div className="mt-6 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-2xs text-slate-600 space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  {import.meta.env.VITE_API_URL ? `Live Backend: ${import.meta.env.VITE_API_URL}` : 'Interactive Demo Mode Active'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIdentifier('admin@ohpea.org');
-                    setPassword('admin123');
-                  }}
-                  className="text-2xs font-bold text-[#0B3D2E] hover:underline"
-                >
-                  Auto-fill
-                </button>
-              </div>
-              <p className="text-slate-500">
-                Credentials: <code className="font-mono text-slate-800 bg-white px-1 py-0.5 rounded border border-slate-200">admin@ohpea.org</code> / <code className="font-mono text-slate-800 bg-white px-1 py-0.5 rounded border border-slate-200">admin123</code>
-              </p>
-              {!import.meta.env.VITE_API_URL && (
-                <p className="text-2xs text-slate-400 italic">
-                  No external API URL configured. The app runs fully with in-memory fixtures. Configure <code className="font-mono">VITE_API_URL</code> in your environment to connect your real backend.
-                </p>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>

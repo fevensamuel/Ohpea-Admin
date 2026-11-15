@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { validateBackendContract, type ContractCheck } from '@/lib/contract';
-import { isDemoMode } from '@/lib/demoMode';
 
 interface ContractContextValue {
   ok: boolean;
@@ -21,18 +20,6 @@ export function ContractProvider({ children }: { children: React.ReactNode }) {
   const [check, setCheck] = useState<ContractCheck | null>(null);
 
   const runCheck = async () => {
-    // If running in explicit demo mode, contract drift is bypassed
-    if (isDemoMode()) {
-      setCheck({
-        ok: true,
-        version: 1,
-        expectedVersion: 1,
-        missingEndpoints: [],
-      });
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     // Keep /api in the base URL so the contract is fetched from /api/contract.json.
     const rawApiUrl = (import.meta as any).env?.VITE_API_URL || '';

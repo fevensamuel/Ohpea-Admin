@@ -236,7 +236,7 @@ export function AnnouncementEdit() {
               type="text"
               value={organization}
               onChange={(e) => setOrganization(e.target.value)}
-              placeholder="e.g. OHPEA Executive Council / Oromia Tourism Bureau"
+              placeholder="e.g. OPHEA Executive Council / Oromia Tourism Bureau"
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700"
             />
           </div>

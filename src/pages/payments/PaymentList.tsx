@@ -73,7 +73,7 @@ export function PaymentList() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `OHPEA-${text(receiptNo) || 'receipt'}.pdf`;
+      a.download = `OPHEA-${text(receiptNo) || 'receipt'}.pdf`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -118,7 +118,7 @@ export function PaymentList() {
         <div className="flex items-center gap-2">
           <ExportButton
             onExport={() => PaymentsApi.export({ status: statusFilter })}
-            filename={`OHPEA-Payments-${new Date().toISOString().slice(0, 10)}.csv`}
+            filename={`OPHEA-Payments-${new Date().toISOString().slice(0, 10)}.csv`}
             label="Export Ledger"
           />
           <button

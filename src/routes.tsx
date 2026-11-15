@@ -3,7 +3,6 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { Sidebar } from '@/components/common/Sidebar';
 import { TopBar } from '@/components/common/TopBar';
-import { DemoBanner } from '@/components/common/DemoBanner';
 import { AccessDenied } from '@/components/common/AccessDenied';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { useUiStore } from '@/store/useUiStore';
@@ -34,7 +33,6 @@ import { Regions } from '@/pages/settings/Regions';
 import { Lookups } from '@/pages/settings/Lookups';
 import { AdminUsers } from '@/pages/settings/AdminUsers';
 import { AuditLogs } from '@/pages/settings/AuditLogs';
-import { ComingSoon } from '@/pages/coming-soon/ComingSoon';
 
 import { ContractDriftBanner } from '@/components/common/ContractDriftBanner';
 import { useContractGuard } from '@/context/ContractContext';
@@ -68,7 +66,6 @@ export function ProtectedLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F8F7] text-slate-800">
       <ContractDriftBanner />
-      <DemoBanner />
       <Sidebar />
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ${
@@ -125,6 +122,5 @@ export {
   Lookups,
   AdminUsers,
   AuditLogs,
-  ComingSoon,
   ContractMismatch,
 };

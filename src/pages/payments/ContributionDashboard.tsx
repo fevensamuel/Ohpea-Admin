@@ -219,7 +219,7 @@ export function ContributionDashboard() {
               </div>
               <ExportButton
                 onExport={() => PaymentsApi.export({ status: 'unpaid' })}
-                filename="OHPEA-Unpaid-Members.csv"
+                filename="OPHEA-Unpaid-Members.csv"
                 label="Export Unpaid List"
               />
             </div>

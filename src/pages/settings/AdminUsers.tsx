@@ -320,7 +320,7 @@ export function AdminUsers() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="user@ohpea.org"
+                    placeholder="user@ophea.org"
                     className="w-full px-3 py-2 rounded-lg border border-slate-200"
                     required
                   />

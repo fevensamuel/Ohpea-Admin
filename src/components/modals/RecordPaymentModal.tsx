@@ -159,7 +159,7 @@ export function RecordPaymentModal({
             </div>
             <div>
               <h3 className="text-sm font-bold text-slate-900">Record Member Contribution</h3>
-              <p className="text-xs text-slate-500">Official OHPEA financial ledger</p>
+              <p className="text-xs text-slate-500">Official OPHEA financial ledger</p>
             </div>
           </div>
           <button

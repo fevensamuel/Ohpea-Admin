@@ -27,10 +27,10 @@ import {
   type MessageStatus,
 } from '@/types/api';
 
-const TOKEN_KEY = 'ohpea_admin_token';
+const TOKEN_KEY = 'ophea_admin_token';
 const DEFAULT_API_URL = 'http://localhost:3000/api';
 
-class OhpeaAdminApiClient {
+class OpheaAdminApiClient {
   private baseUrl: string;
   private token: string | null = null;
   private onAuthErrorCallbacks: (() => void)[] = [];
@@ -40,10 +40,10 @@ class OhpeaAdminApiClient {
     const base = configuredBase.trim() || DEFAULT_API_URL;
     this.baseUrl = base.replace(/\/+$/, '');
     if (!configuredBase.trim()) {
-      console.warn(`[ohpea-admin-api] VITE_API_URL is unset; using ${DEFAULT_API_URL}.`);
+      console.warn(`[ophea-admin-api] VITE_API_URL is unset; using ${DEFAULT_API_URL}.`);
     }
     if (!/^https?:\/\//.test(this.baseUrl)) {
-      console.error(`[ohpea-admin-api] VITE_API_URL is "${this.baseUrl}" — expected absolute URL. Requests will fail.`);
+      console.error(`[ophea-admin-api] VITE_API_URL is "${this.baseUrl}" — expected absolute URL. Requests will fail.`);
     }
     try {
       this.token = localStorage.getItem(TOKEN_KEY);
@@ -666,7 +666,7 @@ class OhpeaAdminApiClient {
   // ADMIN USERS, PERMISSIONS & AUDIT
   // ---------------------------------------------------------------------------
 
-  public async getPermissions(): Promise<string[]> {
+  public async getPermissions(): Promise<{ key: string; label: string }[]> {
     return this.request('/admin/meta/permissions', { method: 'GET' });
   }
 
@@ -705,4 +705,4 @@ class OhpeaAdminApiClient {
   }
 }
 
-export const adminApi = new OhpeaAdminApiClient();
+export const adminApi = new OpheaAdminApiClient();

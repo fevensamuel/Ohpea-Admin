@@ -205,7 +205,7 @@ export function MemberList() {
         <div className="flex items-center gap-2">
           <ExportButton
             onExport={() => MembersApi.export(params)}
-            filename={`OHPEA-Members-${new Date().toISOString().slice(0, 10)}.csv`}
+            filename={`OPHEA-Members-${new Date().toISOString().slice(0, 10)}.csv`}
             label="Export Filtered"
           />
         </div>
@@ -220,7 +220,7 @@ export function MemberList() {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by name, member ID (OHPEA-...), phone, or email..."
+              placeholder="Search by name, member ID (OPHEA-...), phone, or email..."
               className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all"
             />
             {searchInput && (

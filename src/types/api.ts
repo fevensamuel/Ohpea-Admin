@@ -1,5 +1,5 @@
 /**
- * Core API types and DTOs for OHPEA Admin Portal.
+ * Core API types and DTOs for OPHEA Admin Portal.
  */
 
 export interface ApiEnvelope<T = unknown> {
@@ -110,7 +110,6 @@ export interface MemberSummary {
   duplicateOf?: string;
   organizationName?: string | null;
   jobTitle?: string | null;
-  isDemo?: boolean;
 }
 
 export interface MemberDetail extends MemberSummary {
@@ -272,7 +271,7 @@ export interface SmsCampaignItem {
   recipientCount: number;
   sentCount: number;
   failedCount: number;
-  status: 'draft' | 'sending' | 'completed' | 'failed';
+  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed';
   createdAt: string;
 }
 

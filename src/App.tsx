@@ -32,7 +32,6 @@ import {
   Lookups,
   AdminUsers,
   AuditLogs,
-  ComingSoon,
   ContractMismatch,
 } from './routes';
 
@@ -221,7 +220,7 @@ export default function App() {
               <Route
                 path="/settings/contact"
                 element={
-                  <RequirePermission permission="settings.contact">
+                  <RequirePermission permission="settings.site">
                     <ContactSettings />
                   </RequirePermission>
                 }
@@ -253,14 +252,11 @@ export default function App() {
               <Route
                 path="/settings/audit"
                 element={
-                  <RequirePermission permission="audit.logs">
+                  <RequirePermission permission="audit">
                     <AuditLogs />
                   </RequirePermission>
                 }
               />
-
-              {/* Coming Soon roadmap */}
-              <Route path="/coming-soon" element={<ComingSoon />} />
             </Route>
 
             {/* Fallback */}

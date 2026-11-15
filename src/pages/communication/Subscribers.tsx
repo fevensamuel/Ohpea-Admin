@@ -73,7 +73,7 @@ export function Subscribers() {
 
         <ExportButton
           onExport={handleExport}
-          filename="OHPEA-Subscribers.csv"
+          filename="OPHEA-Subscribers.csv"
           label="Export Subscriber CSV"
         />
       </div>

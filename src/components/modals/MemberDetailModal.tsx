@@ -253,7 +253,13 @@ export function MemberDetailModal({
                     <FieldRow label="Industry Sector" value={sectorLabel} />
                     <FieldRow label="Field of Study" value={fieldLabel} />
                     <FieldRow label="Graduation Level" value={gradLabel} />
-                    <FieldRow label="Employment Type" value={safeStr(m?.occupationType) ? <span className="capitalize">{safeStr(m.occupationType)}</span> : null} />
+                    <FieldRow label="Occupation Type" value={safeStr(m?.occupationType) ? <span className="capitalize">{safeStr(m.occupationType)}</span> : null} />
+                    <FieldRow label="Employment Status" value={safeStr((m as any)?.employmentStatus)} />
+                    <FieldRow label="Professional Category" value={safeStr((m as any)?.professionalCategory)} />
+                    <FieldRow label="Zone / Sub-city" value={safeStr((m as any)?.zoneSubCity)} />
+                    <FieldRow label="Woreda" value={safeStr((m as any)?.woreda)} />
+                    <FieldRow label="Preferred Language" value={safeStr((m as any)?.preferredLanguage)} />
+                    <FieldRow label="Phone Verified" value={(m as any)?.phoneVerifiedAt ? 'Yes' : 'No'} />
                     <FieldRow label="Employer / Org" value={organization} />
                     <FieldRow label="Job Title" value={safeStr(m?.jobTitle)} />
                   </div>

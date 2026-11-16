@@ -120,6 +120,10 @@ export interface MemberDetail extends MemberSummary {
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   businessTin?: string;
+  employmentStatus?: string;
+  yearEstablished?: number;
+  zoneSubCity?: string;
+  institutionName?: string;
   skills?: string[];
   expertiseAreas?: string[];
   interests?: string[];

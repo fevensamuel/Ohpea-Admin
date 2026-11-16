@@ -440,6 +440,51 @@ export function MemberEdit() {
               />
             </div>
             <div>
+              <label className="block font-semibold text-slate-700 mb-1">Employment Status</label>
+              <input
+                type="text"
+                value={member.employmentStatus || ''}
+                onChange={(e) => setMember({ ...member, employmentStatus: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Year Established</label>
+              <input
+                type="number"
+                value={member.yearEstablished ?? ''}
+                onChange={(e) => setMember({ ...member, yearEstablished: e.target.value === '' ? undefined : Number(e.target.value) })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Institution Name</label>
+              <input
+                type="text"
+                value={member.institutionName || ''}
+                onChange={(e) => setMember({ ...member, institutionName: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Zone / Sub-city</label>
+              <input
+                type="text"
+                value={member.zoneSubCity || ''}
+                onChange={(e) => setMember({ ...member, zoneSubCity: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
+              <label className="block font-semibold text-slate-700 mb-1">Woreda</label>
+              <input
+                type="text"
+                value={member.woreda || ''}
+                onChange={(e) => setMember({ ...member, woreda: e.target.value })}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200"
+              />
+            </div>
+            <div>
               <label className="block font-semibold text-slate-700 mb-1">Job Title / Role</label>
               <input
                 type="text"

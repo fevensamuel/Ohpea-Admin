@@ -18,6 +18,7 @@ export function Objectives() {
   const [editingItem, setEditingItem] = useState<ObjectiveItem | null>(null);
   const [category, setCategory] = useState<'General' | 'Official' | 'Main' | 'Specific'>('General');
   const [title, setTitle] = useState({ en: '', om: '', am: '' });
+  const [description, setDescription] = useState({ en: '', om: '', am: '' });
   const [saving, setSaving] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [deletingItem, setDeletingItem] = useState<ObjectiveItem | null>(null);
@@ -42,6 +43,7 @@ export function Objectives() {
     setEditingItem(null);
     setCategory('General');
     setTitle({ en: '', om: '', am: '' });
+    setDescription({ en: '', om: '', am: '' });
     setModalOpen(true);
   };
 
@@ -53,6 +55,12 @@ export function Objectives() {
       en: typeof t === 'string' ? t : text(t?.en) || text(t),
       om: typeof t === 'object' ? text(t?.om) : '',
       am: typeof t === 'object' ? text(t?.am) : '',
+    });
+    const d: any = obj.description;
+    setDescription({
+      en: typeof d === 'string' ? d : text(d?.en),
+      om: typeof d === 'object' ? text(d?.om) : '',
+      am: typeof d === 'object' ? text(d?.am) : '',
     });
     setModalOpen(true);
   };
@@ -67,13 +75,14 @@ export function Objectives() {
     try {
       setSaving(true);
       if (editingItem) {
-        await ObjectivesApi.update(editingItem.id, { category, title });
+        await ObjectivesApi.update(editingItem.id, { category, title, description });
         toast.success('Objective statement updated.');
       } else {
         await ObjectivesApi.create({
           category,
           order: objectives.length + 1,
           title,
+          description,
         });
         toast.success('New objective added.');
       }
@@ -253,6 +262,17 @@ export function Objectives() {
                 {(fieldErrors.title || fieldErrors['title.en']) && (
                   <p className="text-2xs text-red-600 mt-1">{fieldErrors.title || fieldErrors['title.en']}</p>
                 )}
+              </div>
+
+              <div>
+                <LocalizedFields
+                  label="Description (optional, shown on the public About page)"
+                  value={description}
+                  onChange={setDescription}
+                  multiline={true}
+                  rows={3}
+                  required={false}
+                />
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">

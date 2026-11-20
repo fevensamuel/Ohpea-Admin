@@ -15,12 +15,12 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-slate-200 bg-white/60">
-      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 mb-3">
+    <div className="flex flex-col items-center justify-center p-10 sm:p-12 text-center rounded-lg border border-[#e1e6df] bg-white">
+      <div className="w-12 h-12 flex items-center justify-center rounded-full bg-[#f4f5f0] text-[#718078] mb-4">
         {icon || <Inbox className="w-6 h-6 stroke-[1.5]" />}
       </div>
-      <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
-      {description && <p className="mt-1 text-xs text-slate-500 max-w-sm">{description}</p>}
+      <h3 className="text-base font-semibold text-[#203a32]">{title}</h3>
+      {description && <p className="mt-2 text-sm text-[#718078] max-w-sm leading-relaxed">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

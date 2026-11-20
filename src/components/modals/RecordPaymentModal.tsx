@@ -154,7 +154,7 @@ export function RecordPaymentModal({
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#0B3D2E] text-[#F1E3B8] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#103f34] text-[#eee5ce] flex items-center justify-center">
               <Receipt className="w-4 h-4" />
             </div>
             <div>
@@ -187,9 +187,9 @@ export function RecordPaymentModal({
               <button
                 type="button"
                 onClick={handleDownloadReceipt}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-xs"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-xs"
               >
-                <Download className="w-4 h-4 text-[#C9A24A]" />
+                <Download className="w-4 h-4 text-[#b49a5a]" />
                 Download Receipt (PDF)
               </button>
               <button
@@ -198,6 +198,14 @@ export function RecordPaymentModal({
                 className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors"
               >
                 Done
+              </button>
+            </div>
+            <div className="mt-5 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-left">
+              <div className="flex items-center gap-2 text-sm font-semibold text-emerald-900">
+                <CheckCircle className="h-4 w-4 shrink-0" /> Payment recorded
+              </div>
+              <button type="button" onClick={handleDownloadReceipt} className="shrink-0 text-xs font-semibold text-emerald-800 underline underline-offset-4 hover:text-emerald-950">
+                View receipt →
               </button>
             </div>
           </div>
@@ -296,10 +304,15 @@ export function RecordPaymentModal({
                   step="any"
                   value={amountEtb}
                   onChange={(e) => setAmountEtb(e.target.value)}
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700 tabular-nums font-semibold"
+                  aria-invalid={Boolean(fieldErrors.amountEtb) || !(Number(amountEtb) > 0)}
+                  className={`w-full px-3 py-2 text-xs rounded-lg border bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700 tabular-nums font-semibold ${fieldErrors.amountEtb || !(Number(amountEtb) > 0) ? 'border-red-500 ring-1 ring-red-100' : 'border-slate-200'}`}
                   required
                 />
-                {fieldErrors.amountEtb && <p className="text-2xs text-red-600 mt-1">{fieldErrors.amountEtb}</p>}
+                {(fieldErrors.amountEtb || !(Number(amountEtb) > 0)) && (
+                  <p className="text-2xs text-red-600 mt-1" role="alert">
+                    {fieldErrors.amountEtb || 'Enter a valid contribution amount before continuing.'}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -311,6 +324,7 @@ export function RecordPaymentModal({
                 </label>
                 <select
                   value={period}
+                  aria-invalid={Boolean(fieldErrors.period)}
                   onChange={(e) => setPeriod(e.target.value as PaymentPeriod)}
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700"
                 >
@@ -328,6 +342,7 @@ export function RecordPaymentModal({
                 <input
                   type="date"
                   value={paidForDate}
+                  aria-invalid={Boolean(fieldErrors.paidForDate)}
                   onChange={(e) => setPaidForDate(e.target.value)}
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700 tabular-nums"
                   required
@@ -344,6 +359,7 @@ export function RecordPaymentModal({
                 </label>
                 <select
                   value={method}
+                  aria-invalid={Boolean(fieldErrors.method)}
                   onChange={(e) => setMethod(e.target.value as PaymentMethod)}
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700"
                 >
@@ -378,6 +394,7 @@ export function RecordPaymentModal({
                 <input
                   type="text"
                   value={reference}
+                  aria-invalid={Boolean(fieldErrors.reference)}
                   onChange={(e) => setReference(e.target.value)}
                   placeholder="e.g. SQ-TXN-129381 or TB-8839"
                   className="w-full px-3 py-2 text-xs rounded-lg border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-700 font-mono"
@@ -411,8 +428,8 @@ export function RecordPaymentModal({
               </button>
               <button
                 type="submit"
-                disabled={loading || !selectedMember}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[#0B3D2E] hover:bg-[#14573F] rounded-lg transition-colors flex items-center gap-2 shadow-xs disabled:opacity-50"
+                disabled={loading || !selectedMember || !(Number(amountEtb) > 0) || !paidForDate}
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#103f34] hover:bg-[#246b55] rounded-lg transition-colors flex items-center gap-2 shadow-xs disabled:opacity-50"
               >
                 {loading && (
                   <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />

@@ -82,7 +82,7 @@ export function ContactMessages() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-[#0B3D2E]" />
+            <MessageSquare className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Public Contact Inquiries &amp; Messages
             </h2>
@@ -216,7 +216,7 @@ export function ContactMessages() {
           <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden flex flex-col max-h-[85vh]">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#0B3D2E]" />
+                <Mail className="w-4 h-4 text-[#103f34]" />
                 <h3 className="text-sm font-bold text-slate-900 truncate">
                   {text(selectedMessage.subject) || '(no subject)'}
                 </h3>
@@ -236,7 +236,7 @@ export function ContactMessages() {
                   {text(selectedMessage.fullName) || text((selectedMessage as any).name) || '—'} (
                   <a
                     href={`mailto:${text(selectedMessage.email)}`}
-                    className="text-[#14573F] hover:underline"
+                    className="text-[#246b55] hover:underline"
                   >
                     {text(selectedMessage.email)}
                   </a>
@@ -271,7 +271,7 @@ export function ContactMessages() {
                       onClick={() => handleUpdateStatus(selectedMessage.id, st)}
                       className={`px-2.5 py-1 rounded text-2xs font-semibold capitalize border ${
                         selectedMessage.status === st
-                          ? 'bg-[#0B3D2E] text-white border-[#0B3D2E]'
+                          ? 'bg-[#103f34] text-white border-[#103f34]'
                           : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
                       }`}
                     >

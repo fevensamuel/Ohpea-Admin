@@ -73,7 +73,7 @@ export function TopBar() {
     : 'Dashboard';
 
   return (
-    <header className="h-16 px-4 lg:px-6 bg-white border-b border-slate-200/80 flex items-center justify-between gap-4 sticky top-0 z-30 shadow-2xs">
+    <header className="h-[72px] px-4 lg:px-8 bg-white border-b border-slate-200 flex items-center justify-between gap-4 sticky top-0 z-30">
       {/* Left zone: Toggle + Breadcrumb */}
       <div className="flex items-center gap-3">
         <button
@@ -94,7 +94,7 @@ export function TopBar() {
         </button>
 
         <div className="flex items-center gap-2 text-xs font-medium text-slate-500">
-          <span className="font-semibold text-slate-900 text-sm tracking-tight">{breadcrumb}</span>
+          <span className="font-medium text-[#68786f] text-xs tracking-wide">Workspace&nbsp; / &nbsp;<span className="text-[#30463c]">{breadcrumb.split(' / ').slice(-1)[0]}</span></span>
         </div>
       </div>
 
@@ -119,7 +119,7 @@ export function TopBar() {
             aria-expanded={dropdownOpen}
             aria-haspopup="true"
           >
-            <div className="w-8 h-8 rounded-full bg-[#0B3D2E] text-[#F1E3B8] font-bold text-xs flex items-center justify-center border border-[#14573F] shadow-2xs">
+            <div className="w-8 h-8 rounded-full bg-[#103f34] text-[#eee5ce] font-bold text-xs flex items-center justify-center border border-[#246b55] shadow-2xs">
               {initials}
             </div>
             <div className="hidden md:flex flex-col text-left">

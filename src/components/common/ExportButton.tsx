@@ -47,7 +47,7 @@ export function ExportButton({
       disabled={disabled || loading}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-xs ${
         variant === 'primary'
-          ? 'bg-[#0B3D2E] text-white hover:bg-[#14573F] disabled:bg-slate-300'
+          ? 'bg-[#103f34] text-white hover:bg-[#246b55] disabled:bg-slate-300'
           : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 disabled:opacity-50'
       }`}
     >

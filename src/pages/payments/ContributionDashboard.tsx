@@ -79,7 +79,7 @@ export function ContributionDashboard() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <PiggyBank className="w-5 h-5 text-[#0B3D2E]" />
+            <PiggyBank className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Contribution &amp; Financial Analytics
             </h2>
@@ -97,7 +97,7 @@ export function ContributionDashboard() {
                 onClick={() => setRange(r)}
                 className={`px-3 py-1 font-semibold rounded-md transition-all uppercase ${
                   range === r
-                    ? 'bg-white text-[#0B3D2E] shadow-2xs'
+                    ? 'bg-white text-[#103f34] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -113,7 +113,7 @@ export function ContributionDashboard() {
                 onClick={() => setGroup(g)}
                 className={`px-3 py-1 font-semibold rounded-md transition-all capitalize ${
                   group === g
-                    ? 'bg-white text-[#0B3D2E] shadow-2xs'
+                    ? 'bg-white text-[#103f34] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -132,29 +132,29 @@ export function ContributionDashboard() {
               value={`ETB ${totalYear.toLocaleString()}`}
               icon={<TrendingUp className="w-4 h-4 text-emerald-700" />}
               subtext="Aggregated membership dues"
-              accentColor="#0B3D2E"
+              accentColor="#103f34"
             />
             <StatsCard
               title="Average per Active Member"
               value={`ETB ${avgPerMember.toLocaleString()}`}
-              icon={<Users className="w-4 h-4 text-[#C9A24A]" />}
+              icon={<Users className="w-4 h-4 text-[#b49a5a]" />}
               subtext="Annualized fee baseline"
-              accentColor="#C9A24A"
+              accentColor="#b49a5a"
             />
             <StatsCard
               title="Collection Compliance Rate"
               value={`${collectionRate}%`}
-              icon={<Percent className="w-4 h-4 text-[#1F7A57]" />}
+              icon={<Percent className="w-4 h-4 text-[#3b8069]" />}
               subtext={`${paidCount} paid / ${unpaidCount} unpaid`}
-              accentColor="#1F7A57"
+              accentColor="#3b8069"
               badge={{ text: 'Target 90%', variant: 'positive' }}
             />
             <StatsCard
               title="Unpaid Arrears Members"
               value={unpaidMembers.length}
-              icon={<AlertCircle className="w-4 h-4 text-[#E8772E]" />}
+              icon={<AlertCircle className="w-4 h-4 text-[#b85b2b]" />}
               subtext="Pending monthly settlement"
-              accentColor="#E8772E"
+              accentColor="#b85b2b"
               badge={{ text: 'Action required', variant: 'warning' }}
             />
           </div>
@@ -200,7 +200,7 @@ export function ContributionDashboard() {
               data={byRegion.map((r) => ({
                 label: safeSplit(r?.region),
                 value: Number(r?.amount) || 0,
-                color: '#14573F',
+                color: '#246b55',
               }))}
               height={230}
               formatValue={(v) => `ETB ${Number(v).toLocaleString()}`}

@@ -247,7 +247,7 @@ export function Dashboard() {
               title="Total"
               value={(safeSummary.totalMembers ?? 0).toLocaleString()}
               icon={<Users className="w-4 h-4" />}
-              accentColor="#0B3D2E"
+              accentColor="#103f34"
               onClick={() => navigate('/members')}
               ctaText="Directory"
             />
@@ -255,15 +255,15 @@ export function Dashboard() {
               title="Active"
               value={(safeSummary.activeMembers ?? 0).toLocaleString()}
               icon={<CheckCircle className="w-4 h-4 text-emerald-600" />}
-              accentColor="#1F7A57"
+              accentColor="#3b8069"
               badge={{ text: 'Verified', variant: 'positive' }}
               onClick={() => navigate('/members?membershipStatus=active')}
             />
             <StatsCard
               title="Pending"
               value={safeSummary.pendingMembers ?? 0}
-              icon={<Clock className="w-4 h-4 text-[#E8772E]" />}
-              accentColor="#E8772E"
+              icon={<Clock className="w-4 h-4 text-[#b85b2b]" />}
+              accentColor="#b85b2b"
               badge={{ text: 'Review', variant: 'warning' }}
               onClick={() => navigate('/members/pending')}
               ctaText="Review"
@@ -282,7 +282,7 @@ export function Dashboard() {
               subtext={`${Math.round(
                 ((safeSummary.femaleMembers ?? 0) / (safeSummary.totalMembers || 1)) * 100
               )}%`}
-              accentColor="#C9A24A"
+              accentColor="#b49a5a"
               onClick={() => navigate('/members?gender=female')}
             />
             <StatsCard
@@ -291,7 +291,7 @@ export function Dashboard() {
               subtext={`${Math.round(
                 ((safeSummary.maleMembers ?? 0) / (safeSummary.totalMembers || 1)) * 100
               )}%`}
-              accentColor="#14573F"
+              accentColor="#246b55"
               onClick={() => navigate('/members?gender=male')}
             />
             <StatsCard
@@ -305,7 +305,7 @@ export function Dashboard() {
               title="Private"
               value={(safeSummary.privateSector ?? 0).toLocaleString()}
               icon={<Briefcase className="w-4 h-4" />}
-              accentColor="#0B3D2E"
+              accentColor="#103f34"
               onClick={() => navigate('/members')}
             />
           </div>
@@ -342,7 +342,7 @@ export function Dashboard() {
                 </div>
                 <button
                   onClick={() => navigate('/members')}
-                  className="text-xs font-semibold text-[#14573F] hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-[#246b55] hover:underline flex items-center gap-1"
                 >
                   View Table <ArrowUpRight className="w-3.5 h-3.5" />
                 </button>
@@ -412,7 +412,7 @@ export function Dashboard() {
                       </div>
                       <div className="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#14573F] h-full rounded-full"
+                          className="bg-[#246b55] h-full rounded-full"
                           style={{
                             width: `${Math.min(100, (r.value / (regionStats[0]?.value || 1)) * 100)}%`,
                           }}
@@ -447,7 +447,7 @@ export function Dashboard() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <PiggyBank className="w-4 h-4 text-[#0B3D2E]" />
+                    <PiggyBank className="w-4 h-4 text-[#103f34]" />
                     <h3 className="text-base font-bold text-slate-900">
                       Contributions &amp; Financial Snapshot
                     </h3>
@@ -465,7 +465,7 @@ export function Dashboard() {
                         onClick={() => setContributionRange(r)}
                         className={`px-3 py-1 font-semibold rounded-md transition-all uppercase ${
                           contributionRange === r
-                            ? 'bg-white text-[#0B3D2E] shadow-2xs'
+                            ? 'bg-white text-[#103f34] shadow-2xs'
                             : 'text-slate-600 hover:text-slate-900'
                         }`}
                       >
@@ -475,7 +475,7 @@ export function Dashboard() {
                   </div>
                   <button
                     onClick={() => navigate('/contributions/dashboard')}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
                   >
                     Financial Hub <ChevronRight className="w-3.5 h-3.5" />
                   </button>
@@ -531,7 +531,7 @@ export function Dashboard() {
                   </p>
                   <button
                     onClick={() => navigate('/payments/unpaid')}
-                    className="text-2xs font-semibold text-[#1F7A57] hover:underline"
+                    className="text-2xs font-semibold text-[#3b8069] hover:underline"
                   >
                     View Unpaid Roster →
                   </button>
@@ -575,7 +575,7 @@ export function Dashboard() {
                 </div>
                 <button
                   onClick={() => navigate('/members/pending')}
-                  className="text-xs font-semibold text-[#14573F] hover:underline flex items-center gap-1"
+                  className="text-xs font-semibold text-[#246b55] hover:underline flex items-center gap-1"
                 >
                   Pending ({safeSummary.pendingMembers}) <ChevronRight className="w-3.5 h-3.5" />
                 </button>
@@ -665,7 +665,7 @@ export function Dashboard() {
               <div className="space-y-3.5">
                 {safeRecentActivity.map((act) => (
                   <div key={act.id} className="flex items-start gap-3 text-xs">
-                    <div className="w-2 h-2 rounded-full bg-[#14573F] mt-1.5 shrink-0" />
+                    <div className="w-2 h-2 rounded-full bg-[#246b55] mt-1.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-slate-800 leading-tight">
                         {text(act.title)}

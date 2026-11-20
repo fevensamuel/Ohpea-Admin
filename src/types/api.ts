@@ -74,6 +74,7 @@ export interface MemberDocument {
   id: string;
   name: string;
   type: string;
+  category?: string;
   size: number;
   uploadedAt: string;
   url?: string;
@@ -137,6 +138,7 @@ export interface MemberDetail extends MemberSummary {
   jobTitle?: string;
   yearsOfExperience?: number;
   documents: MemberDocument[];
+  registrationDetails?: Record<string, unknown>;
   notes?: string;
   rejectionReason?: string;
   approvedAt?: string;

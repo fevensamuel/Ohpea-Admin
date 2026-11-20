@@ -72,7 +72,7 @@ export function ContactSettings() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <Mail className="w-5 h-5 text-[#0B3D2E]" />
+            <Mail className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Headquarters &amp; Contact Information
             </h2>
@@ -86,7 +86,7 @@ export function ContactSettings() {
       <form onSubmit={handleSave} className="p-6 rounded-2xl bg-white border border-slate-200/80 shadow-2xs space-y-6 text-xs">
         <div className="space-y-4">
           <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <Phone className="w-4 h-4 text-[#14573F]" />
+            <Phone className="w-4 h-4 text-[#246b55]" />
             Telephone &amp; Email Communications
           </h3>
 
@@ -138,7 +138,7 @@ export function ContactSettings() {
 
         <div className="space-y-4 pt-4 border-t border-slate-100">
           <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#14573F]" />
+            <MapPin className="w-4 h-4 text-[#246b55]" />
             Physical Headquarters &amp; Operating Hours
           </h3>
 
@@ -184,9 +184,9 @@ export function ContactSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs disabled:opacity-50"
           >
-            <Save className="w-4 h-4 text-[#C9A24A]" />
+            <Save className="w-4 h-4 text-[#b49a5a]" />
             <span>{saving ? 'Saving...' : 'Save Contact Settings'}</span>
           </button>
         </div>

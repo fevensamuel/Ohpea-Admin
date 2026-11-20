@@ -65,7 +65,7 @@ export function LocalizedFields({
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-2 py-0.5 text-xs font-semibold rounded-md transition-all flex items-center gap-1 ${
                   isActive
-                    ? 'bg-white text-[#0B3D2E] shadow-2xs'
+                    ? 'bg-white text-[#103f34] shadow-2xs'
                     : 'text-slate-500 hover:text-slate-900'
                 }`}
               >
@@ -73,7 +73,7 @@ export function LocalizedFields({
                 {hasContent && (
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      isActive ? 'bg-[#C9A24A]' : 'bg-slate-300'
+                      isActive ? 'bg-[#b49a5a]' : 'bg-slate-300'
                     }`}
                   />
                 )}
@@ -90,7 +90,7 @@ export function LocalizedFields({
             value={currentValue}
             onChange={(e) => handleTextChange(activeTab, e.target.value)}
             placeholder={placeholder?.[activeTab] || `Enter ${label} in ${activeTab.toUpperCase()}`}
-            className={`w-full px-3 py-2 text-xs rounded-lg border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all resize-y ${
+            className={`w-full px-3 py-2 text-xs rounded-lg border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all resize-y ${
               error ? 'border-red-400' : 'border-slate-200'
             }`}
           />
@@ -100,7 +100,7 @@ export function LocalizedFields({
             value={currentValue}
             onChange={(e) => handleTextChange(activeTab, e.target.value)}
             placeholder={placeholder?.[activeTab] || `Enter ${label} in ${activeTab.toUpperCase()}`}
-            className={`w-full px-3 py-2 text-xs rounded-lg border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+            className={`w-full px-3 py-2 text-xs rounded-lg border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
               error ? 'border-red-400' : 'border-slate-200'
             }`}
           />

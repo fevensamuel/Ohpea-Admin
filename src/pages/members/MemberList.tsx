@@ -11,8 +11,6 @@ import { LookupsApi } from '@/api/lookups';
 import type { MemberSummary, RegionItem, LookupItem } from '@/types/api';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/common/Pagination';
-import { LoadingSpinner } from '@/components/common/LoadingSpinner';
-import { EmptyState } from '@/components/common/EmptyState';
 import { ExportButton } from '@/components/common/ExportButton';
 import { MemberDetailModal } from '@/components/modals/MemberDetailModal';
 import { RejectReasonModal } from '@/components/modals/RejectReasonModal';
@@ -47,6 +45,7 @@ export function MemberList() {
 
   const [members, setMembers] = useState<MemberSummary[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<boolean>(false);
   const [regions, setRegions] = useState<RegionItem[]>([]);
   const [sectors, setSectors] = useState<LookupItem[]>([]);
   const [fields, setFields] = useState<LookupItem[]>([]);
@@ -85,6 +84,7 @@ export function MemberList() {
   const fetchMembers = async () => {
     try {
       setLoading(true);
+      setLoadError(false);
       const queryPayload: Record<string, unknown> = {
         page,
         pageSize,
@@ -102,6 +102,7 @@ export function MemberList() {
       setMembers(Array.isArray(res.data) ? res.data : []);
       updateMeta(res.meta);
     } catch {
+      setLoadError(true);
       toast.error('Failed to load member records');
     } finally {
       setLoading(false);
@@ -195,10 +196,10 @@ export function MemberList() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-slate-900">
-            Professional Member Directory
+            Members
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Verified hospitality experts, tour operators, educators &amp; hoteliers across Oromia.
+          <p className="text-sm text-[#718078] mt-1">
+            Manage the professionals shaping Oromia’s visitor economy.
           </p>
         </div>
 
@@ -221,7 +222,7 @@ export function MemberList() {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search by name, member ID (OPHEA-...), phone, or email..."
-              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all"
+              className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all"
             />
             {searchInput && (
               <button
@@ -318,7 +319,7 @@ export function MemberList() {
             {activeChips.map((chip) => (
               <span
                 key={chip.key}
-                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#14573F]/10 text-[#0B3D2E] border border-[#14573F]/20"
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#246b55]/10 text-[#103f34] border border-[#246b55]/20"
               >
                 <span>{chip.label}</span>
                 <button
@@ -347,7 +348,7 @@ export function MemberList() {
       </div>
 
       {selectedIds.length > 0 && (
-        <div className="p-3 bg-[#0B3D2E] text-white rounded-xl flex items-center justify-between text-xs animate-in fade-in">
+        <div className="p-3 bg-[#103f34] text-white rounded-xl flex items-center justify-between text-xs animate-in fade-in">
           <span className="font-semibold tabular-nums">
             {selectedIds.length} members selected for bulk batch action
           </span>
@@ -357,13 +358,13 @@ export function MemberList() {
                 toast.info('Exporting selected members bundle...');
                 MembersApi.export({ ids: selectedIds });
               }}
-              className="px-3 py-1 bg-[#14573F] hover:bg-[#1F7A57] rounded-lg font-medium transition-colors"
+              className="px-3 py-1 bg-[#246b55] hover:bg-[#3b8069] rounded-lg font-medium transition-colors"
             >
               Export Selected
             </button>
             <button
               onClick={() => toast.info('SMS Campaigns module will launch in Phase 3.')}
-              className="px-3 py-1 bg-[#C9A24A]/20 text-[#F1E3B8] border border-[#C9A24A]/30 rounded-lg font-medium flex items-center gap-1"
+              className="px-3 py-1 bg-[#b49a5a]/20 text-[#eee5ce] border border-[#b49a5a]/30 rounded-lg font-medium flex items-center gap-1"
             >
               <Lock className="w-3 h-3" /> Send SMS (Soon)
             </button>
@@ -379,23 +380,50 @@ export function MemberList() {
 
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden">
         {loading ? (
-          <LoadingSpinner text="Retrieving member records..." />
+          <div className="p-5 sm:p-6 space-y-5" aria-label="Loading member directory" aria-live="polite">
+            <div>
+              <h3 className="text-base font-semibold text-[#203a32]">Loading members...</h3>
+              <p className="mt-1 text-sm text-[#718078]">Please wait while the directory is prepared.</p>
+            </div>
+            <div className="overflow-x-auto rounded-lg border border-[#e1e6df]">
+              <div className="min-w-[900px]">
+                <div className="grid grid-cols-[32px_1fr_1.2fr_1.3fr_1.2fr_1fr_1fr_1fr_1fr_72px] gap-3 bg-[#f8f9f6] px-4 py-3">
+                  {Array.from({ length: 10 }, (_, n) => <div key={n} className="h-2.5 rounded bg-[#e8ece6] animate-pulse" />)}
+                </div>
+                {Array.from({ length: 7 }, (_, n) => (
+                  <div key={n} className="grid grid-cols-[32px_1fr_1.2fr_1.3fr_1.2fr_1fr_1fr_1fr_1fr_72px] items-center gap-3 border-t border-[#e1e6df] px-4 py-4">
+                    {Array.from({ length: 10 }, (_, cell) => <div key={cell} className={`h-3 rounded bg-[#edf0eb] animate-pulse ${cell === 9 ? 'w-12' : 'w-full'}`} />)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : loadError ? (
+          <div className="m-5 sm:m-6 rounded-lg border border-[#e1e6df] bg-white p-8 sm:p-10 text-center">
+            <span className="inline-flex items-center rounded-full bg-[#fbefe4] px-3 py-1 text-[10px] font-semibold tracking-wide text-[#a95427]">CONNECTION UNAVAILABLE</span>
+            <h3 className="mt-4 text-lg font-semibold text-[#203a32]">Directory couldn’t be loaded</h3>
+            <p className="mx-auto mt-2 max-w-md text-sm text-[#718078]">We couldn’t retrieve member records. Check your connection and try again.</p>
+            <button type="button" onClick={fetchMembers} className="mt-6 inline-flex items-center rounded-md bg-[#103f34] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#246b55]">Try again</button>
+          </div>
         ) : members.length === 0 ? (
-          <EmptyState
-            title="No member records match your query"
-            description="Try modifying search keywords or clearing active filters."
-            action={
-              <button
-                onClick={() => {
-                  setSearchInput('');
-                  clearParams();
-                }}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[#0B3D2E] rounded-lg hover:bg-[#14573F]"
-              >
-                Reset All Filters
-              </button>
-            }
-          />
+          <div className="m-5 sm:m-6 rounded-lg border border-[#e1e6df] bg-white p-7 sm:p-8 md:p-9 text-left min-h-[280px]">
+            <h3 className="text-xl font-semibold tracking-tight text-[#203a32]">No members match your filters</h3>
+            <p className="mt-5 max-w-xl text-sm leading-relaxed text-[#718078]">Try a different name or member ID, or clear your filters.<br className="hidden sm:block" /> Your member records haven’t changed.</p>
+            {activeChips.length > 0 && (
+              <div className="mt-7 flex flex-wrap gap-3">
+                {activeChips.map((chip) => (
+                  <span key={chip.key} className="inline-flex rounded-md bg-[#f5f5f0] px-3 py-1.5 text-xs font-medium text-[#68786f]">{chip.label}</span>
+                ))}
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => { setSearchInput(''); clearParams(); }}
+              className="mt-7 rounded-md bg-[#103f34] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#246b55]"
+            >
+              Clear filters
+            </button>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
@@ -408,7 +436,7 @@ export function MemberList() {
                         selectedIds.length === members.length && members.length > 0
                       }
                       onChange={handleSelectAll}
-                      className="rounded border-slate-300 text-[#0B3D2E] focus:ring-[#0B3D2E]"
+                      className="rounded border-slate-300 text-[#103f34] focus:ring-[#103f34]"
                       aria-label="Select all rows on current page"
                     />
                   </th>
@@ -452,7 +480,7 @@ export function MemberList() {
                           type="checkbox"
                           checked={selectedIds.includes(member.id)}
                           onChange={() => handleToggleSelect(member.id)}
-                          className="rounded border-slate-300 text-[#0B3D2E] focus:ring-[#0B3D2E]"
+                          className="rounded border-slate-300 text-[#103f34] focus:ring-[#103f34]"
                           aria-label={`Select member ${fullName}`}
                         />
                       </td>
@@ -461,7 +489,7 @@ export function MemberList() {
                       </td>
                       <td className="py-3 px-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-2xs flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-full bg-[#103f34]/10 text-[#103f34] font-bold text-2xs flex items-center justify-center shrink-0">
                             {initial}
                           </div>
                           <div className="truncate">

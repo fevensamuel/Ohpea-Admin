@@ -125,9 +125,9 @@ export function AnnouncementEdit() {
             type="button"
             onClick={() => handleSubmit('published')}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#0B3D2E] text-white text-xs font-semibold hover:bg-[#14573F] transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#103f34] text-white text-xs font-semibold hover:bg-[#246b55] transition-colors shadow-2xs"
           >
-            <Send className="w-3.5 h-3.5 text-[#C9A24A]" />
+            <Send className="w-3.5 h-3.5 text-[#b49a5a]" />
             <span>Publish Notice</span>
           </button>
         </div>
@@ -295,7 +295,7 @@ export function AnnouncementEdit() {
               type="button"
               onClick={() => handleSubmit()}
               disabled={saving}
-              className="px-4 py-2 bg-[#0B3D2E] text-white text-xs font-semibold rounded-lg hover:bg-[#14573F] transition-colors"
+              className="px-4 py-2 bg-[#103f34] text-white text-xs font-semibold rounded-lg hover:bg-[#246b55] transition-colors"
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </button>

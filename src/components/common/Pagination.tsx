@@ -70,7 +70,7 @@ export function Pagination({ meta, onPageChange, onPageSizeChange }: PaginationP
             onClick={() => onPageChange(p)}
             className={`min-w-8 h-8 px-2 flex items-center justify-center rounded-lg text-xs font-medium tabular-nums transition-colors ${
               p === page
-                ? 'bg-[#0B3D2E] text-white shadow-xs font-semibold'
+                ? 'bg-[#103f34] text-white shadow-xs font-semibold'
                 : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
             }`}
             aria-current={p === page ? 'page' : undefined}

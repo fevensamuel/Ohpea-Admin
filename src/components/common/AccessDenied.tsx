@@ -16,7 +16,7 @@ export function AccessDenied({ permission }: { permission?: string }) {
       </p>
       <button
         onClick={() => navigate('/dashboard')}
-        className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#0B3D2E] hover:bg-[#14573F] rounded-lg transition-colors shadow-xs"
+        className="mt-6 inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-[#103f34] hover:bg-[#246b55] rounded-lg transition-colors shadow-xs"
       >
         <ArrowLeft className="w-4 h-4" />
         Return to Dashboard

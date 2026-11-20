@@ -10,6 +10,7 @@ import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { EmptyState } from '@/components/common/EmptyState';
 import { RejectReasonModal } from '@/components/modals/RejectReasonModal';
 import { DocumentViewerModal } from '@/components/modals/DocumentViewerModal';
+import { RegistrationSubmissionDetails } from '@/components/members/RegistrationSubmissionDetails';
 import { useToast } from '@/context/ToastContext';
 import {
   UserCheck,
@@ -131,13 +132,13 @@ export function PendingRegistrations() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#E8772E]/10 text-[#E8772E] flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-lg bg-[#b85b2b]/10 text-[#b85b2b] flex items-center justify-center font-bold">
               <UserCheck className="w-4 h-4" />
             </div>
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Pending Member Registrations
             </h2>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#E8772E] text-white tabular-nums">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#b85b2b] text-white tabular-nums">
               {(meta?.total ?? 0)} awaiting review
             </span>
           </div>
@@ -187,7 +188,7 @@ export function PendingRegistrations() {
                     onClick={() => loadMemberDetails(member.id)}
                     className={`p-4 transition-colors cursor-pointer text-left ${
                       isSelected
-                        ? 'bg-[#0B3D2E]/5 border-l-3 border-[#0B3D2E]'
+                        ? 'bg-[#103f34]/5 border-l-3 border-[#103f34]'
                         : 'hover:bg-slate-50'
                     }`}
                   >
@@ -223,7 +224,7 @@ export function PendingRegistrations() {
                         <button
                           onClick={() => handleApprove(member.id, fullName)}
                           disabled={actionLoading}
-                          className="px-2.5 py-1 rounded bg-[#0B3D2E] text-white hover:bg-[#14573F] font-semibold transition-colors disabled:opacity-50"
+                          className="px-2.5 py-1 rounded bg-[#103f34] text-white hover:bg-[#246b55] font-semibold transition-colors disabled:opacity-50"
                         >
                           Approve
                         </button>
@@ -251,7 +252,7 @@ export function PendingRegistrations() {
               <div className="space-y-5">
                 <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-[#0B3D2E] text-[#F1E3B8] font-bold text-sm flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#103f34] text-[#eee5ce] font-bold text-sm flex items-center justify-center shrink-0">
                       {initials(selectedMember.fullName)}
                     </div>
                     <div>
@@ -288,9 +289,9 @@ export function PendingRegistrations() {
                         handleApprove(selectedMember.id, text(selectedMember.fullName))
                       }
                       disabled={actionLoading}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
                     >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#C9A24A]" />
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#b49a5a]" />
                       Approve Member
                     </button>
                   </div>
@@ -471,6 +472,8 @@ export function PendingRegistrations() {
                   </div>
                 </div>
 
+                <RegistrationSubmissionDetails details={selectedMember.registrationDetails} />
+
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-600">
@@ -483,7 +486,7 @@ export function PendingRegistrations() {
                       {selectedMember.documents.map((doc) => (
                         <div
                           key={doc.id}
-                          className="flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white hover:border-[#14573F] transition-colors"
+                          className="flex items-center justify-between p-3 rounded-xl border border-slate-200 bg-white hover:border-[#246b55] transition-colors"
                         >
                           <div className="flex items-center gap-2.5 truncate">
                             <FileText className="w-5 h-5 text-emerald-700 shrink-0" />
@@ -492,7 +495,7 @@ export function PendingRegistrations() {
                                 {text(doc.name) || 'Document'}
                               </p>
                               <p className="text-2xs text-slate-400">
-                                {((doc.size ?? 0) / 1024).toFixed(0)} KB · Verified Scan
+                                {((doc.size ?? 0) / 1024).toFixed(0)} KB · {text((doc as any).category) || text(doc.type) || 'Document'}
                               </p>
                             </div>
                           </div>
@@ -501,7 +504,7 @@ export function PendingRegistrations() {
                             onClick={() =>
                               setViewDoc({ id: doc.id, name: text(doc.name) || 'Document' })
                             }
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-2xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shrink-0 shadow-2xs"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-2xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shrink-0 shadow-2xs"
                           >
                             <Eye className="w-3 h-3" />
                             Preview

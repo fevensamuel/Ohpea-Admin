@@ -63,7 +63,7 @@ export function ChangePassword() {
     <div className="min-h-[80vh] flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-[#0B3D2E] text-[#F1E3B8] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#103f34] text-[#eee5ce] flex items-center justify-center shrink-0">
             <KeyRound className="w-5 h-5" />
           </div>
           <div>
@@ -93,7 +93,7 @@ export function ChangePassword() {
                 }
               }}
               placeholder="Enter existing password"
-              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
                 fieldErrors.currentPassword ? 'border-red-400' : 'border-slate-200'
               }`}
             />
@@ -118,7 +118,7 @@ export function ChangePassword() {
                 }
               }}
               placeholder="Enter new strong password"
-              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
                 fieldErrors.newPassword ? 'border-red-400' : 'border-slate-200'
               }`}
             />
@@ -141,7 +141,7 @@ export function ChangePassword() {
                 }
               }}
               placeholder="Re-enter new password"
-              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+              className={`w-full px-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
                 fieldErrors.confirmPassword ? 'border-red-400' : 'border-slate-200'
               }`}
             />
@@ -156,13 +156,13 @@ export function ChangePassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#0B3D2E] hover:bg-[#14573F] transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#103f34] hover:bg-[#246b55] transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
             >
               {loading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
-                  <CheckCircle2 className="w-4 h-4 text-[#C9A24A]" />
+                  <CheckCircle2 className="w-4 h-4 text-[#b49a5a]" />
                   <span>Update Password</span>
                 </>
               )}

@@ -91,7 +91,7 @@ export function DocumentViewerModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
           <div className="flex items-center gap-2.5 min-w-0">
-            <FileText className="w-4 h-4 text-[#0B3D2E] shrink-0" />
+            <FileText className="w-4 h-4 text-[#103f34] shrink-0" />
             <h3 className="text-sm font-bold text-slate-800 truncate">{docName}</h3>
           </div>
           <div className="flex items-center gap-2">

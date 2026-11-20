@@ -43,7 +43,7 @@ export function AuditLogs() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <History className="w-5 h-5 text-[#0B3D2E]" />
+            <History className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               System Audit Trail &amp; Access Logs
             </h2>
@@ -82,7 +82,7 @@ export function AuditLogs() {
                       {text(log.adminName) || 'System'}
                     </td>
                     <td className="py-3 px-3 whitespace-nowrap">
-                      <span className="font-mono font-bold text-2xs px-2 py-0.5 rounded bg-slate-100 text-[#0B3D2E] border border-slate-200">
+                      <span className="font-mono font-bold text-2xs px-2 py-0.5 rounded bg-slate-100 text-[#103f34] border border-slate-200">
                         {text(log.action) || '—'}
                       </span>
                     </td>

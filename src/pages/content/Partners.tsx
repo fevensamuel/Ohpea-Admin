@@ -110,7 +110,7 @@ export function Partners() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <Handshake className="w-5 h-5 text-[#0B3D2E]" />
+            <Handshake className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Institutional Partners &amp; Alliances
             </h2>
@@ -122,9 +122,9 @@ export function Partners() {
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
         >
-          <Plus className="w-4 h-4 text-[#C9A24A]" />
+          <Plus className="w-4 h-4 text-[#b49a5a]" />
           <span>Add Partner</span>
         </button>
       </div>
@@ -143,7 +143,7 @@ export function Partners() {
                 className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-10 h-10 rounded-xl bg-[#0B3D2E]/10 text-[#0B3D2E] font-bold text-xs flex items-center justify-center mb-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#103f34]/10 text-[#103f34] font-bold text-xs flex items-center justify-center mb-3">
                     {partnerName.charAt(0).toUpperCase() || '?'}
                   </div>
                   <h3 className="text-sm font-bold text-slate-900">{partnerName}</h3>
@@ -156,7 +156,7 @@ export function Partners() {
                       href={text(partner.website)}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-3 text-xs text-[#14573F] hover:underline flex items-center gap-1 font-mono text-2xs truncate"
+                      className="mt-3 text-xs text-[#246b55] hover:underline flex items-center gap-1 font-mono text-2xs truncate"
                     >
                       <Globe className="w-3 h-3 shrink-0" />
                       <span className="truncate">
@@ -257,7 +257,7 @@ export function Partners() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-1.5 rounded-lg bg-[#0B3D2E] text-white font-semibold hover:bg-[#14573F] transition-colors"
+                  className="px-4 py-1.5 rounded-lg bg-[#103f34] text-white font-semibold hover:bg-[#246b55] transition-colors"
                 >
                   {saving ? 'Saving...' : 'Save Partner'}
                 </button>

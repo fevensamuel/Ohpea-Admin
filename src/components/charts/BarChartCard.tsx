@@ -29,7 +29,7 @@ export function BarChartCard({
   title,
   horizontal = false,
   height = 260,
-  barColor = '#14573F',
+  barColor = '#246b55',
   formatValue = (v) => asNumber(v).toLocaleString('en-US', { maximumFractionDigits: 0 }),
 }: BarChartCardProps) {
   const safeData = Array.isArray(data)

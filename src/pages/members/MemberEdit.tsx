@@ -133,9 +133,9 @@ export function MemberEdit() {
             type="submit"
             form="member-edit-form"
             disabled={saving}
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#0B3D2E] text-white text-xs font-semibold hover:bg-[#14573F] transition-colors shadow-2xs"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#103f34] text-white text-xs font-semibold hover:bg-[#246b55] transition-colors shadow-2xs"
           >
-            <Save className="w-3.5 h-3.5 text-[#C9A24A]" />
+            <Save className="w-3.5 h-3.5 text-[#b49a5a]" />
             <span>{saving ? 'Saving...' : 'Save Member Details'}</span>
           </button>
         </div>
@@ -157,7 +157,7 @@ export function MemberEdit() {
 
         {/* Personal Details */}
         <div className="space-y-3">
-          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#14573F]">
+          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#246b55]">
             1. Personal Identification
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -299,7 +299,7 @@ export function MemberEdit() {
 
         {/* Professional & Regional Classifications */}
         <div className="space-y-3 pt-4 border-t border-slate-100">
-          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#14573F]">
+          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#246b55]">
             2. Professional &amp; Academic Background
           </h3>
 
@@ -561,7 +561,7 @@ export function MemberEdit() {
 
         {/* Membership Status Overrides */}
         <div className="space-y-3 pt-4 border-t border-slate-100">
-          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#14573F]">
+          <h3 className="font-bold text-slate-900 uppercase tracking-wider text-2xs text-[#246b55]">
             3. Membership Status &amp; Internal Notes
           </h3>
 

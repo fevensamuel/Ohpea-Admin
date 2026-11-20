@@ -102,7 +102,7 @@ export function Announcements() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-[#0B3D2E]" />
+            <FileText className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Announcements, Vacancies &amp; Events CMS
             </h2>
@@ -114,9 +114,9 @@ export function Announcements() {
 
         <button
           onClick={() => navigate('/content/announcements/new')}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
         >
-          <Plus className="w-4 h-4 text-[#C9A24A]" />
+          <Plus className="w-4 h-4 text-[#b49a5a]" />
           <span>New Announcement</span>
         </button>
       </div>
@@ -170,7 +170,7 @@ export function Announcements() {
             action={
               <button
                 onClick={() => navigate('/content/announcements/new')}
-                className="px-4 py-2 text-xs font-semibold text-white bg-[#0B3D2E] rounded-lg"
+                className="px-4 py-2 text-xs font-semibold text-white bg-[#103f34] rounded-lg"
               >
                 Create Announcement
               </button>
@@ -360,7 +360,7 @@ export function Announcements() {
               <button
                 type="button"
                 onClick={() => setPreviewItem(null)}
-                className="px-4 py-1.5 bg-[#0B3D2E] text-white rounded-lg font-semibold text-xs"
+                className="px-4 py-1.5 bg-[#103f34] text-white rounded-lg font-semibold text-xs"
               >
                 Close Preview
               </button>

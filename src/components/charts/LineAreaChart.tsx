@@ -40,8 +40,8 @@ export function LineAreaChart({ data, title, height = 260 }: LineAreaChartProps)
           <AreaChart data={safeData} margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
             <defs>
               <linearGradient id="areaGreen" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#1F7A57" stopOpacity={0.4} />
-                <stop offset="95%" stopColor="#1F7A57" stopOpacity={0.0} />
+                <stop offset="5%" stopColor="#3b8069" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="#3b8069" stopOpacity={0.0} />
               </linearGradient>
             </defs>
             <XAxis dataKey="period" tick={{ fontSize: 11, fill: '#64748b' }} />
@@ -66,7 +66,7 @@ export function LineAreaChart({ data, title, height = 260 }: LineAreaChartProps)
             <Area
               type="monotone"
               dataKey="amount"
-              stroke="#0B3D2E"
+              stroke="#103f34"
               strokeWidth={2.5}
               fillOpacity={1}
               fill="url(#areaGreen)"

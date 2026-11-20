@@ -47,7 +47,7 @@ export function ProtectedLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F6F8F7]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f6f5ef]">
         <LoadingSpinner text="Authenticating administrative session..." size="lg" />
       </div>
     );
@@ -64,16 +64,16 @@ export function ProtectedLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F8F7] text-slate-800">
+    <div className="min-h-screen flex flex-col bg-[#f6f5ef] text-[#35463f]">
       <ContractDriftBanner />
       <Sidebar />
       <div
         className={`flex-1 flex flex-col transition-all duration-300 ${
-          sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-68'
+          sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-60'
         }`}
       >
         <TopBar />
-        <main className="flex-1 p-4 lg:p-6 overflow-x-hidden">
+        <main className="flex-1 p-5 lg:px-9 lg:py-7 overflow-x-hidden">
           <Outlet />
         </main>
       </div>

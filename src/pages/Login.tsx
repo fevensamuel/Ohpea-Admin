@@ -53,13 +53,13 @@ export function Login() {
   return (
     <div className="min-h-screen w-full flex bg-[#F6F8F7]">
       {/* Left Brand Panel (Desktop) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#0B3D2E] text-white p-12 flex-col justify-between relative overflow-hidden border-r border-[#14573F]">
+      <div className="hidden lg:flex lg:w-1/2 bg-[#103f34] text-white p-12 flex-col justify-between relative overflow-hidden border-r border-[#246b55]">
         {/* Subtle geometric pattern overlay */}
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
             <defs>
               <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#C9A24A" strokeWidth="1" />
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#b49a5a" strokeWidth="1" />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
@@ -68,14 +68,14 @@ export function Login() {
 
         {/* Top brand header */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#C9A24A] text-[#0B3D2E] font-extrabold text-base flex items-center justify-center shadow-md border border-[#F1E3B8]">
+          <div className="w-11 h-11 rounded-xl bg-[#b49a5a] text-[#103f34] font-extrabold text-base flex items-center justify-center shadow-md border border-[#eee5ce]">
             OH
           </div>
           <div>
             <h1 className="text-base font-bold tracking-tight text-white leading-tight">
               OPHEA
             </h1>
-            <p className="text-xs text-[#C9A24A] font-medium tracking-wide">
+            <p className="text-xs text-[#b49a5a] font-medium tracking-wide">
               Waldaa Ogeeyyii Keessummeessuu fi Tuuriizimii Oromiyaa
             </p>
           </div>
@@ -83,8 +83,8 @@ export function Login() {
 
         {/* Central mission quote */}
         <div className="relative z-10 max-w-lg space-y-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#14573F] text-[#F1E3B8] border border-[#C9A24A]/30">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#C9A24A]" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#246b55] text-[#eee5ce] border border-[#b49a5a]/30">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#b49a5a]" />
             Official Administrative Gateway
           </span>
           <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight text-balance">
@@ -96,7 +96,7 @@ export function Login() {
         </div>
 
         {/* Footer info */}
-        <div className="relative z-10 text-2xs text-emerald-400/70 flex items-center justify-between border-t border-[#14573F] pt-4">
+        <div className="relative z-10 text-2xs text-emerald-400/70 flex items-center justify-between border-t border-[#246b55] pt-4">
           <span>Oromia, Ethiopia · Finfinnee &amp; Regional Desks</span>
           <span>Security Protocol TLS 1.3</span>
         </div>
@@ -107,12 +107,12 @@ export function Login() {
         <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8">
           {/* Mobile Brand Emblem */}
           <div className="lg:hidden flex items-center gap-2.5 mb-6">
-            <div className="w-9 h-9 rounded-lg bg-[#0B3D2E] text-[#F1E3B8] font-bold text-sm flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-[#103f34] text-[#eee5ce] font-bold text-sm flex items-center justify-center">
               OH
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-900 leading-tight">OPHEA Portal</h2>
-              <p className="text-2xs text-[#C9A24A] font-medium">Oromia Hospitality &amp; Tourism</p>
+              <p className="text-2xs text-[#b49a5a] font-medium">Oromia Hospitality &amp; Tourism</p>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ export function Login() {
                     }
                   }}
                   placeholder="admin@ophea.org or username"
-                  className={`w-full pl-9 pr-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+                  className={`w-full pl-9 pr-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
                     fieldErrors.identifier || fieldErrors.usernameOrEmail
                       ? 'border-red-400'
                       : 'border-slate-200'
@@ -192,7 +192,7 @@ export function Login() {
                     }
                   }}
                   placeholder="••••••••"
-                  className={`w-full pl-9 pr-10 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0B3D2E]/20 focus:border-[#0B3D2E] transition-all ${
+                  className={`w-full pl-9 pr-10 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
                     fieldErrors.password ? 'border-red-400' : 'border-slate-200'
                   }`}
                   autoComplete="current-password"
@@ -210,7 +210,7 @@ export function Login() {
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-slate-300 text-[#0B3D2E] focus:ring-[#0B3D2E]"
+                  className="rounded border-slate-300 text-[#103f34] focus:ring-[#103f34]"
                 />
                 <span className="text-xs text-slate-600">Remember this station</span>
               </label>
@@ -224,14 +224,14 @@ export function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#0B3D2E] hover:bg-[#14573F] transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
+              className="w-full mt-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#103f34] hover:bg-[#246b55] transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
             >
               {loading ? (
                 <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
                 <>
                   <span>Sign In to Dashboard</span>
-                  <ArrowRight className="w-4 h-4 text-[#C9A24A]" />
+                  <ArrowRight className="w-4 h-4 text-[#b49a5a]" />
                 </>
               )}
             </button>

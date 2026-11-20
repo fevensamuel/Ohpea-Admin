@@ -16,7 +16,7 @@ interface DonutChartProps {
   formatValue?: (val: number) => string;
 }
 
-const DEFAULT_COLORS = ['#0B3D2E', '#C9A24A', '#1F7A57', '#E8772E', '#2F6FB5', '#718096'];
+const DEFAULT_COLORS = ['#103f34', '#b49a5a', '#3b8069', '#b85b2b', '#2F6FB5', '#718096'];
 
 export function DonutChart({
   data,

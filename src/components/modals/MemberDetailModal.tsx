@@ -23,6 +23,7 @@ import { localized } from '@/lib/i18n';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { DocumentViewerModal } from './DocumentViewerModal';
+import { RegistrationSubmissionDetails } from '@/components/members/RegistrationSubmissionDetails';
 import { RejectReasonModal } from './RejectReasonModal';
 import { useToast } from '@/context/ToastContext';
 
@@ -189,7 +190,7 @@ export function MemberDetailModal({
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#0B3D2E] text-[#F1E3B8] font-bold flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-[#103f34] text-[#eee5ce] font-bold flex items-center justify-center shrink-0">
                 {member?.fullName
                   ? String(member.fullName).split(' ').map((n: string) => n[0]).slice(0, 2).join('').toUpperCase()
                   : 'MB'}
@@ -201,7 +202,7 @@ export function MemberDetailModal({
                 <p className="text-xs text-slate-500 font-mono">
                   {safeStr(member?.memberNo) || 'Loading...'}
                   {m?.membershipCategory && (
-                    <span className="ml-2 text-[#14573F] font-semibold">
+                    <span className="ml-2 text-[#246b55] font-semibold">
                       · {safeStr(m.membershipCategory)}
                     </span>
                   )}
@@ -232,7 +233,7 @@ export function MemberDetailModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
-                      <User className="w-3.5 h-3.5 text-[#14573F]" /> Personal Information
+                      <User className="w-3.5 h-3.5 text-[#246b55]" /> Personal Information
                     </h4>
                     <FieldRow label="Gender" value={safeStr(m?.gender) ? <span className="capitalize">{safeStr(m.gender)}</span> : null} />
                     <FieldRow label="Date of Birth" value={dateOfBirth} />
@@ -246,7 +247,7 @@ export function MemberDetailModal({
                   {/* Professional Info */}
                   <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
-                      <Briefcase className="w-3.5 h-3.5 text-[#14573F]" /> Professional &amp; Regional
+                      <Briefcase className="w-3.5 h-3.5 text-[#246b55]" /> Professional &amp; Regional
                     </h4>
                     <FieldRow label="Regional Cluster" value={regionLabel ? <span className="flex items-center justify-end gap-1"><MapPin className="w-3 h-3 text-emerald-600" />{regionLabel}</span> : null} />
                     <FieldRow label="Town / City" value={safeStr(m?.town)} />
@@ -269,7 +270,7 @@ export function MemberDetailModal({
                 {(m?.businessTin || m?.skills || (m?.expertiseAreas && m.expertiseAreas.length) || (m?.interests && m.interests.length)) && (
                   <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 text-xs">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
-                      <Building className="w-3.5 h-3.5 text-[#14573F]" /> Business &amp; Skills
+                      <Building className="w-3.5 h-3.5 text-[#246b55]" /> Business &amp; Skills
                     </h4>
                     {m?.businessTin && <FieldRow label="Business TIN" value={safeStr(m.businessTin)} />}
                     {m?.yearEstablished && <FieldRow label="Year Established" value={String(m.yearEstablished)} />}
@@ -306,17 +307,19 @@ export function MemberDetailModal({
                 {(m?.emergencyContactName || m?.emergencyContactPhone) && (
                   <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2 text-xs">
                     <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5 mb-2">
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#14573F]" /> Emergency Contact
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#246b55]" /> Emergency Contact
                     </h4>
                     <FieldRow label="Name" value={safeStr(m?.emergencyContactName)} />
                     <FieldRow label="Phone" value={safeStr(m?.emergencyContactPhone)} />
                   </div>
                 )}
 
+                <RegistrationSubmissionDetails details={member.registrationDetails} />
+
                 {/* Documents */}
                 <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <FileText className="w-3.5 h-3.5 text-[#14573F]" />
+                    <FileText className="w-3.5 h-3.5 text-[#246b55]" />
                     Uploaded Documents ({member.documents?.length || 0})
                   </h4>
                   {member.documents && member.documents.length > 0 ? (
@@ -328,13 +331,13 @@ export function MemberDetailModal({
                             <div className="truncate">
                               <p className="text-xs font-semibold text-slate-800 truncate">{safeStr(doc.name)}</p>
                               <p className="text-2xs text-slate-400">
-                                {(Number(doc.size) / 1024).toFixed(0)} KB · {safeStr(doc.uploadedAt)}
+                                {(Number(doc.size) / 1024).toFixed(0)} KB · {safeStr((doc as any).category) || safeStr(doc.type)} · {safeStr(doc.uploadedAt)}
                               </p>
                             </div>
                           </div>
                           <button
                             onClick={() => setViewDoc({ id: doc.id, name: safeStr(doc.name) })}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-2xs font-semibold bg-white border border-slate-200 text-[#0B3D2E] hover:bg-[#0B3D2E] hover:text-white transition-colors shrink-0"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-2xs font-semibold bg-white border border-slate-200 text-[#103f34] hover:bg-[#103f34] hover:text-white transition-colors shrink-0"
                           >
                             <Eye className="w-3 h-3" /> Preview
                           </button>
@@ -349,7 +352,7 @@ export function MemberDetailModal({
                 {/* Payments */}
                 <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-3">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                    <CreditCard className="w-3.5 h-3.5 text-[#14573F]" />
+                    <CreditCard className="w-3.5 h-3.5 text-[#246b55]" />
                     Contribution History ({payments.length})
                   </h4>
                   {payments.length > 0 ? (
@@ -425,9 +428,9 @@ export function MemberDetailModal({
                     type="button"
                     onClick={handleApprove}
                     disabled={actionLoading}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
                   >
-                    <CheckCircle2 className="w-3.5 h-3.5 text-[#C9A24A]" /> Approve
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#b49a5a]" /> Approve
                   </button>
                 </>
               )}

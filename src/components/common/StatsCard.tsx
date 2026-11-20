@@ -41,7 +41,7 @@ export function StatsCard({
       }}
       className={`relative p-5 rounded-xl border bg-white transition-all text-left group ${
         active
-          ? 'border-[#0B3D2E] ring-2 ring-[#0B3D2E]/20 shadow-sm'
+          ? 'border-[#103f34] ring-2 ring-[#103f34]/20 shadow-sm'
           : 'border-slate-200/80 hover:border-slate-300 hover:shadow-xs'
       } ${isClickable ? 'cursor-pointer' : ''}`}
     >
@@ -54,7 +54,7 @@ export function StatsCard({
             className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-transform group-hover:scale-105"
             style={{
               backgroundColor: accentColor ? `${accentColor}15` : '#F1F5F9',
-              color: accentColor || '#14573F',
+              color: accentColor || '#246b55',
             }}
           >
             {icon}
@@ -87,7 +87,7 @@ export function StatsCard({
         <div className="mt-2.5 flex items-center justify-between text-xs text-slate-500">
           <span>{subtext}</span>
           {ctaText && (
-            <span className="font-semibold text-[#1F7A57] group-hover:underline">
+            <span className="font-semibold text-[#3b8069] group-hover:underline">
               {ctaText} →
             </span>
           )}

@@ -137,9 +137,9 @@ export function UnpaidMembers() {
                           setSelectedMemberId(m.id);
                           setRecordModalOpen(true);
                         }}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#0B3D2E] text-white hover:bg-[#14573F] text-2xs font-semibold"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#103f34] text-white hover:bg-[#246b55] text-2xs font-semibold"
                       >
-                        <PlusCircle className="w-3 h-3 text-[#C9A24A]" />
+                        <PlusCircle className="w-3 h-3 text-[#b49a5a]" />
                         <span>Record Payment</span>
                       </button>
                     </td>

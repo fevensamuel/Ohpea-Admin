@@ -132,7 +132,7 @@ export function Objectives() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <Compass className="w-5 h-5 text-[#0B3D2E]" />
+            <Compass className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               Association Objectives &amp; Mandates
             </h2>
@@ -144,9 +144,9 @@ export function Objectives() {
 
         <button
           onClick={openCreate}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs"
         >
-          <Plus className="w-4 h-4 text-[#C9A24A]" />
+          <Plus className="w-4 h-4 text-[#b49a5a]" />
           <span>Add Objective</span>
         </button>
       </div>
@@ -177,7 +177,7 @@ export function Objectives() {
                       className="p-4 flex items-start justify-between gap-4 hover:bg-slate-50 transition-colors text-xs"
                     >
                       <div className="flex items-start gap-3">
-                        <span className="w-5 h-5 rounded-full bg-[#14573F]/10 text-[#0B3D2E] font-bold text-2xs flex items-center justify-center shrink-0 mt-0.5">
+                        <span className="w-5 h-5 rounded-full bg-[#246b55]/10 text-[#103f34] font-bold text-2xs flex items-center justify-center shrink-0 mt-0.5">
                           {i + 1}
                         </span>
                         <div className="space-y-1">
@@ -286,7 +286,7 @@ export function Objectives() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-1.5 rounded-lg bg-[#0B3D2E] text-white font-semibold hover:bg-[#14573F] transition-colors"
+                  className="px-4 py-1.5 rounded-lg bg-[#103f34] text-white font-semibold hover:bg-[#246b55] transition-colors"
                 >
                   {saving ? 'Saving...' : 'Save Objective'}
                 </button>

@@ -94,7 +94,7 @@ export function Lookups() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <ListFilter className="w-5 h-5 text-[#0B3D2E]" />
+            <ListFilter className="w-5 h-5 text-[#103f34]" />
             <h2 className="text-xl font-bold tracking-tight text-slate-900">
               System Lookups &amp; Classifications
             </h2>
@@ -112,7 +112,7 @@ export function Lookups() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-3 py-1.5 font-semibold rounded-lg transition-all ${
                   activeTab === tab.id
-                    ? 'bg-white text-[#0B3D2E] shadow-2xs'
+                    ? 'bg-white text-[#103f34] shadow-2xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -124,9 +124,9 @@ export function Lookups() {
           <button
             type="button"
             onClick={handleOpenCreate}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#0B3D2E] text-white hover:bg-[#14573F] transition-colors shadow-2xs shrink-0"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-[#103f34] text-white hover:bg-[#246b55] transition-colors shadow-2xs shrink-0"
           >
-            <Plus className="w-3.5 h-3.5 text-[#C9A24A]" />
+            <Plus className="w-3.5 h-3.5 text-[#b49a5a]" />
             <span>Add Entry</span>
           </button>
         </div>
@@ -257,7 +257,7 @@ export function Lookups() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-1.5 rounded-lg bg-[#0B3D2E] text-white font-semibold hover:bg-[#14573F] transition-colors"
+                  className="px-4 py-1.5 rounded-lg bg-[#103f34] text-white font-semibold hover:bg-[#246b55] transition-colors"
                 >
                   {saving ? 'Saving...' : 'Save Entry'}
                 </button>

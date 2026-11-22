@@ -37,7 +37,6 @@ import {
   XCircle,
   Clock,
   ChevronRight,
-  TrendingUp,
 } from 'lucide-react';
 
 export function Dashboard() {
@@ -205,25 +204,25 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Banner / Filter Strip */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+    <div className="space-y-8">
+      {/* Welcome panel and regional filter */}
+      <div className="relative overflow-hidden flex flex-col sm:flex-row sm:items-center justify-between gap-5 p-6 sm:p-7 rounded-2xl bg-[#063d2d] text-white border border-[#14573f] shadow-sm">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-slate-900">
+          <h2 className="text-2xl font-semibold tracking-tight text-white">
             Welcome back, {user?.fullName?.split(' ')[0] || 'Administrator'}
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Real-time association telemetry across Oromia tourism corridors.
+          <p className="text-sm text-white/70 mt-1">
+            Membership, applications and association activity at a glance.
           </p>
         </div>
 
         {user?.role !== 'RegionalAdmin' && (
           <div className="flex items-center gap-2">
-            <Filter className="w-3.5 h-3.5 text-slate-400" />
+            <Filter className="w-4 h-4 text-[#e7c86c]" />
             <select
               value={selectedRegionId}
               onChange={(e) => setSelectedRegionId(e.target.value)}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 focus:outline-none focus:ring-1 focus:ring-emerald-700"
+              className="text-sm font-medium px-4 py-2.5 rounded-xl border border-white/20 bg-white text-[#203a32] focus:outline-none focus:ring-2 focus:ring-[#d8ae36]/50"
               aria-label="Filter dashboard by regional cluster"
             >
               <option value="">All Oromia Clusters</option>
@@ -242,7 +241,7 @@ export function Dashboard() {
       ) : summary || !loading ? (
         <>
           {/* KPI Stat Cards Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
             <StatsCard
               title="Total"
               value={(safeSummary.totalMembers ?? 0).toLocaleString()}
@@ -311,7 +310,7 @@ export function Dashboard() {
           </div>
 
           {/* Section 1: Demographics & Specialization Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Gender Representation
@@ -360,7 +359,7 @@ export function Dashboard() {
           </div>
 
           {/* Section 2: Education, Fields of Study & Regional Clusters */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
               <h3 className="text-sm font-bold text-slate-900 mb-1">
                 Core Fields of Study
@@ -490,9 +489,7 @@ export function Dashboard() {
                   <p className="mt-1 text-xl font-bold text-slate-900 tabular-nums">
                     ETB {(safeContributions.totalYear ?? 0).toLocaleString()}
                   </p>
-                  <span className="text-2xs text-emerald-700 font-semibold flex items-center gap-0.5 mt-0.5">
-                    <TrendingUp className="w-3 h-3" /> +14.2% YoY Growth
-                  </span>
+                  <span className="text-2xs text-slate-500 font-medium mt-0.5">Year-to-date total</span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/60">
@@ -502,7 +499,7 @@ export function Dashboard() {
                   <p className="mt-1 text-xl font-bold text-slate-900 tabular-nums">
                     ETB {(safeContributions.totalMonth ?? 0).toLocaleString()}
                   </p>
-                  <span className="text-2xs text-slate-500">October 2026</span>
+                  <span className="text-2xs text-slate-500">Current calendar month</span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/60">
@@ -538,7 +535,7 @@ export function Dashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-3">
                 <div className="lg:col-span-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                     Contribution Collections Over Time
@@ -564,7 +561,7 @@ export function Dashboard() {
           )}
 
           {/* Section 4: Recent Registrations & Activity Feed */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             <div className="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs lg:col-span-2">
               <div className="flex items-center justify-between mb-4">
                 <div>

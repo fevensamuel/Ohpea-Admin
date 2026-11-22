@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/context/AuthContext';
 import { ApiError } from '@/types/api';
-import { Eye, EyeOff, Lock, User, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, ShieldCheck, ArrowRight, Landmark } from 'lucide-react';
 
 export function Login() {
   const [identifier, setIdentifier] = useState('');
@@ -12,7 +12,6 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-
   const { login } = useAuthContext();
   const navigate = useNavigate();
 
@@ -20,30 +19,24 @@ export function Login() {
     e.preventDefault();
     setErrorMessage('');
     setFieldErrors({});
-
     if (!identifier.trim()) {
-      setFieldErrors((prev) => ({ ...prev, identifier: 'Please enter your username or email' }));
+      setFieldErrors((prev) => ({ ...prev, identifier: 'Please enter your username or email.' }));
       return;
     }
     if (!password) {
-      setFieldErrors((prev) => ({ ...prev, password: 'Please enter your password' }));
+      setFieldErrors((prev) => ({ ...prev, password: 'Please enter your password.' }));
       return;
     }
-
     try {
       setLoading(true);
       await login(identifier.trim(), password);
       navigate('/dashboard');
     } catch (err) {
-      console.error('[login] failed request URL:', `${import.meta.env.VITE_API_URL || '(unset)'}/auth/login`);
       if (err instanceof ApiError) {
-        if (err.fields) {
-          setFieldErrors(err.fields);
-        } else {
-          setErrorMessage(err.message);
-        }
+        if (err.fields) setFieldErrors(err.fields);
+        else setErrorMessage(err.message);
       } else {
-        setErrorMessage('Unable to connect to login server. Please verify credentials.');
+        setErrorMessage('Unable to connect to the login server. Please try again.');
       }
     } finally {
       setLoading(false);
@@ -51,193 +44,43 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-[#F6F8F7]">
-      {/* Left Brand Panel (Desktop) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#103f34] text-white p-12 flex-col justify-between relative overflow-hidden border-r border-[#246b55]">
-        {/* Subtle geometric pattern overlay */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#b49a5a" strokeWidth="1" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-        </div>
-
-        {/* Top brand header */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-[#b49a5a] text-[#103f34] font-extrabold text-base flex items-center justify-center shadow-md border border-[#eee5ce]">
-            OH
+    <main className="min-h-screen w-full bg-[#f7f5ee] px-4 py-8 sm:px-8 lg:px-12 flex items-center justify-center">
+      <div className="w-full max-w-6xl min-h-[min(760px,calc(100vh-4rem))] grid grid-cols-1 lg:grid-cols-[1.05fr_.95fr] overflow-hidden rounded-[28px] border border-[#e2e4d9] bg-white shadow-[0_24px_80px_rgba(15,55,39,.12)]">
+        <section className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-[#063d2d] p-12 xl:p-16 text-white">
+          <div className="absolute inset-0 opacity-[.12]" aria-hidden="true">
+            <div className="absolute -right-28 -top-24 h-[520px] w-[520px] rounded-full border border-[#d8ae36]" />
+            <div className="absolute -right-8 top-0 h-[380px] w-[380px] rounded-full border border-[#d8ae36]" />
+            <div className="absolute -bottom-40 -left-32 h-[520px] w-[520px] rounded-full border border-white" />
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_48%,rgba(216,174,54,.13)_48.2%,transparent_48.5%)]" />
           </div>
-          <div>
-            <h1 className="text-base font-bold tracking-tight text-white leading-tight">
-              OPHEA
-            </h1>
-            <p className="text-xs text-[#b49a5a] font-medium tracking-wide">
-              Waldaa Ogeeyyii Keessummeessuu fi Tuuriizimii Oromiyaa
-            </p>
+          <div className="relative z-10 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#ead9a8] bg-[#d8ae36] text-lg font-extrabold tracking-tight text-[#063d2d]">OH</div>
+            <div><p className="text-lg font-bold tracking-[.16em] text-white">OHPEA</p><p className="mt-0.5 text-[10px] font-medium tracking-wide text-[#e7d39b]">Oromia Hospitality &amp; Tourism Professionals</p></div>
           </div>
-        </div>
+          <div className="relative z-10 max-w-xl py-12">
+            <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#d8ae36]/40 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#f0d98f]"><ShieldCheck className="h-3.5 w-3.5" /> Official administration portal</span>
+            <h1 className="font-serif text-4xl font-medium leading-[1.12] tracking-tight xl:text-5xl">A stronger professional community, built together.</h1>
+            <p className="mt-6 max-w-md text-sm leading-7 text-white/75">Manage membership applications, professional records, contributions and association activities from one secure workspace.</p>
+            <div className="mt-10 flex items-center gap-3 border-t border-white/15 pt-6"><div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-[#e7c86c]"><Landmark className="h-5 w-5" /></div><div><p className="text-xs font-semibold text-white">Oromia, Ethiopia</p><p className="mt-1 text-[10px] text-white/55">Professional excellence in hospitality and tourism</p></div></div>
+          </div>
+          <div className="relative z-10 flex items-center justify-between border-t border-white/15 pt-5 text-[10px] text-white/50"><span>OHPEA Administration</span><span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-[#d8ae36]" /> Secure access</span></div>
+        </section>
 
-        {/* Central mission quote */}
-        <div className="relative z-10 max-w-lg space-y-4">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#246b55] text-[#eee5ce] border border-[#b49a5a]/30">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#b49a5a]" />
-            Official Administrative Gateway
-          </span>
-          <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight text-balance">
-            Advancing Professional Excellence in Oromia Hospitality &amp; Tourism
-          </h2>
-          <p className="text-xs text-emerald-200/80 leading-relaxed">
-            Centralized portal for member registries, professional accreditation, financial contributions, and cultural tourism content across all regional clusters.
-          </p>
-        </div>
-
-        {/* Footer info */}
-        <div className="relative z-10 text-2xs text-emerald-400/70 flex items-center justify-between border-t border-[#246b55] pt-4">
-          <span>Oromia, Ethiopia · Finfinnee &amp; Regional Desks</span>
-          <span>Security Protocol TLS 1.3</span>
-        </div>
+        <section className="flex items-center justify-center px-6 py-10 sm:px-12 lg:px-14 xl:px-20">
+          <div className="w-full max-w-md">
+            <div className="mb-10 flex items-center gap-3 lg:hidden"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#063d2d] text-sm font-extrabold text-[#e7c86c]">OH</div><div><p className="text-sm font-bold tracking-[.12em] text-[#063d2d]">OHPEA</p><p className="text-[10px] text-[#68746b]">Administration portal</p></div></div>
+            <div className="mb-8"><p className="mb-3 text-[10px] font-bold uppercase tracking-[.2em] text-[#987a2b]">Welcome back</p><h2 className="font-serif text-3xl font-medium tracking-tight text-[#18251f] sm:text-4xl">Sign in to your workspace</h2><p className="mt-3 text-sm leading-6 text-[#68746b]">Enter your administrator credentials to continue.</p></div>
+            {errorMessage && <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{errorMessage}</div>}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div><label htmlFor="admin-identifier" className="mb-2 block text-xs font-semibold text-[#35463f]">Username or email address</label><div className="relative"><User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#829087]" /><input id="admin-identifier" type="text" value={identifier} onChange={(e) => { setIdentifier(e.target.value); if (fieldErrors.identifier || fieldErrors.usernameOrEmail) setFieldErrors((prev) => ({ ...prev, identifier: '', usernameOrEmail: '' })); }} placeholder="Enter your username or email" autoComplete="username" aria-invalid={Boolean(fieldErrors.identifier || fieldErrors.usernameOrEmail)} className="h-12 w-full rounded-xl border border-[#dfe4dc] bg-[#fbfcf9] pl-11 pr-4 text-sm text-[#203a32] placeholder:text-[#a1aaa3] transition focus:border-[#246b55] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#246b55]/10" /></div>{(fieldErrors.identifier || fieldErrors.usernameOrEmail) && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.identifier || fieldErrors.usernameOrEmail}</p>}</div>
+              <div><div className="mb-2 flex items-center justify-between"><label htmlFor="admin-password" className="text-xs font-semibold text-[#35463f]">Password</label><button type="button" onClick={() => setShowPassword((show) => !show)} className="inline-flex items-center gap-1.5 text-xs font-medium text-[#68746b] transition hover:text-[#063d2d]">{showPassword ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}{showPassword ? 'Hide' : 'Show'}</button></div><div className="relative"><Lock className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#829087]" /><input id="admin-password" type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => { setPassword(e.target.value); if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' })); }} placeholder="Enter your password" autoComplete="current-password" aria-invalid={Boolean(fieldErrors.password)} className="h-12 w-full rounded-xl border border-[#dfe4dc] bg-[#fbfcf9] pl-11 pr-12 text-sm text-[#203a32] placeholder:text-[#a1aaa3] transition focus:border-[#246b55] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#246b55]/10" /></div>{fieldErrors.password && <p className="mt-1.5 text-xs text-red-600">{fieldErrors.password}</p>}</div>
+              <label className="flex cursor-pointer items-center gap-2.5 text-xs text-[#68746b]"><input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} className="h-4 w-4 rounded border-[#cbd4ca] accent-[#063d2d] focus:ring-[#246b55]" />Remember this station</label>
+              <button type="submit" disabled={loading} className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#063d2d] px-5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(6,61,45,.16)] transition hover:-translate-y-0.5 hover:bg-[#14573f] disabled:cursor-not-allowed disabled:opacity-60">{loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <>Sign in securely <ArrowRight className="h-4 w-4 text-[#e7c86c]" /></>}</button>
+            </form>
+            <div className="mt-8 border-t border-[#e9ece5] pt-5 text-center"><p className="text-[11px] leading-5 text-[#8a958d]">Need access or a password reset? Contact your system administrator.</p><p className="mt-4 text-[10px] font-medium tracking-wide text-[#a2aaa3]">© OHPEA · Oromia, Ethiopia</p></div>
+          </div>
+        </section>
       </div>
-
-      {/* Right Login Form Card */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/80 p-8">
-          {/* Mobile Brand Emblem */}
-          <div className="lg:hidden flex items-center gap-2.5 mb-6">
-            <div className="w-9 h-9 rounded-lg bg-[#103f34] text-[#eee5ce] font-bold text-sm flex items-center justify-center">
-              OH
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900 leading-tight">OPHEA Portal</h2>
-              <p className="text-2xs text-[#b49a5a] font-medium">Oromia Hospitality &amp; Tourism</p>
-            </div>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-xl font-bold tracking-tight text-slate-900">
-              Staff Administrator Sign In
-            </h3>
-            <p className="mt-1 text-xs text-slate-500">
-              Access the administrative dashboard using your verified credentials.
-            </p>
-          </div>
-
-          {errorMessage && (
-            <div
-              className="mb-4 p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 text-xs font-medium"
-              role="alert"
-            >
-              {errorMessage}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Username or Email */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Username or Email Address
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input
-                  type="text"
-                  value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value);
-                    if (fieldErrors.identifier) {
-                      setFieldErrors((prev) => ({ ...prev, identifier: '' }));
-                    }
-                  }}
-                  placeholder="admin@ophea.org or username"
-                  className={`w-full pl-9 pr-3 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
-                    fieldErrors.identifier || fieldErrors.usernameOrEmail
-                      ? 'border-red-400'
-                      : 'border-slate-200'
-                  }`}
-                  autoComplete="username"
-                />
-              </div>
-              {(fieldErrors.identifier || fieldErrors.usernameOrEmail) && (
-                <p className="mt-1 text-2xs text-red-600 font-medium">
-                  {fieldErrors.identifier || fieldErrors.usernameOrEmail}
-                </p>
-              )}
-            </div>
-
-            {/* Password */}
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-semibold text-slate-700">Password</label>
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="text-2xs text-slate-500 hover:text-slate-800 flex items-center gap-1"
-                >
-                  {showPassword ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
-                  <span>{showPassword ? 'Hide' : 'Show'}</span>
-                </button>
-              </div>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (fieldErrors.password) {
-                      setFieldErrors((prev) => ({ ...prev, password: '' }));
-                    }
-                  }}
-                  placeholder="••••••••"
-                  className={`w-full pl-9 pr-10 py-2 text-xs rounded-xl border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#103f34]/20 focus:border-[#103f34] transition-all ${
-                    fieldErrors.password ? 'border-red-400' : 'border-slate-200'
-                  }`}
-                  autoComplete="current-password"
-                />
-              </div>
-              {fieldErrors.password && (
-                <p className="mt-1 text-2xs text-red-600 font-medium">{fieldErrors.password}</p>
-              )}
-            </div>
-
-            {/* Remember Me */}
-            <div className="flex items-center justify-between pt-1">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="rounded border-slate-300 text-[#103f34] focus:ring-[#103f34]"
-                />
-                <span className="text-xs text-slate-600">Remember this station</span>
-              </label>
-
-              <span className="text-2xs text-slate-400">
-                Contact Super Admin for password reset
-              </span>
-            </div>
-
-            {/* Submit button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-2 py-2.5 px-4 rounded-xl text-xs font-semibold text-white bg-[#103f34] hover:bg-[#246b55] transition-all flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
-            >
-              {loading ? (
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Sign In to Dashboard</span>
-                  <ArrowRight className="w-4 h-4 text-[#b49a5a]" />
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }

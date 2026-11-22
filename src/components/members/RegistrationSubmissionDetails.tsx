@@ -22,12 +22,13 @@ const sectionFor = (key: string): string => {
   const k = key.toLowerCase();
   if (/education|qualification|graduation|academic|institution|fieldofstudy/.test(k)) return 'Education & Qualifications';
   if (/certification|license|licence|credential/.test(k)) return 'Professional Certifications & Licenses';
-  if (/experience|workhistory|employment|workplace|organization|jobtitle|employer|business|tin|established|employee/.test(k)) return 'Employment & Business';
-  if (/language|afaan|amharic|english|arabic|french/.test(k)) return 'Languages & Skills';
+  if (/experience|workhistory|employment|workplace|organization|jobtitle|employer|business|tin|established|employee|industry|sector|professionalcategory|occupation|yearsincurrentrole/.test(k)) return 'Employment & Business';
+  if (/language|afaan|amharic|english|arabic|french|technical|coreskill/.test(k)) return 'Languages & Skills';
   if (/expertise|interest|mentor|specialized|technical|skill|software/.test(k)) return 'Expertise & Association Interests';
-  if (/payment|bank|platform|transaction|receipt|amountpaid|paidat/.test(k)) return 'Payment Confirmation';
+  if (/payment|bank|platform|transaction|receipt|amountpaid|paidat|membershipfee|joiningfee/.test(k)) return 'Payment Confirmation';
+  if (/document|cvcompany|passportphoto|idcopy|academiccert|professionallicense|paymentproof|fayda|passport|attachment|upload|file/.test(k)) return 'Uploaded Documents & Attachments';
   if (/declaration|signature|consent|applicantfullname/.test(k)) return 'Declaration & Agreement';
-  if (/emergency|secondaryphone|alternate|relationship|phone|email|gender|birth|nationality|name|region|zone|woreda|town|city|address|idnumber|membershipcategory/.test(k)) return 'Personal & Contact Information';
+  if (/emergency|secondaryphone|alternate|relationship|phone|email|gender|birth|nationality|name|region|zone|woreda|town|city|address|nationalid|idtype|idnumber|membershipcategory/.test(k)) return 'Personal & Contact Information';
   return 'Other Submitted Information';
 };
 
@@ -99,11 +100,16 @@ export function RegistrationSubmissionDetails({
   if (!isRecord(details)) return null;
 
   const submittedFields = isRecord(details.submittedFields) ? details.submittedFields : {};
-  // The backend stores the original request under submittedFields and merges
-  // officialFormData into the root. Prefer root values where both exist.
-  const values: RecordValue = { ...submittedFields, ...details };
+  const officialFormData = isRecord(details.officialFormData) ? details.officialFormData : {};
+  // Support both API shapes: flattened registration fields and nested form payloads.
+  // Root-level normalized values take precedence when a key exists in both places.
+  const values: RecordValue = { ...submittedFields, ...officialFormData, ...details };
   delete values.submittedFields;
   delete values.officialFormData;
+  delete values.id;
+  delete values.memberId;
+  delete values.createdAt;
+  delete values.updatedAt;
 
   const groups = new Map<string, [string, unknown][]>();
   for (const [key, value] of Object.entries(values)) {
@@ -131,6 +137,7 @@ export function RegistrationSubmissionDetails({
     'Languages & Skills',
     'Expertise & Association Interests',
     'Payment Confirmation',
+    'Uploaded Documents & Attachments',
     'Declaration & Agreement',
     'Other Submitted Information',
   ];

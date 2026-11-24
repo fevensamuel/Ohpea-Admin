@@ -259,9 +259,7 @@ export function Sidebar() {
         {/* Brand Header */}
         <div className="min-h-[158px] flex flex-col items-start justify-center gap-4 px-5 py-5 border-b border-white/10 shrink-0">
           <div className="flex items-center gap-3 overflow-hidden">
-            <div className="w-11 h-11 rounded-lg bg-[#f5f5ed] text-[#103f34] font-extrabold flex items-center justify-center shrink-0 border border-white/70">
-              <span className="text-sm tracking-tight">OHPEA</span>
-            </div>
+            <img src="/ohpea-mark.png" alt="OHPEA emblem" className="h-12 w-12 rounded-lg bg-white p-1 object-contain shrink-0 border border-white/70" />
             {!sidebarCollapsed && (
               <div className="flex flex-col truncate">
                 <span className="text-lg font-semibold tracking-tight text-white truncate">
@@ -283,7 +281,7 @@ export function Sidebar() {
         </div>
         {!sidebarCollapsed && (
           <div className="px-5 py-3 text-[11px] leading-relaxed text-white/65 border-b border-white/10">
-            Oromia Tourism &amp; Hospitality<br />Professionals Association
+            Oromia Hospitality Professionals<br />and Entrepreneurs Association
           </div>
         )}
 

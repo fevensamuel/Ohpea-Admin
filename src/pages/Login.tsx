@@ -54,8 +54,8 @@ export function Login() {
             <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_48%,rgba(216,174,54,.13)_48.2%,transparent_48.5%)]" />
           </div>
           <div className="relative z-10 flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#ead9a8] bg-[#d8ae36] text-lg font-extrabold tracking-tight text-[#063d2d]">OH</div>
-            <div><p className="text-lg font-bold tracking-[.16em] text-white">OHPEA</p><p className="mt-0.5 text-[10px] font-medium tracking-wide text-[#e7d39b]">Oromia Hospitality &amp; Tourism Professionals</p></div>
+            <img src="/ohpea-mark.png" alt="OHPEA emblem" className="h-14 w-14 rounded-xl bg-white p-1 object-contain" />
+            <div><p className="text-lg font-bold tracking-[.16em] text-white">OHPEA</p><p className="mt-0.5 max-w-[260px] text-[10px] font-medium leading-4 tracking-wide text-[#e7d39b]">Oromia Hospitality Professionals and Entrepreneurs Association</p></div>
           </div>
           <div className="relative z-10 max-w-xl py-12">
             <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#d8ae36]/40 bg-white/5 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[.16em] text-[#f0d98f]"><ShieldCheck className="h-3.5 w-3.5" /> Official administration portal</span>
@@ -68,7 +68,7 @@ export function Login() {
 
         <section className="flex items-center justify-center px-6 py-10 sm:px-12 lg:px-14 xl:px-20">
           <div className="w-full max-w-md">
-            <div className="mb-10 flex items-center gap-3 lg:hidden"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#063d2d] text-sm font-extrabold text-[#e7c86c]">OH</div><div><p className="text-sm font-bold tracking-[.12em] text-[#063d2d]">OHPEA</p><p className="text-[10px] text-[#68746b]">Administration portal</p></div></div>
+            <div className="mb-10 flex items-center gap-3 lg:hidden"><img src="/ohpea-mark.png" alt="OHPEA emblem" className="h-12 w-12 rounded-xl bg-white p-1 object-contain"/><div><p className="text-sm font-bold tracking-[.12em] text-[#063d2d]">OHPEA</p><p className="max-w-[250px] text-[10px] leading-4 text-[#68746b]">Oromia Hospitality Professionals and Entrepreneurs Association</p></div></div>
             <div className="mb-8"><p className="mb-3 text-[10px] font-bold uppercase tracking-[.2em] text-[#987a2b]">Welcome back</p><h2 className="font-serif text-3xl font-medium tracking-tight text-[#18251f] sm:text-4xl">Sign in to your workspace</h2><p className="mt-3 text-sm leading-6 text-[#68746b]">Enter your administrator credentials to continue.</p></div>
             {errorMessage && <div className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">{errorMessage}</div>}
             <form onSubmit={handleSubmit} className="space-y-5">

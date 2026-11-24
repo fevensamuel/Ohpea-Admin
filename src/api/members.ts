@@ -14,6 +14,7 @@ export const MembersApi = {
     adminApi.getMember(id),
   create: (data: unknown): Promise<MemberDetail> =>
     adminApi.createMember(data),
+  createRegistration: (data: FormData): Promise<MemberDetail> => adminApi.createMemberRegistration(data),
   update: (id: string, data: unknown): Promise<MemberDetail> =>
     adminApi.updateMember(id, data),
   updateStatus: (id: string, status: MembershipStatus): Promise<MemberDetail> =>
@@ -28,6 +29,8 @@ export const MembersApi = {
     adminApi.getPendingCount(),
   export: (filters: Record<string, unknown> = {}): Promise<Blob> =>
     adminApi.exportMembers(filters),
+  downloadImportTemplate: (): Promise<Blob> => adminApi.downloadMemberImportTemplate(),
+  importFile: (file: File) => adminApi.importMembers(file),
   getDocumentBlobUrl: (memberId: string, docId: string): Promise<string> =>
     adminApi.getMemberDocumentBlobUrl(memberId, docId),
   downloadDocument: (memberId: string, docId: string): Promise<Blob> =>

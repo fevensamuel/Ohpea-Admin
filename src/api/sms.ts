@@ -5,7 +5,7 @@ import type { SmsCampaignItem, SmsLogItem, Paginated } from '@/types/api';
 export const SmsApi = {
   send: (data: { memberId?: string; phone?: string; message: string }): Promise<{ success: boolean }> =>
     adminApi.sendSms(data),
-  createCampaign: (data: unknown): Promise<SmsCampaignItem> =>
+  createCampaign: (data: unknown): Promise<{ id: string; targetCount: number }> =>
     adminApi.createSmsCampaign(data),
   getCampaigns: async (params: Record<string, unknown> = {}): Promise<Paginated<SmsCampaignItem[]>> => {
     const response = await adminApi.getSmsCampaigns(params);
@@ -21,6 +21,6 @@ export const SmsApi = {
       pageSize: typeof params.pageSize === 'number' ? params.pageSize : 10,
     });
   },
-  getBalance: (): Promise<{ balance: number }> =>
-    adminApi.getSmsBalance(),
+  getStatus: () => adminApi.getSmsStatus(),
+  getTemplates: () => adminApi.getSmsTemplates(),
 };

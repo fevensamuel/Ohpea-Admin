@@ -36,12 +36,13 @@ export class ApiError extends Error {
   }
 }
 
-export type RoleType = 'SuperAdmin' | 'RegionalAdmin' | 'Finance' | 'Editor';
+export type RoleType = string;
 
 export interface AdminUser {
   id: string;
   fullName: string;
   email: string;
+  phone?: string;
   username: string;
   role: RoleType;
   regionId?: string;
@@ -49,6 +50,7 @@ export interface AdminUser {
   permissions: string[];
   active: boolean;
   mustChangePassword?: boolean;
+  temporaryPassword?: string;
   lastLoginAt?: string;
   createdAt: string;
 }
@@ -277,7 +279,7 @@ export interface SmsCampaignItem {
   recipientCount: number;
   sentCount: number;
   failedCount: number;
-  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed';
+  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed' | 'waiting_for_provider' | 'sent';
   createdAt: string;
 }
 
@@ -286,7 +288,7 @@ export interface SmsLogItem {
   recipientPhone: string;
   recipientName?: string;
   message: string;
-  status: 'delivered' | 'sent' | 'failed';
+  status: 'delivered' | 'sent' | 'failed' | 'not_configured' | 'queued' | 'unknown';
   errorMessage?: string;
   sentAt: string;
 }

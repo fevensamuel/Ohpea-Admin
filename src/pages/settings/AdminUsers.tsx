@@ -16,6 +16,16 @@ import {
   X,
 } from 'lucide-react';
 
+const ROLE_PRESETS: Record<string, string[]> = {
+  RegionalAdmin: ['dashboard', 'members', 'members.approve', 'members.edit'],
+  Finance: ['dashboard', 'payments', 'payments.record', 'payments.void', 'contributions.dashboard'],
+  Editor: ['dashboard', 'announcements', 'programs', 'partners', 'activities'],
+  MembershipOfficer: ['dashboard', 'members', 'members.approve', 'members.edit', 'members.export'],
+  Communications: ['dashboard', 'messages', 'subscribers', 'sms'],
+  ContentManager: ['dashboard', 'announcements', 'programs', 'partners', 'activities'],
+  SuperAdmin: PERMISSION_GROUPS.flatMap(group => group.permissions.map(permission => permission.key)),
+};
+
 export function AdminUsers() {
   const toast = useToast();
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -26,8 +36,11 @@ export function AdminUsers() {
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<RoleType>('RegionalAdmin');
+  const [customRole, setCustomRole] = useState('');
   const [regionId, setRegionId] = useState('');
   const [permissions, setPermissions] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
@@ -63,10 +76,13 @@ export function AdminUsers() {
     setEditingUser(null);
     setFullName('');
     setEmail('');
+    setPhone('');
     setUsername('');
+    setPassword('');
     setRole('RegionalAdmin');
+    setCustomRole('');
     setRegionId(regions[0]?.id || '');
-    setPermissions(['dashboard', 'members', 'members.approve']);
+    setPermissions(ROLE_PRESETS.RegionalAdmin);
     setModalOpen(true);
   };
 
@@ -74,8 +90,11 @@ export function AdminUsers() {
     setEditingUser(u);
     setFullName(text(u.fullName));
     setEmail(text(u.email));
+    setPhone(text(u.phone));
     setUsername(text(u.username));
-    setRole(u.role);
+    setPassword('');
+    setRole(Object.keys(ROLE_PRESETS).includes(u.role) ? u.role : 'Custom');
+    setCustomRole(Object.keys(ROLE_PRESETS).includes(u.role) ? '' : u.role);
     setRegionId(u.regionId || '');
     setPermissions(Array.isArray(u.permissions) ? u.permissions : []);
     setModalOpen(true);
@@ -83,18 +102,20 @@ export function AdminUsers() {
 
   const handleTogglePermission = (key: string) => {
     setPermissions((prev) =>
-      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+      prev.includes('*') ? prev : (prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key])
     );
   };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setFieldErrors({});
-    if (!fullName.trim() || !email.trim() || !username.trim()) {
-      toast.error('Name, email, and username are required');
+    if (!fullName.trim() || !email.trim() || !phone.trim() || !username.trim() || (!editingUser && password.length < 8)) {
+      toast.error('Name, email, phone, username, and a password of at least 8 characters are required');
       return;
     }
-    if (role === 'RegionalAdmin' && !regionId) {
+    const effectiveRole = role === 'Custom' ? customRole.trim() : role;
+    if (!effectiveRole) { toast.error('Enter a name for the custom role'); return; }
+    if (effectiveRole === 'RegionalAdmin' && !regionId) {
       toast.error('Regional cluster assignment is mandatory for RegionalAdmin accounts');
       return;
     }
@@ -105,9 +126,10 @@ export function AdminUsers() {
         await UsersApi.update(editingUser.id, {
           fullName: fullName.trim(),
           email: email.trim(),
+          phone: phone.trim(),
           username: username.trim(),
-          role,
-          regionId: role === 'RegionalAdmin' ? regionId : undefined,
+          role: effectiveRole,
+          regionId: effectiveRole === 'RegionalAdmin' ? regionId : undefined,
           permissions,
         });
         toast.success(`Updated account for ${fullName}`);
@@ -115,12 +137,14 @@ export function AdminUsers() {
         await UsersApi.create({
           fullName: fullName.trim(),
           email: email.trim(),
+          phone: phone.trim(),
           username: username.trim(),
-          role,
-          regionId: role === 'RegionalAdmin' ? regionId : undefined,
+          password,
+          role: effectiveRole,
+          regionId: effectiveRole === 'RegionalAdmin' ? regionId : undefined,
           permissions,
         });
-        toast.success(`Admin account created for ${fullName}`);
+        toast.success(`Admin account created for ${fullName}. They can sign in with the username/email and password you set, then change the password on first login.`);
       }
       setModalOpen(false);
       fetchUsers();
@@ -216,7 +240,7 @@ export function AdminUsers() {
                           {text(u.fullName) || '—'}
                         </p>
                         <p className="text-2xs text-slate-400 font-mono">
-                          {text(u.email)} · @{text(u.username)}
+                          {text(u.email)} · @{text(u.username)}{u.phone ? ` · ${text(u.phone)}` : ''}
                         </p>
                       </td>
                       <td className="py-3 px-3 whitespace-nowrap">
@@ -338,6 +362,17 @@ export function AdminUsers() {
                   />
                   {fieldErrors.username && <p className="text-2xs text-red-600 mt-1">{fieldErrors.username}</p>}
                 </div>
+                <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Phone Number</label>
+                  <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+251 9XX XXX XXX" className="w-full px-3 py-2 rounded-lg border border-slate-200" required />
+                  {fieldErrors.phone && <p className="text-2xs text-red-600 mt-1">{fieldErrors.phone}</p>}
+                </div>
+                {!editingUser && <div>
+                  <label className="block font-semibold text-slate-700 mb-1">Initial Password</label>
+                  <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 8 characters" autoComplete="new-password" minLength={8} className="w-full px-3 py-2 rounded-lg border border-slate-200" required />
+                  <p className="text-2xs text-slate-500 mt-1">The user will be required to change this after signing in.</p>
+                  {fieldErrors.password && <p className="text-2xs text-red-600 mt-1">{fieldErrors.password}</p>}
+                </div>}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
@@ -345,18 +380,23 @@ export function AdminUsers() {
                   <label className="block font-semibold text-slate-700 mb-1">Role Type</label>
                   <select
                     value={role}
-                    onChange={(e) => setRole(e.target.value as RoleType)}
+                    onChange={(e) => { const next = e.target.value; setRole(next as RoleType); if (ROLE_PRESETS[next]) setPermissions(ROLE_PRESETS[next]); else if (next === 'Custom') setPermissions([]); }}
                     className="w-full px-3 py-2 rounded-lg border border-slate-200"
                   >
                     <option value="RegionalAdmin">RegionalAdmin (Scoped to one cluster)</option>
                     <option value="SuperAdmin">SuperAdmin (Full Association access)</option>
                     <option value="Finance">Finance (Contributions &amp; receipts)</option>
                     <option value="Editor">Editor (Announcements &amp; Content)</option>
+                    <option value="MembershipOfficer">Membership Officer</option>
+                    <option value="Communications">Communications</option>
+                    <option value="ContentManager">Content Manager</option>
+                    <option value="Custom">Custom role…</option>
                   </select>
+                  {role === 'Custom' && <input value={customRole} onChange={(e) => setCustomRole(e.target.value)} placeholder="Enter custom role name" className="mt-2 w-full px-3 py-2 rounded-lg border border-slate-200" required />}
                   {fieldErrors.role && <p className="text-2xs text-red-600 mt-1">{fieldErrors.role}</p>}
                 </div>
 
-                {role === 'RegionalAdmin' && (
+                {(role === 'RegionalAdmin' || (role === 'Custom' && customRole.trim() === 'RegionalAdmin')) && (
                   <div>
                     <label className="block font-semibold text-slate-700 mb-1">
                       Regional Cluster Scope <span className="text-red-500">*</span>
@@ -398,6 +438,7 @@ export function AdminUsers() {
                               <input
                                 type="checkbox"
                                 checked={isChecked}
+                                disabled={permissions.includes('*')}
                                 onChange={() => handleTogglePermission(p.key)}
                                 className="rounded border-slate-300 text-emerald-700 focus:ring-emerald-700"
                               />

@@ -15,6 +15,7 @@ import {
   Handshake,
   CalendarCheck,
   MessageSquare,
+  Smartphone,
   Mail,
   Sliders,
   MapPin,
@@ -25,6 +26,7 @@ import {
   ChevronDown,
   X,
   Compass,
+  Globe,
 } from 'lucide-react';
 
 interface NavItem {
@@ -181,6 +183,12 @@ export function Sidebar() {
           icon: Mail,
           permission: 'subscribers',
         },
+        {
+          title: 'SMS Center',
+          path: '/communication/sms',
+          icon: Smartphone,
+          permission: 'sms',
+        },
       ],
     },
     {
@@ -196,6 +204,12 @@ export function Sidebar() {
           title: 'Contact Information',
           path: '/settings/contact',
           icon: Mail,
+          permission: 'settings.site',
+        },
+        {
+          title: 'Social Media Links',
+          path: '/settings/socials',
+          icon: Globe,
           permission: 'settings.site',
         },
         {
@@ -301,6 +315,7 @@ export function Sidebar() {
                       <NavLink
                         key={item.title}
                         to={item.path}
+                        end
                         className={({ isActive }) =>
                           `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group opacity-75 hover:opacity-100 ${
                             isActive
@@ -328,6 +343,7 @@ export function Sidebar() {
                     <NavLink
                       key={item.title}
                       to={item.path}
+                      end
                       className={({ isActive }) =>
                         `flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all group ${
                           isActive

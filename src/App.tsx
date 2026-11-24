@@ -13,6 +13,8 @@ import {
   MemberList,
   PendingRegistrations,
   MemberEdit,
+  MemberCreate,
+  MemberImport,
   PaymentStatus,
   PaymentList,
   ContributionDashboard,
@@ -26,7 +28,9 @@ import {
   Activities,
   ContactMessages,
   Subscribers,
+  SmsCenter,
   SiteSettings,
+  SocialLinks,
   ContactSettings,
   Regions,
   Lookups,
@@ -78,6 +82,22 @@ export default function App() {
                 element={
                   <RequirePermission permission="members.approve">
                     <PendingRegistrations />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/members/new"
+                element={
+                  <RequirePermission permission="members.edit">
+                    <MemberCreate />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/members/import"
+                element={
+                  <RequirePermission permission="members.edit">
+                    <MemberImport />
                   </RequirePermission>
                 }
               />
@@ -207,6 +227,14 @@ export default function App() {
                   </RequirePermission>
                 }
               />
+              <Route
+                path="/communication/sms"
+                element={
+                  <RequirePermission permission="sms">
+                    <SmsCenter />
+                  </RequirePermission>
+                }
+              />
 
               {/* Settings */}
               <Route
@@ -214,6 +242,14 @@ export default function App() {
                 element={
                   <RequirePermission permission="settings.site">
                     <SiteSettings />
+                  </RequirePermission>
+                }
+              />
+              <Route
+                path="/settings/socials"
+                element={
+                  <RequirePermission permission="settings.site">
+                    <SocialLinks />
                   </RequirePermission>
                 }
               />

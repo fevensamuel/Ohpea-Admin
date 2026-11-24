@@ -297,6 +297,10 @@ class OpheaAdminApiClient {
     });
   }
 
+  public async createMemberRegistration(data: FormData): Promise<MemberDetail> {
+    return this.request('/admin/members/registration', { method: 'POST', body: data });
+  }
+
   public async updateMember(id: string, data: unknown): Promise<MemberDetail> {
     return this.request(`/admin/members/${id}`, {
       method: 'PUT',
@@ -333,6 +337,16 @@ class OpheaAdminApiClient {
 
   public async getPendingCount(): Promise<{ pendingCount: number }> {
     return this.request('/admin/registrations/pending-count', { method: 'GET' });
+  }
+
+  public async downloadMemberImportTemplate(): Promise<Blob> {
+    return this.requestBlob('/admin/members/import/template');
+  }
+
+  public async importMembers(file: File): Promise<{ imported: number; total: number; results: Array<{ row: number; name?: string; status: string; message: string }> }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.request('/admin/members/import', { method: 'POST', body: form });
   }
 
   public async exportMembers(query: Record<string, unknown> = {}): Promise<Blob> {
@@ -636,7 +650,7 @@ class OpheaAdminApiClient {
     return this.request('/admin/sms/send', { method: 'POST', body: JSON.stringify(data) });
   }
 
-  public async createSmsCampaign(data: unknown): Promise<SmsCampaignItem> {
+  public async createSmsCampaign(data: unknown): Promise<{ id: string; targetCount: number }> {
     return this.request('/admin/sms/campaigns', { method: 'POST', body: JSON.stringify(data) });
   }
 
@@ -658,8 +672,12 @@ class OpheaAdminApiClient {
     return this.request(`/admin/sms/logs${qs ? `?${qs}` : ''}`, { method: 'GET' });
   }
 
-  public async getSmsBalance(): Promise<{ balance: number }> {
-    return this.request('/admin/sms/balance', { method: 'GET' });
+  public async getSmsStatus(): Promise<{ configured: boolean; enabled: boolean; provider: string; featureEnabled: boolean; message: string }> {
+    return this.request('/admin/sms/status', { method: 'GET' });
+  }
+
+  public async getSmsTemplates(): Promise<Array<{ key: string; label: string; message: string }>> {
+    return this.request('/admin/sms/templates', { method: 'GET' });
   }
 
   // ---------------------------------------------------------------------------

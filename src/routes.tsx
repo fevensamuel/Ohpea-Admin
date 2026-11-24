@@ -14,6 +14,8 @@ import { Dashboard } from '@/pages/Dashboard';
 import { MemberList } from '@/pages/members/MemberList';
 import { PendingRegistrations } from '@/pages/members/PendingRegistrations';
 import { MemberEdit } from '@/pages/members/MemberEdit';
+import { MemberCreate } from '@/pages/members/MemberCreate';
+import { MemberImport } from '@/pages/members/MemberImport';
 import { PaymentStatus } from '@/pages/payments/PaymentStatus';
 import { PaymentList } from '@/pages/payments/PaymentList';
 import { ContributionDashboard } from '@/pages/payments/ContributionDashboard';
@@ -27,7 +29,9 @@ import { Partners } from '@/pages/content/Partners';
 import { Activities } from '@/pages/content/Activities';
 import { ContactMessages } from '@/pages/communication/ContactMessages';
 import { Subscribers } from '@/pages/communication/Subscribers';
+import { SmsCenter } from '@/pages/communication/SmsCenter';
 import { SiteSettings } from '@/pages/settings/SiteSettings';
+import { SocialLinks } from '@/pages/settings/SocialLinks';
 import { ContactSettings } from '@/pages/settings/ContactSettings';
 import { Regions } from '@/pages/settings/Regions';
 import { Lookups } from '@/pages/settings/Lookups';
@@ -40,7 +44,7 @@ import { ContractMismatch } from '@/pages/ContractMismatch';
 
 // Protected layout with hard guards
 export function ProtectedLayout() {
-  const { user, loading } = useAuthContext();
+  const { user, loading, mustChangePassword } = useAuthContext();
   const { ok } = useContractGuard();
   const { sidebarCollapsed } = useUiStore();
   const location = useLocation();
@@ -56,6 +60,11 @@ export function ProtectedLayout() {
   // 1. If no user/token -> redirect /login
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Force first-login and reset-password users to update their password before using the portal.
+  if (mustChangePassword && location.pathname !== '/change-password') {
+    return <Navigate to="/change-password" replace />;
   }
 
   // 2. Contract drift guard: once logged in, if !ok, redirect to /contract-mismatch
@@ -103,6 +112,8 @@ export {
   MemberList,
   PendingRegistrations,
   MemberEdit,
+  MemberCreate,
+  MemberImport,
   PaymentStatus,
   PaymentList,
   ContributionDashboard,
@@ -116,7 +127,9 @@ export {
   Activities,
   ContactMessages,
   Subscribers,
+  SmsCenter,
   SiteSettings,
+  SocialLinks,
   ContactSettings,
   Regions,
   Lookups,

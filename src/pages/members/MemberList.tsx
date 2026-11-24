@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQueryParams } from '@/hooks/useQueryParams';
 import { useDebounce } from '@/hooks/useDebounce';
 import { usePagination } from '@/hooks/usePagination';
@@ -17,12 +18,12 @@ import { RejectReasonModal } from '@/components/modals/RejectReasonModal';
 import { useToast } from '@/context/ToastContext';
 import {
   Search,
+  MessageSquare,
   Filter,
   X,
   Eye,
   CheckCircle,
   XCircle,
-  Lock,
   ChevronDown,
   SlidersHorizontal,
   ArrowUpDown,
@@ -32,7 +33,8 @@ import {
 
 export function MemberList() {
   const { params, setParam, setMultipleParams, clearParams } = useQueryParams();
-  const { user } = useAuthContext();
+  const navigate = useNavigate();
+  const { user, hasPermission } = useAuthContext();
   const toast = useToast();
 
   const [searchInput, setSearchInput] = useState<string>(params.q || '');
@@ -203,11 +205,18 @@ export function MemberList() {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {hasPermission('members.edit') && <button type="button" onClick={() => navigate('/members/new')} className="rounded-lg bg-[#103f34] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#246b55]">Add Member</button>}
+          {hasPermission('members.edit') && <button type="button" onClick={() => navigate('/members/import')} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Bulk Import</button>}
           <ExportButton
-            onExport={() => MembersApi.export(params)}
-            filename={`OPHEA-Members-${new Date().toISOString().slice(0, 10)}.csv`}
-            label="Export Filtered"
+            onExport={() => MembersApi.export({ ...params, format: 'xlsx' })}
+            filename={`OPHEA-Members-${new Date().toISOString().slice(0, 10)}.xlsx`}
+            label="Export Excel"
+          />
+          <ExportButton
+            onExport={() => MembersApi.export({ ...params, format: 'pdf' })}
+            filename={`OPHEA-Members-${new Date().toISOString().slice(0, 10)}.pdf`}
+            label="Export PDF"
           />
         </div>
       </div>
@@ -355,19 +364,32 @@ export function MemberList() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => {
-                toast.info('Exporting selected members bundle...');
-                MembersApi.export({ ids: selectedIds });
+                const exportSelected = async () => {
+                  try {
+                    const blob = await MembersApi.export({ ids: selectedIds.join(','), format: 'xlsx' });
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `OPHEA-Selected-Members-${new Date().toISOString().slice(0, 10)}.xlsx`;
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 1000);
+                    toast.success('Selected member export downloaded');
+                  } catch { toast.error('Could not export selected members'); }
+                };
+                void exportSelected();
               }}
               className="px-3 py-1 bg-[#246b55] hover:bg-[#3b8069] rounded-lg font-medium transition-colors"
             >
               Export Selected
             </button>
-            <button
-              onClick={() => toast.info('SMS Campaigns module will launch in Phase 3.')}
+            {hasPermission('sms') && <button
+              onClick={() => navigate('/communication/sms')}
               className="px-3 py-1 bg-[#b49a5a]/20 text-[#eee5ce] border border-[#b49a5a]/30 rounded-lg font-medium flex items-center gap-1"
             >
-              <Lock className="w-3 h-3" /> Send SMS (Soon)
-            </button>
+              <MessageSquare className="w-3 h-3" /> SMS Center
+            </button>}
             <button
               onClick={() => setSelectedIds([])}
               className="text-xs text-emerald-300 hover:underline px-2"

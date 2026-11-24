@@ -15,27 +15,11 @@ interface BrandingSettings {
   supportPhone: string;
 }
 
-interface SocialSettings {
-  facebook: string;
-  telegram: string;
-  linkedin: string;
-  twitter: string;
-  youtube: string;
-}
-
 interface StatsSettings {
   accreditedHotels: number;
   certifiedGuides: number;
   trainingGraduates: number;
 }
-
-const SOCIAL_FIELDS: { key: keyof SocialSettings; label: string }[] = [
-  { key: 'facebook', label: 'Facebook page URL' },
-  { key: 'telegram', label: 'Telegram channel URL' },
-  { key: 'linkedin', label: 'LinkedIn URL' },
-  { key: 'twitter', label: 'X / Twitter URL' },
-  { key: 'youtube', label: 'YouTube URL' },
-];
 
 const STAT_FIELDS: { key: keyof StatsSettings; label: string }[] = [
   { key: 'accreditedHotels', label: 'Accredited hotels' },
@@ -58,20 +42,17 @@ export function SiteSettings() {
     supportPhone: '',
   });
 
-  const [socials, setSocials] = useState<SocialSettings>({ facebook: '', telegram: '', linkedin: '', twitter: '', youtube: '' });
   const [stats, setStats] = useState<StatsSettings>({ accreditedHotels: 0, certifiedGuides: 0, trainingGraduates: 0 });
 
   useEffect(() => {
     const load = async () => {
       try {
         setLoading(true);
-        const [data, socialData, statsData] = await Promise.all([
+        const [data, statsData] = await Promise.all([
           SettingsApi.get<BrandingSettings>('branding'),
-          SettingsApi.get<SocialSettings>('socials'),
           SettingsApi.get<StatsSettings>('stats'),
         ]);
         if (data) setSettings(data);
-        if (socialData) setSocials(socialData);
         if (statsData) setStats(statsData);
       } catch {
         toast.error('Failed to load branding settings');
@@ -88,7 +69,6 @@ export function SiteSettings() {
     try {
       setSaving(true);
       await SettingsApi.update('branding', settings);
-      await SettingsApi.update('socials', socials);
       await SettingsApi.update('stats', stats);
       toast.success('Site branding and mission statements updated successfully.');
     } catch (err) {
@@ -197,27 +177,6 @@ export function SiteSettings() {
               className="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-700"
             />
             {fieldErrors.vision && <p className="text-2xs text-red-600 mt-1">{fieldErrors.vision}</p>}
-          </div>
-        </div>
-
-        <div className="space-y-4 pt-4 border-t border-slate-100">
-          <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-[#246b55]" />
-            Social Media Links
-          </h3>
-          <p className="text-slate-500">Only links you fill in are shown on the public website.</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {SOCIAL_FIELDS.map(({ key, label }) => (
-              <div key={key}>
-                <label className="block font-semibold text-slate-700 mb-1">{label}</label>
-                <input
-                  type="url"
-                  value={socials[key]}
-                  onChange={(e) => setSocials({ ...socials, [key]: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-700"
-                />
-              </div>
-            ))}
           </div>
         </div>
 

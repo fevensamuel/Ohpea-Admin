@@ -40,13 +40,12 @@ import {
 } from './routes';
 
 export default function App() {
-  const basename = '/admin';
-
+  // CHANGED: Removed basename '/admin' so the app runs at the root of admin.ohpea-et.com
   return (
     <ContractProvider>
       <AuthProvider>
         <ToastProvider>
-          <BrowserRouter basename={basename}>
+          <BrowserRouter>
             <ContractDriftBanner />
             <Routes>
               {/* Public route */}
